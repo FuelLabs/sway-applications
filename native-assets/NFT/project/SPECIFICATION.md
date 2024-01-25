@@ -39,7 +39,7 @@ This function will return the total number of individual assets for a contract.
 
 ### `total_supply()`
 
-This function will return the total supply of tokens for an asset.
+This function will return the total supply of coins for an asset.
 
 ### `name()`
 
@@ -65,11 +65,11 @@ This function will unconditionally set the symbol of an asset.
 
 ### `mint()`
 
-This function will mint new tokens using a sub-identifier.
+This function will mint new assets using a sub-identifier.
 
 ### `burn()`
 
-This function will burn tokens with the given sub-identifier.
+This function will burn assets with the given sub-identifier.
 
 ## SRC-7
 
