@@ -10,6 +10,6 @@ games/TicTacToe
 multisig-wallet
 name-registry
 native-assets/NFT
-native-assets/token
+native-assets/native-asset
 oracle
 timelock

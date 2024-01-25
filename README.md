@@ -48,11 +48,11 @@ sway-applications/
 
 #### Asset Management
 
-- [Airdrop](./airdrop/) is a token distribution program where users are able to claim tokens given a valid merkle proof.
+- [Airdrop](./airdrop/) is an asset distribution program where users are able to claim assets given a valid merkle proof.
 - [Escrow](./escrow) is a third party that keeps an asset on behalf of multiple parties.
-- [Non-Fungible Token (NFT)](./native-assets/NFT/) is a token contract which provides unique collectibles, identified and differentiated by token IDs, where tokens contain metadata giving them distinctive characteristics.
+- [Non-Fungible Native Asset (NFT)](./native-assets/NFT/) is an asset contract which provides unique collectibles, identified and differentiated by IDs, where assets contain metadata giving them distinctive characteristics.
 - [Timelock](./timelock) is a contract which restricts the execution of a transaction to a specified time range.
-- [Token](./native-assets/token/) is a basic token contract that enables the use of Native Assets on Fuel using existing standards and libraries.
+- [Native Asset](./native-assets/native-asset/) is a basic asset contract that enables the use of Native Assets on Fuel using existing standards and libraries.
 
 #### Decentralized Finance
 
@@ -62,7 +62,7 @@ sway-applications/
 
 #### Governance
 
-- [Decentralized Autonomous Organization (DAO)](./DAO) is an organization where users get to vote on governance proposals using governance tokens.
+- [Decentralized Autonomous Organization (DAO)](./DAO) is an organization where users get to vote on governance proposals using governance assets.
 - [Multi-Signature Wallet](./multisig-wallet) is a wallet that requires multiple signatures to execute a transaction.
 
 #### Other
