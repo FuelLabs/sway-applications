@@ -1,7 +1,7 @@
 <p align="center">
     <picture>
-        <source media="(prefers-color-scheme: dark)" srcset=".docs/token-logo-dark-theme.png">
-        <img alt="light theme" src=".docs/token-logo-light-theme.png">
+        <source media="(prefers-color-scheme: dark)" srcset=".docs/native-asset-logo-dark-theme.png">
+        <img alt="light theme" src=".docs/native-asset-logo-light-theme.png">
     </picture>
 </p>
 
@@ -16,19 +16,19 @@
 
 ## Overview
 
-A fungible token is a [Native Asset](https://docs.fuel.network/docs/sway/blockchain-development/native_assets) on the Fuel Network.
+A fungible asset is a [Native Asset](https://docs.fuel.network/docs/sway/blockchain-development/native_assets) on the Fuel Network.
 
-In this project, there are a maximum of 100,000,000 tokens for each asset that may be minted. There is no limit on the total individual assets a user may mint.
+In this project, there are a maximum of 100,000,000 coins for each asset that may be minted. There is no limit on the total individual assets a user may mint.
 
 ## Standards Implementations
 
-The project implements and follows the [SRC-20; Token](https://github.com/FuelLabs/sway-standards/tree/master/standards/src_20) and [SRC-3; Mint and Burn](https://github.com/FuelLabs/sway-standards/tree/master/standards/src_3) standards. It also uses the [Token Library](https://github.com/FuelLabs/sway-libs/tree/master/libs/token) to implement the basic functionality behind the standards.  
+The project implements and follows the [SRC-20; Native Asset](https://github.com/FuelLabs/sway-standards/tree/master/standards/src20-native-asset) and [SRC-3; Mint and Burn](https://github.com/FuelLabs/sway-standards/tree/master/standards/src3-mint-burn) standards. It also uses the [Native Asset Library](https://github.com/FuelLabs/sway-libs/blob/master/libs/native_assets) to implement the basic functionality behind the standards.  
 
 ### SRC-20
 
 Set functions for name, symbol, and decimals have been provided to the user. While traditionally name, symbol, and decimals are written into the contract rather than storage, this contract is open to mint new types of assets. This means that every asset minted by this contract may contain a different name and symbol. 
 
-The [SRC-20](https://github.com/FuelLabs/sway-standards/tree/master/standards/src_20) ABI defined below has also been implemented.
+The [SRC-20](https://github.com/FuelLabs/sway-standards/tree/master/standards/src20-native-asset) ABI defined below has also been implemented.
 
 ```sway
 abi SRC20 {
@@ -65,10 +65,10 @@ The project consists of a smart contract.
 <!--Only show most important files e.g. script to run, build etc.-->
 
 ```sh
-token
+native-asset
 ├── project
 │   ├── contracts
-│   │   └── token-contract
+│   │   └── native-asset-contract
 │   │       └──src/main.sw
 │   └── SPECIFICATION.md
 ├── ui
@@ -84,7 +84,7 @@ TODO: The user interface does not currently exist therefore its [SPECIFICATION.m
 
 ### Project
 
-In order to run the subsequent commands change into the following directory `/path/to/token/project/<here>`.
+In order to run the subsequent commands change into the following directory `/path/to/native-asset/project/<here>`.
 
 #### Program compilation
 
