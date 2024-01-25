@@ -8,7 +8,7 @@ mod success {
     use super::*;
 
     #[tokio::test]
-    async fn returns_all_tokens() {
+    async fn returns_all_coins() {
         let (deploy_wallet, wallet1, wallet2, wallet3, asset_id) = setup().await;
         let (
             _,
@@ -54,7 +54,7 @@ mod success {
     }
 
     #[tokio::test]
-    async fn returns_unclaimed_tokens() {
+    async fn returns_unclaimed_coins() {
         let (deploy_wallet, wallet1, wallet2, wallet3, asset_id) = setup().await;
         let (
             identity_a,
@@ -175,7 +175,7 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic(expected = "NotEnoughTokens")]
+    #[should_panic(expected = "NotEnoughCoins")]
     async fn when_called_twice() {
         let (deploy_wallet, wallet1, wallet2, wallet3, asset_id) = setup().await;
         let (_, _, _, minter, key, num_leaves, asset_supply, airdrop_leaves, claim_time, _, _) =

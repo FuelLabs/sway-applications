@@ -4,9 +4,9 @@ library;
 pub enum AccessError {
     /// The caller is not the admin of the contract.
     CallerNotAdmin: (),
-    /// There are not enough tokens in the contract to perform the operation.
-    NotEnoughTokens: (),
-    /// The user has already claimed their tokens.
+    /// There are not enough coins in the contract to perform the operation.
+    NotEnoughCoins: (),
+    /// The user has already claimed their coins.
     UserAlreadyClaimed: (),
 }
 
@@ -14,8 +14,8 @@ pub enum AccessError {
 pub enum InitError {
     /// The contract has already been initialized.
     AlreadyInitialized: (),
-    /// No assets were transferred during initialization.
-    CannotAirdropZeroTokens: (),
+    /// No coins were transferred during initialization.
+    CannotAirdropZeroCoins: (),
 }
 
 /// Errors related to the state of the contract.
