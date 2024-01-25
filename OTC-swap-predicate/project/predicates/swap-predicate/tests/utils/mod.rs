@@ -20,7 +20,7 @@ const BASE_ASSET: AssetId = AssetId::new([0u8; 32]);
 const OFFERED_ASSET: AssetId = AssetId::new([2u8; 32]);
 const PREDICATE_BINARY: &str = "../swap-predicate/out/debug/swap-predicate.bin";
 
-// Get the balance of a given token of an address
+// Get the balance of a given asset of an address
 async fn get_balance(provider: &Provider, address: &Bech32Address, asset: AssetId) -> u64 {
     provider.get_asset_balance(address, asset).await.unwrap()
 }
@@ -59,9 +59,9 @@ pub async fn test_predicate_spend_with_parameters(
 
     let provider = receiver_wallet.provider().unwrap();
 
-    let initial_taker_offered_token_balance =
+    let initial_taker_offered_asset_balance =
         get_balance(provider, taker_wallet.address(), OFFERED_ASSET).await;
-    let initial_taker_asked_token_balance =
+    let initial_taker_asked_asset_balance =
         get_balance(provider, taker_wallet.address(), asked_asset).await;
     let initial_receiver_balance = get_balance(provider, &receiver_address, asked_asset).await;
 
@@ -108,7 +108,7 @@ pub async fn test_predicate_spend_with_parameters(
         .unwrap()[0];
 
     // Configure inputs and outputs to send coins from the predicate root to another address
-    // The predicate allows to spend its tokens if `ask_amount` is sent to the receiver.
+    // The predicate allows to spend its assets if `ask_amount` is sent to the receiver.
 
     // Offered asset coin belonging to the predicate root
     let input_predicate = match predicate_coin {
@@ -164,9 +164,9 @@ pub async fn test_predicate_spend_with_parameters(
     let _response = script_call.call().await.unwrap();
 
     let predicate_balance = get_balance(provider, predicate.address(), OFFERED_ASSET).await;
-    let taker_asked_token_balance =
+    let taker_asked_asset_balance =
         get_balance(provider, taker_wallet.address(), asked_asset).await;
-    let taker_offered_token_balance =
+    let taker_offered_asset_balance =
         get_balance(provider, taker_wallet.address(), OFFERED_ASSET).await;
     let receiver_balance = get_balance(provider, &receiver_address, asked_asset).await;
 
@@ -176,14 +176,14 @@ pub async fn test_predicate_spend_with_parameters(
     // Receiver has been paid `ask_amount`
     assert_eq!(receiver_balance, initial_receiver_balance + ask_amount);
 
-    // Taker has sent `ask_amount` of the asked token and received `offered_amount` of the offered token in return
+    // Taker has sent `ask_amount` of the asked asset and received `offered_amount` of the offered asset in return
     assert_eq!(
-        taker_asked_token_balance,
-        initial_taker_asked_token_balance - ask_amount
+        taker_asked_asset_balance,
+        initial_taker_asked_asset_balance - ask_amount
     );
     assert_eq!(
-        taker_offered_token_balance,
-        initial_taker_offered_token_balance + offered_amount
+        taker_offered_asset_balance,
+        initial_taker_offered_asset_balance + offered_amount
     );
 }
 
