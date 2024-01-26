@@ -18,16 +18,16 @@ abigen!(
     ),
     Contract(
         name = "NFT",
-        abi = "../../NFT/project/contracts/NFT-contract/out/debug/NFT-contract-abi.json"
+        abi = "./contracts/test-artifacts/out/debug/NFT-contract-abi.json"
     ),
 );
 
 const F_NFT_CONTRACT_BINARY_PATH: &str = "./out/debug/f-NFT-contract.bin";
 const NFT_CONTRACT_BINARY_PATH: &str =
-    "../../../../NFT/project/contracts/NFT-contract/out/debug/NFT-contract.bin";
+    "../test-artifacts/out/debug/NFT-contract.bin";
 const F_NFT_CONTRACT_STORAGE_PATH: &str = "./out/debug/f-NFT-contract-storage_slots.json";
 const NFT_CONTRACT_STORAGE_PATH: &str =
-    "../../../../NFT/project/contracts/NFT-contract/out/debug/NFT-contract-storage_slots.json";
+    "../test-artifacts/out/debug/NFT-contract-storage_slots.json";
 
 pub(crate) struct User {
     pub(crate) f_nft: F_NFT<WalletUnlocked>,
