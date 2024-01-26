@@ -14,7 +14,7 @@ Table of Content
     - [`user_balance()`](#user_balance)
     - [`user_votes()`](#user_votes)
     - [`proposal()`](#proposal)
-    - [`governance_asser_id()`](#governance_asser_id)
+    - [`governance_asset_id()`](#governance_asset_id)
     - [`proposal_count()`](#proposal_count)
   - [Sequence diagram](#sequence-diagram)
 
@@ -98,7 +98,7 @@ If you are interested in a functional overview then this is the section for you.
    5. The raw number of "yes" and "no" votes
    6. Arbitrary data required for the proposal to execute
 
-### `governance_asser_id()`
+### `governance_asset_id()`
 
 1. Returns the ID of the governance asset
 
