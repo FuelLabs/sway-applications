@@ -3,9 +3,8 @@ resolver = "2"
 members = [
     "./contracts/AMM-contract",
     "./contracts/exchange-contract",
-    # TODO - Fix these tests. All the script tests have a change of failing at random.
-    # "./scripts/atomic-add-liquidity",
-    # "./scripts/swap-exact-input",
-    # "./scripts/swap-exact-output",
+    "./scripts/atomic-add-liquidity",
+    "./scripts/swap-exact-input",
+    "./scripts/swap-exact-output",
     "./test-utils",
 ]
