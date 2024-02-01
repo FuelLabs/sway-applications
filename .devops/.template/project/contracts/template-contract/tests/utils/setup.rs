@@ -19,23 +19,20 @@ pub async fn setup() -> (Template<WalletUnlocked>, WalletUnlocked) {
         Some(amount_per_coin),
     );
 
-    let provider_config = Config {
-        manual_blocks_enabled: true, // Necessary so the `produce_blocks` API can be used locally
-        ..Config::local_node()
-    };
-
-    let mut wallets =
-        launch_custom_provider_and_get_wallets(wallet_config, Some(provider_config), None).await;
+    let mut wallets = launch_custom_provider_and_get_wallets(wallet_config, None, None)
+        .await
+        .unwrap();
 
     let wallet = wallets.pop().unwrap();
 
-    let storage_configuration = StorageConfiguration::load_from(TEMPLATE_CONTRACT_STORAGE_PATH);
+    let storage_configuration = StorageConfiguration::default()
+        .add_slot_overrides_from_file(TEMPLATE_CONTRACT_STORAGE_PATH);
     let configuration =
-        LoadConfiguration::default().set_storage_configuration(storage_configuration.unwrap());
+        LoadConfiguration::default().with_storage_configuration(storage_configuration.unwrap());
 
     let id = Contract::load_from(TEMPLATE_CONTRACT_BINARY_PATH, configuration)
         .unwrap()
-        .deploy(&wallet, TxParameters::default())
+        .deploy(&wallet, TxPolicies::default())
         .await
         .unwrap();
 
