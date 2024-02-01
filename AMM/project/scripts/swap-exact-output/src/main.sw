@@ -16,6 +16,7 @@ enum SwapError {
     PairExchangeNotRegistered: (AssetId, AssetId),
 }
 
+// TODO: Remove this when its automatically implemented
 impl AbiEncode for SwapError {
     fn abi_encode(self, ref mut buffer: Buffer) {
         match self {

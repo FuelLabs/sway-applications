@@ -8,6 +8,7 @@ pub struct RegisterPoolEvent {
     pool: ContractId,
 }
 
+// TODO: Remove this when its automatically implemented
 impl AbiEncode for RegisterPoolEvent {
     fn abi_encode(self, ref mut buffer: Buffer) {
         buffer.push(self.asset_pair.0);
