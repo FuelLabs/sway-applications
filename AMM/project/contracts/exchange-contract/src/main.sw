@@ -35,7 +35,7 @@ use std::{
     context::msg_amount,
     hash::Hash,
     math::*,
-    token::{
+    asset::{
         burn,
         mint,
         transfer,
