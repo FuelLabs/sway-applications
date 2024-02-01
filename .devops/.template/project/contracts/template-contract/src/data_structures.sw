@@ -1,3 +1,3 @@
 library;
 
-mod example;
+pub mod example;

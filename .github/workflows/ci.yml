@@ -51,6 +51,7 @@ jobs:
             "multisig-wallet",
             "name-registry",
             "native-assets/NFT",
+            "native-assets/fractional-NFT",
             "native-assets/token",
             "oracle",
             "OTC-swap-predicate",
@@ -74,8 +75,8 @@ jobs:
       - name: Install Fuel toolchain
         uses: FuelLabs/action-fuel-toolchain@v0.6.0
         with:
-          toolchain: latest
-          date: 2023-09-29
+          toolchain: nightly
+          date: 2024-01-24
 
       - name: Check Sway formatting
         run: |
@@ -134,11 +135,11 @@ jobs:
       - name: Install Fuel toolchain
         uses: FuelLabs/action-fuel-toolchain@v0.6.0
         with:
-          toolchain: latest
-          date: 2023-09-29
+          toolchain: nightly
+          date: 2024-01-24
 
       - name: Check Sway formatting
-        run: forc fmt --check --path ${{ matrix.project }}
+        run: cd ${{ matrix.project }} && forc fmt --check
 
       - name: Build Sway
-        run: forc build --locked --path ${{ matrix.project }}
+        run: cd ${{ matrix.project }} && forc build --locked
