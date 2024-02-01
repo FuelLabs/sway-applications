@@ -3,9 +3,9 @@ contract;
 mod errors;
 
 use errors::{MintError, SetError};
-use src_20::SRC20;
-use src_3::SRC3;
-use token::{
+use src20::SRC20;
+use src3::SRC3;
+use asset::{
     base::{
         _decimals,
         _name,
@@ -15,7 +15,7 @@ use token::{
         _symbol,
         _total_assets,
         _total_supply,
-        SetTokenAttributes,
+        SetAssetAttributes,
     },
     mint::{
         _burn,
@@ -275,7 +275,7 @@ impl SRC3 for Contract {
     }
 }
 
-impl SetTokenAttributes for Contract {
+impl SetAssetAttributes for Contract {
     /// Sets the name of an asset.
     ///
     /// # Arguments
@@ -295,12 +295,12 @@ impl SetTokenAttributes for Contract {
     /// # Examples
     ///
     /// ```sway
-    /// use token::SetTokenAttributes;
+    /// use token::SetAssetAttributes;
     /// use src20::SRC20;
     /// use std::string::String;
     ///
     /// fn foo(asset: AssetId) {
-    ///     let set_abi = abi(SetTokenAttributes, contract_id);
+    ///     let set_abi = abi(SetAssetAttributes, contract_id);
     ///     let src_20_abi = abi(SRC20, contract_id);
     ///     let name = String::from_ascii_str("Ether");
     ///     set_abi.set_name(storage.name, asset, name);
@@ -338,12 +338,12 @@ impl SetTokenAttributes for Contract {
     /// # Examples
     ///
     /// ```sway
-    /// use token::SetTokenAttributes;
+    /// use token::SetAssetAttributes;
     /// use src20::SRC20;
     /// use std::string::String;
     ///
     /// fn foo(asset: AssetId) {
-    ///     let set_abi = abi(SetTokenAttributes, contract_id);
+    ///     let set_abi = abi(SetAssetAttributes, contract_id);
     ///     let src_20_abi = abi(SRC20, contract_id);
     ///     let symbol = String::from_ascii_str("ETH");
     ///     set_abi.set_symbol(storage.name, asset, symbol);
@@ -381,12 +381,12 @@ impl SetTokenAttributes for Contract {
     /// # Examples
     ///
     /// ```sway
-    /// use token::SetTokenAttributes;
+    /// use token::SetAssetAttributes;
     /// use src20::SRC20;
     ///
     /// fn foo(asset: AssetId) {
     ///     let decimals = 8u8;
-    ///     let set_abi = abi(SetTokenAttributes, contract_id);
+    ///     let set_abi = abi(SetAssetAttributes, contract_id);
     ///     let src_20_abi = abi(SRC20, contract_id);
     ///     set_abi.set_decimals(asset, decimals);
     ///     assert(src_20_abi.decimals(asset) == decimals);
@@ -471,24 +471,18 @@ fn test_total_supply() {
 fn test_name() {
     use std::constants::ZERO_B256;
     let src20_abi = abi(SRC20, CONTRACT_ID);
-    let attributes_abi = abi(SetTokenAttributes, CONTRACT_ID);
+    let attributes_abi = abi(SetAssetAttributes, CONTRACT_ID);
     let sub_id = ZERO_B256;
     let asset_id = AssetId::new(ContractId::from(CONTRACT_ID), sub_id);
     let name = String::from_ascii_str("Fuel Token");
     assert(src20_abi.name(asset_id).is_none());
     attributes_abi.set_name(asset_id, name);
-    assert(
-        src20_abi
-            .name(asset_id)
-            .unwrap()
-            .as_bytes() == name
-            .as_bytes(),
-    );
+    assert(src20_abi.name(asset_id).unwrap().as_bytes() == name.as_bytes());
 }
 #[test(should_revert)]
 fn test_revert_set_name_twice() {
     use std::constants::ZERO_B256;
-    let attributes_abi = abi(SetTokenAttributes, CONTRACT_ID);
+    let attributes_abi = abi(SetAssetAttributes, CONTRACT_ID);
     let sub_id = ZERO_B256;
     let asset_id = AssetId::new(ContractId::from(CONTRACT_ID), sub_id);
     let name = String::from_ascii_str("Fuel Token");
@@ -499,24 +493,18 @@ fn test_revert_set_name_twice() {
 fn test_symbol() {
     use std::constants::ZERO_B256;
     let src20_abi = abi(SRC20, CONTRACT_ID);
-    let attributes_abi = abi(SetTokenAttributes, CONTRACT_ID);
+    let attributes_abi = abi(SetAssetAttributes, CONTRACT_ID);
     let sub_id = ZERO_B256;
     let asset_id = AssetId::new(ContractId::from(CONTRACT_ID), sub_id);
     let symbol = String::from_ascii_str("FUEL");
     assert(src20_abi.symbol(asset_id).is_none());
     attributes_abi.set_symbol(asset_id, symbol);
-    assert(
-        src20_abi
-            .symbol(asset_id)
-            .unwrap()
-            .as_bytes() == symbol
-            .as_bytes(),
-    );
+    assert(src20_abi.symbol(asset_id).unwrap().as_bytes() == symbol.as_bytes());
 }
 #[test(should_revert)]
 fn test_revert_set_symbol_twice() {
     use std::constants::ZERO_B256;
-    let attributes_abi = abi(SetTokenAttributes, CONTRACT_ID);
+    let attributes_abi = abi(SetAssetAttributes, CONTRACT_ID);
     let sub_id = ZERO_B256;
     let asset_id = AssetId::new(ContractId::from(CONTRACT_ID), sub_id);
     let symbol = String::from_ascii_str("FUEL");
@@ -527,7 +515,7 @@ fn test_revert_set_symbol_twice() {
 fn test_decimals() {
     use std::constants::ZERO_B256;
     let src20_abi = abi(SRC20, CONTRACT_ID);
-    let attributes_abi = abi(SetTokenAttributes, CONTRACT_ID);
+    let attributes_abi = abi(SetAssetAttributes, CONTRACT_ID);
     let sub_id = ZERO_B256;
     let asset_id = AssetId::new(ContractId::from(CONTRACT_ID), sub_id);
     let decimals = 8u8;
@@ -539,7 +527,7 @@ fn test_decimals() {
 fn test_revert_set_decimals_twice() {
     use std::constants::ZERO_B256;
     let src20_abi = abi(SRC20, CONTRACT_ID);
-    let attributes_abi = abi(SetTokenAttributes, CONTRACT_ID);
+    let attributes_abi = abi(SetAssetAttributes, CONTRACT_ID);
     let sub_id = ZERO_B256;
     let asset_id = AssetId::new(ContractId::from(CONTRACT_ID), sub_id);
     let decimals = 8u8;

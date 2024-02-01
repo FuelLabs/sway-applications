@@ -145,9 +145,7 @@ fn encode_and_pack_signed_data(
     // `message_1`, `message_2`, `message_3` and `message_4` are the four `u64`s that made up the `b256` `message_hash`.
     let (message_1, message_2, message_3, message_4) = decompose(message_hash);
 
-    data.push(
-        (initial_byte << 56) + (version_byte << 48) + (message_1 >> 16),
-    );
+    data.push((initial_byte << 56) + (version_byte << 48) + (message_1 >> 16));
     data.push((message_1 << 48) + (message_2 >> 16));
     data.push((message_2 << 48) + (message_3 >> 16));
     data.push((message_3 << 48) + (message_4 >> 16));
@@ -166,7 +164,9 @@ fn encode_and_pack_signed_data(
 ///
 /// * [(u64, u64, u64, u64)] - The [u64]s that comprised `value`.
 fn decompose(value: b256) -> (u64, u64, u64, u64) {
-    asm(r1: __addr_of(value)) { r1: (u64, u64, u64, u64) }
+    asm(r1: __addr_of(value)) {
+        r1: (u64, u64, u64, u64)
+    }
 }
 
 /// Applies the prefix "\x19Ethereum Signed Message:\n32" to a message hash.

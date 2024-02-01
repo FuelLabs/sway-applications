@@ -10,12 +10,11 @@ impl Bytes {
         let mut bytes = Bytes::with_capacity(8);
         bytes.len = 8;
 
-        asm(buffer, ptr: value, dst: bytes.buf
-            .ptr, len: 8) {
+        asm(buffer, ptr: value, dst: bytes.buf.ptr, len: 8) {
             move buffer sp;
             cfei i8;
-            sw   buffer ptr i0;
-            mcp  dst buffer len;
+            sw buffer ptr i0;
+            mcp dst buffer len;
             cfsi i8;
         }
 

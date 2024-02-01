@@ -22,13 +22,13 @@ use ::events::{
     UnpledgedEvent,
 };
 use std::{
+    asset::transfer,
     auth::msg_sender,
     block::height,
     call_frames::msg_asset_id,
     constants::BASE_ASSET_ID,
     context::msg_amount,
     hash::Hash,
-    token::transfer,
 };
 use ::interface::{Fundraiser, Info};
 use ::utils::validate_campaign_id;
@@ -422,13 +422,7 @@ impl Info for Contract {
 
     #[storage(read)]
     fn asset_info_by_count(index: u64) -> Option<AssetInfo> {
-        storage.asset_info.get(
-            storage
-                .asset_index
-                .get(index)
-                .try_read()
-                .unwrap_or(BASE_ASSET_ID),
-        ).try_read()
+        storage.asset_info.get(storage.asset_index.get(index).try_read().unwrap_or(BASE_ASSET_ID)).try_read()
     }
 
     #[storage(read)]
