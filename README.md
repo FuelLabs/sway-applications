@@ -56,7 +56,6 @@ sway-applications/
 
 #### Decentralized Finance
 
-- [Automated Market Maker (AMM)](./AMM/) is a decentralized exchange protocol that manages liquidity pools supplied by its users and determines prices algorithmically while exchanging assets.
 - [English Auction](./auctions/english-auction/) is an auction where users bid up the price of an asset until the bidding period has ended or a reserve has been met.
 - [Fundraiser](./fundraiser/) is a program allowing users to pledge towards a goal.
 - [OTC Swap Predicate](./OTC-swap-predicate) is a predicate that can be used to propose and execute an atomic swap between two parties without requiring any on-chain state.
@@ -75,6 +74,10 @@ sway-applications/
 #### Games
 
 - [TicTacToe](./games/TicTacToe) is a game where two players compete to align three markers in a row.
+
+#### Low maintenance
+The below apps are updated to the latest version, but may have broken tests or broken functionality. Use at your own discretion.
+- [Automated Market Maker (AMM)](./archive/AMM/) is a decentralized exchange protocol that manages liquidity pools supplied by its users and determines prices algorithmically while exchanging assets.
 
 ## Running a project
 
