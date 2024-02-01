@@ -25,6 +25,11 @@ use libraries::{
     Exchange,
 };
 use std::{
+    asset::{
+        burn,
+        mint,
+        transfer,
+    },
     auth::msg_sender,
     block::height,
     call_frames::{
@@ -35,11 +40,6 @@ use std::{
     context::msg_amount,
     hash::Hash,
     math::*,
-    asset::{
-        burn,
-        mint,
-        transfer,
-    },
 };
 use ::utils::{
     determine_assets,
@@ -110,12 +110,7 @@ impl Exchange for Contract {
         // adding liquidity for the first time
         // use up all the deposited amounts of assets to determine the ratio.
         if reserves.a.amount == 0 && reserves.b.amount == 0 {
-            added_liquidity = (deposits
-                .a
-                .amount * deposits
-                .b
-                .amount)
-                .sqrt();
+            added_liquidity = (deposits.a.amount * deposits.b.amount).sqrt();
             require(
                 desired_liquidity <= added_liquidity,
                 TransactionError::DesiredAmountTooHigh(desired_liquidity),
@@ -359,10 +354,7 @@ impl Exchange for Contract {
         output_asset.amount = output_asset.amount - bought;
         storage
             .pair
-            .write(Option::Some(
-                AssetPair::new(input_asset, output_asset)
-                    .sort(reserves.unwrap()),
-            ));
+            .write(Option::Some(AssetPair::new(input_asset, output_asset).sort(reserves.unwrap())));
 
         log(SwapEvent {
             input: input_asset,
@@ -427,10 +419,7 @@ impl Exchange for Contract {
         output_asset.amount = output_asset.amount - output;
         storage
             .pair
-            .write(Option::Some(
-                AssetPair::new(input_asset, output_asset)
-                    .sort(reserves.unwrap()),
-            ));
+            .write(Option::Some(AssetPair::new(input_asset, output_asset).sort(reserves.unwrap())));
 
         log(SwapEvent {
             input: input_asset,

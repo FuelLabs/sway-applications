@@ -1,9 +1,6 @@
 use crate::utils::{expected_and_actual_output, expected_swap_output, setup};
 use fuels::prelude::AssetId;
-use test_utils::{
-    data_structures::SwapParameters,
-    setup::scripts::contract_instances,
-};
+use test_utils::{data_structures::SwapParameters, setup::scripts::contract_instances};
 
 #[tokio::test]
 #[should_panic(expected = "RouteTooShort")]

@@ -89,12 +89,11 @@ fn main(
         let exchange_contract = abi(Exchange, exchange_contract_id.unwrap().into());
 
         // swap by specifying the exact amount to sell.
-        latest_bought = exchange_contract
-            .swap_exact_input {
-                gas: 10_000_000,
-                coins: latest_bought, // forwarding coins of asset to sell.
-                asset_id: asset_pair.0.into(), // identifier of asset to sell.
-            }(Option::None, deadline);
+        latest_bought = exchange_contract.swap_exact_input {
+            gas: 10_000_000,
+            coins: latest_bought, // forwarding coins of asset to sell.
+            asset_id: asset_pair.0.into(), // identifier of asset to sell.
+        }(Option::None, deadline);
 
         sold_asset_index += 1;
     }

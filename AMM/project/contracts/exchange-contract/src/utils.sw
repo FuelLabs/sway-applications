@@ -35,12 +35,10 @@ pub fn maximum_input_for_exact_output(
 ) -> u64 {
     assert(input_reserve > 0 && output_reserve > 0);
     let numerator = U128::from((0, input_reserve)) * U128::from((0, output_amount));
-    let denominator = U128::from(
-        (
-            0,
-            calculate_amount_with_fee(output_reserve - output_amount, liquidity_miner_fee),
-        ),
-    );
+    let denominator = U128::from((
+        0,
+        calculate_amount_with_fee(output_reserve - output_amount, liquidity_miner_fee),
+    ));
     let result_wrapped = (numerator / denominator).as_u64();
 
     if denominator > numerator {
@@ -123,8 +121,5 @@ pub fn determine_assets(input_asset_id: AssetId, pair: Option<AssetPair>) -> (As
             .id,
         InputError::InvalidAsset,
     );
-    (
-        pair.this_asset(input_asset_id),
-        pair.other_asset(input_asset_id),
-    )
+    (pair.this_asset(input_asset_id), pair.other_asset(input_asset_id))
 }

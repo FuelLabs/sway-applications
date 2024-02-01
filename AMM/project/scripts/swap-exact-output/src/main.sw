@@ -92,12 +92,11 @@ fn main(
         let sell_amount = preview.other_asset.amount;
 
         // swap by specifying the exact amount to buy.
-        latest_sold = exchange_contract
-            .swap_exact_output {
-                gas: 10_000_000,
-                coins: sell_amount, // forward coins of asset to sell.
-                asset_id: asset_pair.0.into(), // identifier of asset to sell.
-            }(latest_sold, deadline);
+        latest_sold = exchange_contract.swap_exact_output {
+            gas: 10_000_000,
+            coins: sell_amount, // forward coins of asset to sell.
+            asset_id: asset_pair.0.into(), // identifier of asset to sell.
+        }(latest_sold, deadline);
 
         bought_asset_index -= 1;
     }
