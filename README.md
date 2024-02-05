@@ -51,6 +51,7 @@ sway-applications/
 - [Airdrop](./airdrop/) is an asset distribution program where users are able to claim assets given a valid merkle proof.
 - [Escrow](./escrow) is a third party that keeps an asset on behalf of multiple parties.
 - [Non-Fungible Native Asset (NFT)](./native-assets/NFT/) is an asset contract which provides unique collectibles, identified and differentiated by IDs, where assets contain metadata giving them distinctive characteristics.
+- [Fractional Non-Fungible Token (F-NFT)](./native-assets/fractional-NFT/) is a token contract which issues shares or partial ownership upon locking an NFT into a vault.
 - [Timelock](./timelock) is a contract which restricts the execution of a transaction to a specified time range.
 - [Native Asset](./native-assets/native-asset/) is a basic asset contract that enables the use of Native Assets on Fuel using existing standards and libraries.
 
