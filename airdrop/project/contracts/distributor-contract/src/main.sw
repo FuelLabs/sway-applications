@@ -27,9 +27,9 @@ use std::{
 };
 
 storage {
-    /// The Identity which has the ability to clawback unclaimed tokens.
+    /// The Identity which has the ability to clawback unclaimed coins of an asset.
     admin: Option<Identity> = Option::None,
-    /// The contract of the tokens which is to be distributed.
+    /// The asset which is to be distributed.
     asset: Option<AssetId> = Option::None,
     /// Stores the ClaimState of users that have interacted with the Airdrop Distributor contract.
     /// Maps (user => claim)
@@ -64,9 +64,9 @@ impl AirdropDistributor for Contract {
             AccessError::UserAlreadyClaimed,
         );
 
-        // There must be enough tokens left in the contract
+        // There must be enough coins left in the contract
         let asset = storage.asset.read().unwrap();
-        require(this_balance(asset) >= amount, AccessError::NotEnoughTokens);
+        require(this_balance(asset) >= amount, AccessError::NotEnoughCoins);
 
         // Verify the merkle proof against the user and amount
         // TODO: Remove assembly when https://github.com/FuelLabs/sway-libs/issues/186 is resolved
@@ -94,7 +94,7 @@ impl AirdropDistributor for Contract {
 
         storage.claims.insert(sender, ClaimState::Claimed(amount));
 
-        // Transfer tokens
+        // Transfer coins
         transfer(to, asset, amount);
 
         log(ClaimEvent {
@@ -123,9 +123,9 @@ impl AirdropDistributor for Contract {
 
         let asset = storage.asset.read().unwrap();
         let balance = this_balance(asset);
-        require(balance > 0, AccessError::NotEnoughTokens);
+        require(balance > 0, AccessError::NotEnoughCoins);
 
-        // Send the remaining balance of tokens to the admin
+        // Send the remaining balance of coins to the admin
         transfer(admin.unwrap(), asset, balance);
 
         log(ClawbackEvent {
@@ -145,7 +145,7 @@ impl AirdropDistributor for Contract {
         // If `end_block` is set to a value other than 0, we know that the constructor has already
         // been called.
         require(storage.end_block.read() == 0, InitError::AlreadyInitialized);
-        require(msg_amount() > 0, InitError::CannotAirdropZeroTokens);
+        require(msg_amount() > 0, InitError::CannotAirdropZeroCoins);
 
         let asset = msg_asset_id();
         storage.end_block.write(claim_time + height());

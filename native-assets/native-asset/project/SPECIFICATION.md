@@ -1,7 +1,7 @@
 Table of Contents
 - [Overview](#overview)
 - [Use Cases](#use-cases)
-- [Token Contract](#token-contract)
+- [Asset Contract](#asset-contract)
   - [SRC-20 Functionality](#src-20-functionality)
     - [`total_assets()`](#total_assets)
     - [`total_supply()`](#total_supply)
@@ -27,7 +27,7 @@ This section contains general information about the functionality of the applica
 
 If you are interested in a functional overview then this is the section for you.
 
-# Token Contract
+# Asset Contract
 
 ## SRC-20 Functionality
 
@@ -37,7 +37,7 @@ This function will return the total number of individual assets for a contract.
 
 ### `total_supply()`
 
-This function will return the total supply of tokens for an asset.
+This function will return the total supply of coins for an asset.
 
 ### `name()`
 
@@ -67,8 +67,8 @@ This function will set the decimals of an asset.
 
 ### `mint()`
 
-This function will mint new tokens using a sub-identifier.
+This function will mint new asset using a sub-identifier.
 
 ### `burn()`
 
-This function will burn tokens with the given sub-identifier.
+This function will burn assets with the given sub-identifier.

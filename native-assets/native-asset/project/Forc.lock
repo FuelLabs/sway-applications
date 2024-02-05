@@ -11,6 +11,16 @@ name = "core"
 source = "path+from-root-C3992B43B72ADB8C"
 
 [[package]]
+name = "native-asset-contract"
+source = "member"
+dependencies = [
+    "asset",
+    "src20",
+    "src3",
+    "std",
+]
+
+[[package]]
 name = "src20"
 source = "git+https://github.com/FuelLabs/sway-standards?tag=v0.3.3#4198b4b07449ad16104cc8a0501f3013670fdcfd"
 dependencies = ["std"]
@@ -29,13 +39,3 @@ dependencies = ["std"]
 name = "std"
 source = "git+https://github.com/fuellabs/sway?tag=v0.49.1#2ac7030570f22510b0ac2a7b5ddf7baa20bdc0e1"
 dependencies = ["core"]
-
-[[package]]
-name = "token-contract"
-source = "member"
-dependencies = [
-    "asset",
-    "src20",
-    "src3",
-    "std",
-]

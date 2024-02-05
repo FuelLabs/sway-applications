@@ -45,19 +45,19 @@ pub(crate) async fn setup() -> (AssetId, AssetId, Metadata, Metadata, u64) {
         num_coins: number_of_coins,
         coin_amount,
     };
-    let gov_token_id = AssetId::new([1; 32]);
-    let gov_token = AssetConfig {
-        id: gov_token_id,
+    let gov_asset_id = AssetId::new([1; 32]);
+    let gov_asset = AssetConfig {
+        id: gov_asset_id,
         num_coins: number_of_coins,
         coin_amount,
     };
-    let other_token_id = AssetId::new([2; 32]);
-    let other_token = AssetConfig {
-        id: other_token_id,
+    let other_asset_id = AssetId::new([2; 32]);
+    let other_asset = AssetConfig {
+        id: other_asset_id,
         num_coins: number_of_coins,
         coin_amount,
     };
-    let assets = vec![base_asset, gov_token, other_token];
+    let assets = vec![base_asset, gov_asset, other_asset];
 
     let wallet_config = WalletsConfig::new_multiple_assets(number_of_wallets, assets);
     let mut wallets = launch_custom_provider_and_get_wallets(wallet_config, None, None)
@@ -88,5 +88,5 @@ pub(crate) async fn setup() -> (AssetId, AssetId, Metadata, Metadata, u64) {
 
     let asset_amount = 10;
 
-    (gov_token_id, other_token_id, deployer, user, asset_amount)
+    (gov_asset_id, other_asset_id, deployer, user, asset_amount)
 }

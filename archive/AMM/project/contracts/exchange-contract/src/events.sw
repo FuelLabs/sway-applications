@@ -34,7 +34,7 @@ pub struct RemoveLiquidityEvent {
     burned_liquidity: Asset,
 }
 
-/// The information logged when a token swap is made.
+/// The information logged when an asset swap is made.
 pub struct SwapEvent {
     /// Identifier and amount of sold asset.
     input: Asset,

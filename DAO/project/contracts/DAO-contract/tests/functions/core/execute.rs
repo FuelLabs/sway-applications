@@ -12,13 +12,13 @@ mod success {
     #[tokio::test]
     #[ignore]
     async fn user_proposal_can_execute() {
-        let (gov_token_id, _other_token_id, deployer, user, asset_amount) = setup().await;
-        constructor(&deployer.dao_voting, gov_token_id).await;
+        let (gov_asset_id, _other_asset_id, deployer, user, asset_amount) = setup().await;
+        constructor(&deployer.dao_voting, gov_asset_id).await;
 
-        let call_params = CallParameters::new(asset_amount, AssetId::from(*gov_token_id), 100_000);
+        let call_params = CallParameters::new(asset_amount, AssetId::from(*gov_asset_id), 100_000);
         deposit(&user.dao_voting, call_params).await;
 
-        let proposal_transaction = proposal_transaction(gov_token_id);
+        let proposal_transaction = proposal_transaction(gov_asset_id);
         create_proposal(&user.dao_voting, 10, 1, proposal_transaction.clone()).await;
         vote(&user.dao_voting, true, 0, asset_amount / 2).await;
 
@@ -46,7 +46,7 @@ mod revert {
     #[tokio::test]
     #[should_panic(expected = "InvalidId")]
     async fn on_invalid_proposal_id() {
-        let (_gov_token, _gov_token_id, _deployer, user, _asset_amount) = setup().await;
+        let (_gov_asset, _gov_asset_id, _deployer, user, _asset_amount) = setup().await;
         execute(&user.dao_voting, 0).await;
     }
 
@@ -54,13 +54,13 @@ mod revert {
     #[should_panic(expected = "ProposalExecuted")]
     #[ignore]
     async fn on_already_executed_proposal() {
-        let (gov_token_id, _other_token_id, deployer, user, asset_amount) = setup().await;
-        constructor(&deployer.dao_voting, gov_token_id).await;
+        let (gov_asset_id, _other_asset_id, deployer, user, asset_amount) = setup().await;
+        constructor(&deployer.dao_voting, gov_asset_id).await;
 
-        let call_params = CallParameters::new(asset_amount, AssetId::from(*gov_token_id), 100_000);
+        let call_params = CallParameters::new(asset_amount, AssetId::from(*gov_asset_id), 100_000);
         deposit(&user.dao_voting, call_params).await;
 
-        let proposal_transaction = proposal_transaction(gov_token_id);
+        let proposal_transaction = proposal_transaction(gov_asset_id);
         create_proposal(&user.dao_voting, 10, 1, proposal_transaction.clone()).await;
         vote(&user.dao_voting, true, 0, asset_amount / 2).await;
 
@@ -71,13 +71,13 @@ mod revert {
     #[tokio::test]
     #[should_panic(expected = "ProposalStillActive")]
     pub async fn on_active_proposal() {
-        let (gov_token_id, _other_token_id, deployer, user, asset_amount) = setup().await;
-        constructor(&deployer.dao_voting, gov_token_id).await;
+        let (gov_asset_id, _other_asset_id, deployer, user, asset_amount) = setup().await;
+        constructor(&deployer.dao_voting, gov_asset_id).await;
 
-        let call_params = CallParameters::new(asset_amount, AssetId::from(*gov_token_id), 100_000);
+        let call_params = CallParameters::new(asset_amount, AssetId::from(*gov_asset_id), 100_000);
         deposit(&user.dao_voting, call_params).await;
 
-        let proposal_transaction = proposal_transaction(gov_token_id);
+        let proposal_transaction = proposal_transaction(gov_asset_id);
         create_proposal(&user.dao_voting, 10, 100, proposal_transaction.clone()).await;
         vote(&user.dao_voting, true, 0, asset_amount / 2).await;
 
@@ -87,13 +87,13 @@ mod revert {
     #[tokio::test]
     #[should_panic(expected = "InsufficientApprovals")]
     pub async fn on_not_enough_yes_votes() {
-        let (gov_token_id, _other_token_id, deployer, user, asset_amount) = setup().await;
-        constructor(&deployer.dao_voting, gov_token_id).await;
+        let (gov_asset_id, _other_asset_id, deployer, user, asset_amount) = setup().await;
+        constructor(&deployer.dao_voting, gov_asset_id).await;
 
-        let call_params = CallParameters::new(asset_amount, AssetId::from(*gov_token_id), 100_000);
+        let call_params = CallParameters::new(asset_amount, AssetId::from(*gov_asset_id), 100_000);
         deposit(&user.dao_voting, call_params).await;
 
-        let proposal_transaction = proposal_transaction(gov_token_id);
+        let proposal_transaction = proposal_transaction(gov_asset_id);
         create_proposal(&user.dao_voting, 10, 1, proposal_transaction.clone()).await;
         vote(&user.dao_voting, false, 0, asset_amount / 2).await;
 

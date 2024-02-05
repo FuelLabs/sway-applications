@@ -3,5 +3,5 @@
 version = 3
 
 [[package]]
-name = "token-contract"
+name = "native-asset-contract"
 version = "0.0.0"

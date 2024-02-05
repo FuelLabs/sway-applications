@@ -7,9 +7,9 @@ use fuels::{
 
 pub(crate) async fn constructor(
     contract: &DaoVoting<WalletUnlocked>,
-    token: AssetId,
+    asset: AssetId,
 ) -> FuelCallResponse<()> {
-    contract.methods().constructor(token).call().await.unwrap()
+    contract.methods().constructor(asset).call().await.unwrap()
 }
 
 pub(crate) async fn create_proposal(

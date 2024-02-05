@@ -625,8 +625,8 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic(expected = "NotEnoughTokens")]
-    async fn when_not_enough_tokens_to_claim() {
+    #[should_panic(expected = "NotEnoughCoins")]
+    async fn when_not_enough_coins_to_claim() {
         let (deploy_wallet, wallet1, wallet2, wallet3, asset_id) = setup().await;
         let (_, _, _, minter, key, num_leaves, _asset_supply, airdrop_leaves, claim_time, _, _) =
             defaults(&deploy_wallet, &wallet1, &wallet2, &wallet3).await;
