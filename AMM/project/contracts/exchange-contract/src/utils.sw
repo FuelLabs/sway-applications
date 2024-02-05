@@ -105,19 +105,21 @@ pub fn proportional_value(b: u64, c: u64, a: u64) -> u64 {
 ///
 /// # Arguments
 ///
-/// * `input_asset_id`: [ContractId] - The contract ID of the input asset.
+/// * `input_asset_id`: [AssetId] - The AssetId of the input asset.
 /// * `pair`: [Option<AssetPair>] - The asset pair from which the individual assets are determined.
 ///
 /// # Reverts
 ///
 /// * When `pair` is Option::None.
 /// * When `input_asset_id` does not match the asset id of either asset in `pair`.
-pub fn determine_assets(input_asset_id: ContractId, pair: Option<AssetPair>) -> (Asset, Asset) {
+pub fn determine_assets(input_asset_id: AssetId, pair: Option<AssetPair>) -> (Asset, Asset) {
     require(pair.is_some(), InitError::AssetPairNotSet);
     let pair = pair.unwrap();
-    require(input_asset_id == pair.a.id || input_asset_id == pair.b.id, InputError::InvalidAsset);
-    (
-        pair.this_asset(input_asset_id),
-        pair.other_asset(input_asset_id),
-    )
+    require(
+        input_asset_id == pair.a
+            .id || input_asset_id == pair.b
+            .id,
+        InputError::InvalidAsset,
+    );
+    (pair.this_asset(input_asset_id), pair.other_asset(input_asset_id))
 }

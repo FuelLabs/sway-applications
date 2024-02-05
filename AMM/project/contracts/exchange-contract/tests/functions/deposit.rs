@@ -3,7 +3,7 @@ use test_utils::interface::exchange::deposit;
 
 mod success {
     use super::*;
-    use fuels::{accounts::ViewOnlyAccount, prelude::ContractId};
+    use fuels::accounts::ViewOnlyAccount;
     use test_utils::interface::{exchange::balance, Asset, DepositEvent};
 
     #[tokio::test]
@@ -26,7 +26,7 @@ mod success {
             *event,
             DepositEvent {
                 deposited_asset: Asset {
-                    id: ContractId::new(*exchange.pair.0),
+                    id: exchange.pair.0,
                     amount: deposit_amount,
                 },
                 new_balance: final_contract_balance,
@@ -65,7 +65,7 @@ mod success {
             *event,
             DepositEvent {
                 deposited_asset: Asset {
-                    id: ContractId::new(*exchange.pair.0),
+                    id: exchange.pair.0,
                     amount: second_deposit_amount,
                 },
                 new_balance: final_contract_balance,

@@ -13,9 +13,9 @@ pub struct AddLiquidityEvent {
 /// The information about the asset pair logged during initialisation.
 pub struct DefineAssetPairEvent {
     /// Identifier of one of the assets that make up the pool.
-    asset_a_id: ContractId,
+    asset_a_id: AssetId,
     /// Identifier of the other asset.
-    asset_b_id: ContractId,
+    asset_b_id: AssetId,
 }
 
 /// The information logged when a deposit is made.

@@ -13,7 +13,22 @@ enum SwapError {
     /// The amount bought is less than the minimum output amount.
     ExcessiveSlippage: u64,
     /// The exchange for this asset pair could not be found.
-    PairExchangeNotRegistered: (ContractId, ContractId),
+    PairExchangeNotRegistered: (AssetId, AssetId),
+}
+
+// TODO: Remove this when its automatically implemented
+impl AbiEncode for SwapError {
+    fn abi_encode(self, ref mut buffer: Buffer) {
+        match self {
+            SwapError::ExcessiveSlippage(amount) => {
+                buffer.push(amount);
+            }
+            SwapError::PairExchangeNotRegistered(asset_pair) => {
+                buffer.push(asset_pair.0);
+                buffer.push(asset_pair.1);
+            }
+        }
+    }
 }
 
 configurable {
@@ -25,7 +40,7 @@ configurable {
 ///
 /// # Arguments
 ///
-/// * `assets`: [Vec<ContractId>] - The assets along the swap route.
+/// * `assets`: [Vec<AssetId>] - The assets along the swap route.
 /// * `input_amount`: [u64] - The desired amount of the input asset.
 /// * `minimum_output_amount`: [u64] - The maximum amount of the output asset.
 /// * `deadline`: [u64] - The limit on block height for operation.
@@ -40,7 +55,7 @@ configurable {
 /// * When the exchange contract has not been registered in the AMM.
 /// * When the amount of the brought asset is less than `minimum_output_amount`.
 fn main(
-    assets: Vec<ContractId>,
+    assets: Vec<AssetId>,
     input_amount: u64,
     minimum_output_amount: Option<u64>,
     deadline: u64,
@@ -62,9 +77,15 @@ fn main(
         );
 
         // get the exchange contract id of asset pair.
-        let exchange_contract_id = amm_contract.pool { gas: 100_000 }(asset_pair);
+        let exchange_contract_id = amm_contract.pool {
+            gas: 100_000,
+        }(asset_pair);
 
-        require(exchange_contract_id.is_some(), SwapError::PairExchangeNotRegistered(asset_pair));
+        require(
+            exchange_contract_id
+                .is_some(),
+            SwapError::PairExchangeNotRegistered(asset_pair),
+        );
 
         let exchange_contract = abi(Exchange, exchange_contract_id.unwrap().into());
 
@@ -79,7 +100,11 @@ fn main(
     }
 
     if minimum_output_amount.is_some() {
-        require(latest_bought >= minimum_output_amount.unwrap(), SwapError::ExcessiveSlippage(latest_bought));
+        require(
+            latest_bought >= minimum_output_amount
+                .unwrap(),
+            SwapError::ExcessiveSlippage(latest_bought),
+        );
     }
 
     latest_bought

@@ -1,8 +1,7 @@
 use crate::utils::{expected_liquidity, setup};
-use fuels::prelude::{ContractId, TxParameters};
 use test_utils::interface::{
     abigen_bindings::shared_types::{Asset, AssetPair},
-    LiquidityParameters, SCRIPT_GAS_LIMIT,
+    LiquidityParameters,
 };
 
 #[tokio::test]
@@ -17,11 +16,11 @@ async fn when_desired_liquidity_zero() {
             LiquidityParameters {
                 deposits: AssetPair {
                     a: Asset {
-                        id: ContractId::new(*exchange.pair.0),
+                        id: exchange.pair.0,
                         amount: liquidity_parameters.amounts.0,
                     },
                     b: Asset {
-                        id: ContractId::new(*exchange.pair.1),
+                        id: exchange.pair.1,
                         amount: liquidity_parameters.amounts.1,
                     },
                 },
@@ -48,11 +47,11 @@ async fn when_desired_liquidity_too_high() {
             LiquidityParameters {
                 deposits: AssetPair {
                     a: Asset {
-                        id: ContractId::new(*exchange.pair.0),
+                        id: exchange.pair.0,
                         amount: liquidity_parameters.amounts.0,
                     },
                     b: Asset {
-                        id: ContractId::new(*exchange.pair.1),
+                        id: exchange.pair.1,
                         amount: liquidity_parameters.amounts.1,
                     },
                 },
@@ -60,10 +59,9 @@ async fn when_desired_liquidity_too_high() {
                 deadline: liquidity_parameters.deadline,
             },
         )
-        .set_contracts(&[&exchange.instance])
+        .with_contracts(&[&exchange.instance])
         .with_inputs(transaction_parameters.inputs)
         .with_outputs(transaction_parameters.outputs)
-        .tx_params(TxParameters::new(0, SCRIPT_GAS_LIMIT, 0))
         .call()
         .await
         .unwrap();
@@ -81,11 +79,11 @@ async fn when_one_deposit_is_zero() {
             LiquidityParameters {
                 deposits: AssetPair {
                     a: Asset {
-                        id: ContractId::new(*exchange.pair.0),
+                        id: exchange.pair.0,
                         amount: 0, // deposit amount is 0
                     },
                     b: Asset {
-                        id: ContractId::new(*exchange.pair.1),
+                        id: exchange.pair.1,
                         amount: liquidity_parameters.amounts.1,
                     },
                 },
@@ -93,10 +91,9 @@ async fn when_one_deposit_is_zero() {
                 deadline: liquidity_parameters.deadline,
             },
         )
-        .set_contracts(&[&exchange.instance])
+        .with_contracts(&[&exchange.instance])
         .with_inputs(transaction_parameters.inputs)
         .with_outputs(transaction_parameters.outputs)
-        .tx_params(TxParameters::new(0, SCRIPT_GAS_LIMIT, 0))
         .call()
         .await
         .unwrap();
@@ -114,11 +111,11 @@ async fn when_both_deposits_are_zero() {
             LiquidityParameters {
                 deposits: AssetPair {
                     a: Asset {
-                        id: ContractId::new(*exchange.pair.0),
+                        id: exchange.pair.0,
                         amount: 0, // deposit amount is 0
                     },
                     b: Asset {
-                        id: ContractId::new(*exchange.pair.1),
+                        id: exchange.pair.1,
                         amount: 0, // deposit amount is 0
                     },
                 },
@@ -126,10 +123,9 @@ async fn when_both_deposits_are_zero() {
                 deadline: liquidity_parameters.deadline,
             },
         )
-        .set_contracts(&[&exchange.instance])
+        .with_contracts(&[&exchange.instance])
         .with_inputs(transaction_parameters.inputs)
         .with_outputs(transaction_parameters.outputs)
-        .tx_params(TxParameters::new(0, SCRIPT_GAS_LIMIT, 0))
         .call()
         .await
         .unwrap();

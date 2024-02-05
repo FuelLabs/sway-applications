@@ -1,6 +1,7 @@
 use fuels::{
     accounts::ViewOnlyAccount,
     prelude::{AssetId, WalletUnlocked},
+    tx::{Bytes32, ContractIdExt},
 };
 use test_utils::{
     data_structures::{
@@ -71,7 +72,7 @@ pub async fn wallet_balances(
     let asset_a = wallet.get_asset_balance(&exchange.pair.0).await.unwrap();
     let asset_b = wallet.get_asset_balance(&exchange.pair.1).await.unwrap();
     let liquidity_pool_asset = wallet
-        .get_asset_balance(&AssetId::new(*exchange.id))
+        .get_asset_balance(&exchange.id.asset_id(&Bytes32::zeroed()))
         .await
         .unwrap();
     WalletBalances {

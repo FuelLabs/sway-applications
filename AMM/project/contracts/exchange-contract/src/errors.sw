@@ -17,9 +17,9 @@ pub enum InputError {
     /// The deadline has passed.
     DeadlinePassed: u64,
     /// The input amount was not greater than zero.
-    ExpectedNonZeroAmount: ContractId,
+    ExpectedNonZeroAmount: AssetId,
     /// The parameter was not greater than zero.
-    ExpectedNonZeroParameter: ContractId,
+    ExpectedNonZeroParameter: AssetId,
     /// The provided asset id is invalid.
     InvalidAsset: (),
 }
@@ -31,9 +31,9 @@ pub enum TransactionError {
     /// The desired amount is too low.
     DesiredAmountTooLow: u64,
     /// The deposit amount was not greater than zero.
-    ExpectedNonZeroDeposit: ContractId,
+    ExpectedNonZeroDeposit: AssetId,
     /// The reserve amount is too low.
-    InsufficientReserve: ContractId,
+    InsufficientReserve: AssetId,
     /// The total liquidity is not greater than zero.
     NoLiquidityToRemove: (),
 }

@@ -1,5 +1,5 @@
 use fuels::{
-    prelude::{AssetId, ContractId, TxParameters, WalletUnlocked},
+    prelude::{AssetId, WalletUnlocked},
     types::Bits256,
 };
 use test_utils::{
@@ -7,8 +7,7 @@ use test_utils::{
         AMMContract, SwapParameters, SwapResult, TransactionParameters, WalletAssetConfiguration,
     },
     interface::{
-        exchange::preview_swap_exact_input, SwapExactInputScript,
-        SwapExactInputScriptConfigurables, SCRIPT_GAS_LIMIT,
+        exchange::preview_swap_exact_input, SwapExactInputScript, SwapExactInputScriptConfigurables,
     },
     paths::SWAP_EXACT_INPUT_SCRIPT_BINARY_PATH,
     setup::{
@@ -54,19 +53,10 @@ pub async fn expected_and_actual_output(swap_parameters: SwapParameters) -> Swap
     };
 
     let actual = script_instance
-        .main(
-            route
-                .into_iter()
-                .map(|asset_id| ContractId::new(*asset_id))
-                .collect(),
-            swap_parameters.amount,
-            expected,
-            deadline,
-        )
-        .set_contracts(&contract_instances(&amm))
+        .main(route, swap_parameters.amount, expected, deadline)
+        .with_contracts(&contract_instances(&amm))
         .with_inputs(transaction_parameters.inputs)
         .with_outputs(transaction_parameters.outputs)
-        .tx_params(TxParameters::new(0, SCRIPT_GAS_LIMIT, 0))
         .call()
         .await
         .unwrap()
@@ -98,7 +88,7 @@ pub async fn setup() -> (
     let deadline = provider.latest_block_height().await.unwrap() + 10;
 
     let script_configurables = SwapExactInputScriptConfigurables::new()
-        .set_AMM_ID(Bits256::from_hex_str(&amm.id.to_string()).unwrap());
+        .with_AMM_ID(Bits256::from_hex_str(&amm.id.to_string()).unwrap());
 
     let script_instance = SwapExactInputScript::new(wallet, SWAP_EXACT_INPUT_SCRIPT_BINARY_PATH)
         .with_configurables(script_configurables);

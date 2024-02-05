@@ -32,7 +32,7 @@ abi AMM {
     ///
     /// # Arguments
     ///
-    /// * `asset_pair`: [(ContractId, ContractId)] - The pair of assets that make up the pool.
+    /// * `asset_pair`: [(AssetId, AssetId)] - The pair of assets that make up the pool.
     /// * `pool`: [ContractId] - The pair of assets that make up the pool.
     ///
     /// # Reverts
@@ -46,13 +46,13 @@ abi AMM {
     /// * Reads: `2`
     /// * Writes: `1`
     #[storage(read, write)]
-    fn add_pool(asset_pair: (ContractId, ContractId), pool: ContractId);
+    fn add_pool(asset_pair: (AssetId, AssetId), pool: ContractId);
 
     /// For the given asset pair, get the exchange contract; the pool that consists of the asset pair.
     ///
     /// # Arguments
     ///
-    /// * `asset_pair`: [(ContractId, ContractId)] - The pair of assets that make up the pool.
+    /// * `asset_pair`: [(AssetId, AssetId)] - The pair of assets that make up the pool.
     ///
     /// # Returns
     ///
@@ -62,7 +62,7 @@ abi AMM {
     ///
     /// * Reads: `1`
     #[storage(read)]
-    fn pool(asset_pair: (ContractId, ContractId)) -> Option<ContractId>;
+    fn pool(asset_pair: (AssetId, AssetId)) -> Option<ContractId>;
 }
 
 abi Exchange {
@@ -102,8 +102,8 @@ abi Exchange {
     ///
     /// # Arguments
     ///
-    /// * `asset_a`: [ContractId] - The unique identifier of one asset.
-    /// * `asset_b`: [ContractId] - The unique identifier of the other asset.
+    /// * `asset_a`: [AssetId] - The unique identifier of one asset.
+    /// * `asset_b`: [AssetId] - The unique identifier of the other asset.
     ///
     /// # Reverts
     ///
@@ -115,7 +115,7 @@ abi Exchange {
     /// * Reads: `1`
     /// * Writes: `1`
     #[storage(read, write)]
-    fn constructor(asset_a: ContractId, asset_b: ContractId);
+    fn constructor(asset_a: AssetId, asset_b: AssetId);
 
     /// Deposit asset to later add to the liquidity pool or withdraw.
     ///
@@ -236,7 +236,7 @@ abi Exchange {
     ///
     /// # Arguments
     ///
-    /// * `asset_id`: [ContractId] - The id of the asset to get balance of.
+    /// * `asset_id`: [AssetId] - The id of the asset to get balance of.
     ///
     /// # Returns
     ///
@@ -250,7 +250,7 @@ abi Exchange {
     ///
     /// * Reads: `4`
     #[storage(read)]
-    fn balance(asset_id: ContractId) -> u64;
+    fn balance(asset_id: AssetId) -> u64;
 
     /// Get the pool info of the exchange contract.
     ///

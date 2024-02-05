@@ -4,7 +4,6 @@ use test_utils::interface::exchange::{preview_swap_exact_output, swap_exact_outp
 mod success {
     use super::*;
     use crate::utils::wallet_balances;
-    use fuels::prelude::ContractId;
     use test_utils::interface::{exchange::pool_info, Asset, SwapEvent};
 
     #[tokio::test]
@@ -44,11 +43,11 @@ mod success {
             *event,
             SwapEvent {
                 input: Asset {
-                    id: ContractId::from(*exchange.pair.0),
+                    id: exchange.pair.0,
                     amount: initial_pool_info.reserves.a.amount + max_input,
                 },
                 output: Asset {
-                    id: ContractId::from(*exchange.pair.1),
+                    id: exchange.pair.1,
                     amount: initial_pool_info.reserves.b.amount - output_amount,
                 },
             }
@@ -111,11 +110,11 @@ mod success {
             *event,
             SwapEvent {
                 input: Asset {
-                    id: ContractId::from(*exchange.pair.0),
+                    id: exchange.pair.0,
                     amount: initial_pool_info.reserves.a.amount + max_input,
                 },
                 output: Asset {
-                    id: ContractId::from(*exchange.pair.1),
+                    id: exchange.pair.1,
                     amount: initial_pool_info.reserves.b.amount - output_amount,
                 },
             }
@@ -176,11 +175,11 @@ mod success {
             *event,
             SwapEvent {
                 input: Asset {
-                    id: ContractId::from(*exchange.pair.1),
+                    id: exchange.pair.1,
                     amount: initial_pool_info.reserves.b.amount + max_input,
                 },
                 output: Asset {
-                    id: ContractId::from(*exchange.pair.0),
+                    id: exchange.pair.0,
                     amount: initial_pool_info.reserves.a.amount - output_amount,
                 },
             }
@@ -243,11 +242,11 @@ mod success {
             *event,
             SwapEvent {
                 input: Asset {
-                    id: ContractId::from(*exchange.pair.1),
+                    id: exchange.pair.1,
                     amount: initial_pool_info.reserves.b.amount + max_input,
                 },
                 output: Asset {
-                    id: ContractId::from(*exchange.pair.0),
+                    id: exchange.pair.0,
                     amount: initial_pool_info.reserves.a.amount - output_amount,
                 },
             }
