@@ -97,8 +97,8 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic(expected = "CannotAirdropZeroTokens")]
-    async fn when_no_tokens_provided() {
+    #[should_panic(expected = "CannotAirdropZeroCoins")]
+    async fn when_no_coins_provided() {
         let (deploy_wallet, wallet1, wallet2, wallet3, asset_id) = setup().await;
         let (_, admin, _, _, _, num_leaves, _, _, claim_time, _, _) =
             defaults(&deploy_wallet, &wallet1, &wallet2, &wallet3).await;

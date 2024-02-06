@@ -10,10 +10,10 @@ mod success {
 
     #[tokio::test]
     pub async fn user_can_get_proposal() {
-        let (gov_token_id, _other_token_id, deployer, user, _asset_amount) = setup().await;
-        constructor(&deployer.dao_voting, gov_token_id).await;
+        let (gov_asset_id, _other_asset_id, deployer, user, _asset_amount) = setup().await;
+        constructor(&deployer.dao_voting, gov_asset_id).await;
 
-        let proposal_transaction = proposal_transaction(gov_token_id);
+        let proposal_transaction = proposal_transaction(gov_asset_id);
         create_proposal(&user.dao_voting, 10, 10, proposal_transaction.clone()).await;
 
         assert_eq!(
@@ -37,7 +37,7 @@ mod revert {
     #[tokio::test]
     #[should_panic(expected = "InvalidId")]
     async fn on_invalid_proposal_id() {
-        let (_gov_token, _gov_token_id, _deployer, user, _asset_amount) = setup().await;
+        let (_gov_asset, _gov_asset_id, _deployer, user, _asset_amount) = setup().await;
         proposal(&user.dao_voting, 0).await;
     }
 }

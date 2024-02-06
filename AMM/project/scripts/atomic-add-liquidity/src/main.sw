@@ -17,7 +17,7 @@ enum InputError {
 ///
 /// # Returns
 ///
-/// * The amount of liquidity tokens minted.
+/// * The amount of liquidity assets minted.
 ///
 /// # Reverts
 ///

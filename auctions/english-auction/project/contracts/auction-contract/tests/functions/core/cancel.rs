@@ -90,7 +90,7 @@ mod success {
     }
 
     #[tokio::test]
-    async fn cancels_token_auction() {
+    async fn cancels_asset_auction() {
         let (_, seller, _, _, _, sell_asset, buy_asset) = setup().await;
         let (sell_amount, initial_price, reserve_price, duration, _initial_wallet_amount) =
             defaults().await;

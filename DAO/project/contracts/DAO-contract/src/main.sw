@@ -33,7 +33,7 @@ use ::interface::{DaoVoting, Info};
 use ::utils::validate_id;
 
 storage {
-    /// The amount of governance tokens a user has deposited
+    /// The amount of governance coins a user has deposited
     balances: StorageMap<Identity, u64> = StorageMap {},
     /// Information describing a proposal created via create_proposal(...)
     proposals: StorageMap<u64, ProposalInfo> = StorageMap {},
@@ -43,15 +43,15 @@ storage {
     proposal_count: u64 = 0,
     /// The initialization state of the contract.
     state: State = State::NotInitialized,
-    /// Contract Id of the governance token
-    token: AssetId = AssetId::base_asset_id(),
+    /// Contract Id of the governance asset
+    asset: AssetId = AssetId::base_asset_id(),
     /// The amount of votes a user has used on a proposal
     votes: StorageMap<(Identity, u64), Votes> = StorageMap {},
 }
 
 impl DaoVoting for Contract {
     #[storage(read, write)]
-    fn constructor(token: AssetId) {
+    fn constructor(asset: AssetId) {
         require(
             storage
                 .state
@@ -59,12 +59,12 @@ impl DaoVoting for Contract {
             InitializationError::CannotReinitialize,
         );
 
-        storage.token.write(token);
+        storage.asset.write(asset);
         storage.state.write(State::Initialized);
 
         log(InitializeEvent {
             author: msg_sender().unwrap(),
-            token,
+            asset,
         })
     }
 
@@ -111,7 +111,7 @@ impl DaoVoting for Contract {
         );
         require(
             storage
-                .token
+                .asset
                 .read() == msg_asset_id(),
             UserError::IncorrectAssetSent,
         );
@@ -147,7 +147,7 @@ impl DaoVoting for Contract {
         storage.balances.insert(user, prev_balance - amount);
 
         // Transfer the asset back to the user
-        transfer(user, storage.token.read(), amount);
+        transfer(user, storage.asset.read(), amount);
 
         log(WithdrawEvent { amount, user })
     }
@@ -225,7 +225,7 @@ impl DaoVoting for Contract {
             call call_data amount asset gas;
         }
 
-        // Users can now convert their votes back into tokens
+        // Users can now convert their votes back into assets
         log(ExecuteEvent {
             user: msg_sender().unwrap(),
             acceptance_percentage,
@@ -273,7 +273,7 @@ impl DaoVoting for Contract {
 impl Info for Contract {
     #[storage(read)]
     fn balance() -> u64 {
-        this_balance(storage.token.read())
+        this_balance(storage.asset.read())
     }
 
     #[storage(read)]
@@ -294,14 +294,14 @@ impl Info for Contract {
     }
 
     #[storage(read)]
-    fn governance_token_id() -> AssetId {
+    fn governance_asset_id() -> AssetId {
         require(
             storage
                 .state
                 .read() == State::Initialized,
             InitializationError::ContractNotInitialized,
         );
-        storage.token.read()
+        storage.asset.read()
     }
 
     #[storage(read)]

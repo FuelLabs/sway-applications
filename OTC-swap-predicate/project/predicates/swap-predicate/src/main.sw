@@ -19,7 +19,7 @@ configurable {
     /// The amount of asset required to unlock the predicate.
     ASK_AMOUNT: u64 = 42,
     /// The asset to be paid.
-    ASK_TOKEN: AssetId = AssetId::from(0x0101010101010101010101010101010101010101010101010101010101010101),
+    ASK_ASSET: AssetId = AssetId::from(0x0101010101010101010101010101010101010101010101010101010101010101),
     /// The receiver to whom the swapped asset will be sent.
     RECEIVER: Address = Address::from(0x09c0b2d1a486c439a87bcba6b46a7a1a23f3897cc83a94521a96da5c23bc58db),
 }
@@ -34,7 +34,7 @@ configurable {
 ///
 /// * [bool] - `true` if the spender is the receiver or if the terms of the order are met, `false` otherwise.
 fn main() -> bool {
-    // The spending transaction must have an output that sends `ask_amount` of `ask_token` to `receiver`
+    // The spending transaction must have an output that sends `ask_amount` of `ask_asset` to `receiver`
 
     // Check if the transaction contains a single input coin from the receiver, to cancel their own order (in addition to this predicate)
     if input_count() == 2u8 {
@@ -62,5 +62,5 @@ fn main() -> bool {
     let amount = output_amount(output_index);
 
     // Evaluate the predicate
-    (to == RECEIVER) && (amount == ASK_AMOUNT) && (asset_id == ASK_TOKEN)
+    (to == RECEIVER) && (amount == ASK_AMOUNT) && (asset_id == ASK_ASSET)
 }

@@ -32,15 +32,15 @@ pub struct ExecuteEvent {
 pub struct InitializeEvent {
     /// User who initialized the contract.
     author: Identity,
-    /// AssetId of the token used for DAO governance.
-    token: AssetId,
+    /// AssetId of the asset used for DAO governance.
+    asset: AssetId,
 }
 
-/// Event for unlocking of governance tokens.
+/// Event for unlocking of governance coins.
 pub struct UnlockVotesEvent {
     /// The unique identifier for the proposal.
     id: u64,
-    /// User who unlocks the tokens.
+    /// User who unlocks the coins.
     user: Identity,
     /// Amount of votes unlocked.
     vote_amount: u64,

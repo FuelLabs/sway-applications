@@ -2,13 +2,13 @@ use crate::utils::{interface::core::constructor, setup::setup};
 
 mod success {
     use super::*;
-    use crate::utils::{interface::info::governance_token_id, setup::InitializeEvent};
+    use crate::utils::{interface::info::governance_asset_id, setup::InitializeEvent};
     use fuels::{prelude::Address, types::Identity};
 
     #[tokio::test]
     async fn constructs() {
-        let (gov_token_id, _other_token_id, deployer, _user, _asset_amount) = setup().await;
-        let response = constructor(&deployer.dao_voting, gov_token_id).await;
+        let (gov_asset_id, _other_asset_id, deployer, _user, _asset_amount) = setup().await;
+        let response = constructor(&deployer.dao_voting, gov_asset_id).await;
 
         let log = response.decode_logs_with_type::<InitializeEvent>().unwrap();
         let event = log.get(0).unwrap();
@@ -17,12 +17,12 @@ mod success {
             *event,
             InitializeEvent {
                 author: Identity::Address(Address::from(deployer.wallet.address())),
-                token: gov_token_id
+                asset: gov_asset_id
             }
         );
         assert_eq!(
-            governance_token_id(&deployer.dao_voting).await,
-            gov_token_id
+            governance_asset_id(&deployer.dao_voting).await,
+            gov_asset_id
         );
     }
 }
@@ -33,8 +33,8 @@ mod revert {
     #[tokio::test]
     #[should_panic(expected = "CannotReinitialize")]
     async fn when_reinitialized() {
-        let (gov_token_id, _other_token_id, deployer, _user, _asset_amount) = setup().await;
-        constructor(&deployer.dao_voting, gov_token_id).await;
-        constructor(&deployer.dao_voting, gov_token_id).await;
+        let (gov_asset_id, _other_asset_id, deployer, _user, _asset_amount) = setup().await;
+        constructor(&deployer.dao_voting, gov_asset_id).await;
+        constructor(&deployer.dao_voting, gov_asset_id).await;
     }
 }

@@ -1,6 +1,6 @@
 library;
 
-/// Event for when the price of a token is updated.
+/// Event for when the price of an asset is updated.
 pub struct PriceUpdateEvent {
     /// Updated price.
     price: u64,

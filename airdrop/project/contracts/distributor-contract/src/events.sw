@@ -3,7 +3,7 @@ library;
 pub struct ClaimEvent {
     /// The quantity of an asset which is to be transferred to the user.
     amount: u64,
-    /// The user that has a claim to tokens with a valid proof.
+    /// The user that has a claim to coins with a valid proof.
     claimer: Identity,
     /// The identity that will receive the transferred asset.
     to: Identity,
@@ -17,7 +17,7 @@ pub struct ClawbackEvent {
 }
 
 pub struct CreateAirdropEvent {
-    /// The user which can claim any left over tokens after the claiming period.
+    /// The user which can claim any left over coins after the claiming period.
     admin: Identity,
     /// The asset which is to be distributed.
     asset: AssetId,

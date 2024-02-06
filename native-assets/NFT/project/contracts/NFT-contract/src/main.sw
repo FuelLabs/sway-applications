@@ -31,7 +31,7 @@ storage {
     ///
     /// This is the number of NFTs that have been minted.
     total_assets: u64 = 0,
-    /// The total number of tokens minted for a particular asset.
+    /// The total number of coins minted for a particular asset.
     ///
     /// # Additional Information
     ///
@@ -77,7 +77,7 @@ impl SRC20 for Contract {
         _total_assets(storage.total_assets)
     }
 
-    /// Returns the total supply of tokens for an asset.
+    /// Returns the total supply of coins for an asset.
     ///
     /// # Additional Information
     ///
@@ -89,7 +89,7 @@ impl SRC20 for Contract {
     ///
     /// # Returns
     ///
-    /// * [Option<u64>] - The total supply of tokens for `asset`.
+    /// * [Option<u64>] - The total supply of coins for `asset`.
     ///
     /// # Number of Storage Accesses
     ///
@@ -203,18 +203,18 @@ impl SRC20 for Contract {
 }
 
 impl SRC3 for Contract {
-    /// Mints new tokens using the `sub_id` sub-identifier.
+    /// Mints new assets using the `sub_id` sub-identifier.
     ///
     /// # Additional Information
     ///
     /// This conforms to the SRC-20 NFT portion of the standard for a maximium
-    /// mint amount of 1 token per asset.
+    /// mint amount of 1 coin per asset.
     ///
     /// # Arguments
     ///
-    /// * `recipient`: [Identity] - The user to which the newly minted tokens are transferred to.
-    /// * `sub_id`: [SubId] - The sub-identifier of the newly minted token.
-    /// * `amount`: [u64] - The quantity of tokens to mint.
+    /// * `recipient`: [Identity] - The user to which the newly minted assets are transferred to.
+    /// * `sub_id`: [SubId] - The sub-identifier of the newly minted asset.
+    /// * `amount`: [u64] - The quantity of coins to mint.
     ///
     /// # Reverts
     ///
@@ -266,7 +266,7 @@ impl SRC3 for Contract {
             amount,
         );
     }
-    /// Burns tokens sent with the given `sub_id`.
+    /// Burns assets sent with the given `sub_id`.
     ///
     /// # Additional Information
     ///
@@ -275,8 +275,8 @@ impl SRC3 for Contract {
     ///
     /// # Arguments
     ///
-    /// * `sub_id`: [SubId] - The sub-identifier of the token to burn.
-    /// * `amount`: [u64] - The quantity of tokens to burn.
+    /// * `sub_id`: [SubId] - The sub-identifier of the asset to burn.
+    /// * `amount`: [u64] - The quantity of coins to burn.
     ///
     /// # Number of Storage Accesses
     ///
@@ -358,7 +358,7 @@ impl SetAssetAttributes for Contract {
     /// # Examples
     ///
     /// ```sway
-    /// use token::SetAssetAttributes;
+    /// use asset::SetAssetAttributes;
     /// use src20::SRC20;
     /// use std::string::String;
     ///
@@ -401,7 +401,7 @@ impl SetAssetAttributes for Contract {
     /// # Examples
     ///
     /// ```sway
-    /// use token::SetAssetAttributes;
+    /// use asset::SetAssetAttributes;
     /// use src20::SRC20;
     /// use std::string::String;
     ///
@@ -463,8 +463,8 @@ impl SetAssetMetadata for Contract {
     /// # Example
     ///
     /// ```sway
+    /// use asset::metdata::SetAssetMetadata;
     /// use src_7::{SRC7, Metadata};
-    /// use token::metdata::SetAssetMetadata;
     ///
     /// fn foo(asset: AssetId, key: String, contract_id: ContractId, metadata: Metadata) {
     ///     let set_abi = abi(SetAssetMetadata, contract_id);
@@ -564,7 +564,7 @@ fn test_name() {
     let attributes_abi = abi(SetAssetAttributes, CONTRACT_ID);
     let sub_id = ZERO_B256;
     let asset_id = AssetId::new(ContractId::from(CONTRACT_ID), sub_id);
-    let name = String::from_ascii_str("Fuel Token");
+    let name = String::from_ascii_str("Fuel Asset");
     assert(src20_abi.name(asset_id).is_none());
     attributes_abi.set_name(asset_id, name);
     assert(src20_abi.name(asset_id).unwrap().as_bytes() == name.as_bytes());
@@ -575,7 +575,7 @@ fn test_revert_set_name_twice() {
     let attributes_abi = abi(SetAssetAttributes, CONTRACT_ID);
     let sub_id = ZERO_B256;
     let asset_id = AssetId::new(ContractId::from(CONTRACT_ID), sub_id);
-    let name = String::from_ascii_str("Fuel Token");
+    let name = String::from_ascii_str("Fuel Asset");
     attributes_abi.set_name(asset_id, name);
     attributes_abi.set_name(asset_id, name);
 }

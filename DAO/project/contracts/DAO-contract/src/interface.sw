@@ -3,17 +3,17 @@ library;
 use ::data_structures::{Proposal, ProposalInfo, Votes};
 
 abi DaoVoting {
-    /// Initialize the dao with the governance token.
+    /// Initialize the dao with the governance asset.
     ///
     /// # Arguments
     ///
-    /// * `gov_token`: [AssetId] - AssetId of the token used to vote on governance proposals.
+    /// * `gov_asset`: [AssetId] - AssetId of the asset used to vote on governance proposals.
     ///
     /// # Reverts
     ///
     /// * When the constructor is called more than once.
     #[storage(read, write)]
-    fn constructor(gov_token: AssetId);
+    fn constructor(gov_asset: AssetId);
 
     /// Create a new proposal.
     ///
@@ -35,28 +35,28 @@ abi DaoVoting {
         proposal_transaction: Proposal,
     );
 
-    /// Deposit governance tokens into contract.
+    /// Deposit governance assets into contract.
     ///
     /// # Additional Information
     ///
-    /// Update the user balance to indicate they have deposited governance tokens.
+    /// Update the user balance to indicate they have deposited governance assets.
     /// A successful deposit unlocks voting functionality.
-    /// Voting power is directly proportional to the amount of deposited governance tokens,
-    /// That is: 1 governance token = 1 vote.
+    /// Voting power is directly proportional to the amount of deposited governance coins,
+    /// That is: 1 governance coin = 1 vote.
     ///
     /// # Reverts
     ///
     /// * When the constructor has not been called to initialize.
-    /// * When the user deposits an asset that is not the specified governance token.
+    /// * When the user deposits an asset that is not the specified governance asset.
     /// * When the user does not deposit any assets.
     #[payable, storage(read, write)]
     fn deposit();
 
-    /// Update the user balance to indicate they have withdrawn governance tokens.
+    /// Update the user balance to indicate they have withdrawn governance assets.
     ///
     /// # Arguments
     ///
-    /// * `amount`: [u64] - amount of governance tokens to withdraw from the contract.
+    /// * `amount`: [u64] - amount of governance coins to withdraw from the contract.
     ///
     /// # Reverts
     ///
@@ -97,13 +97,13 @@ abi DaoVoting {
     #[storage(read, write)]
     fn execute(proposal_id: u64);
 
-    /// Unlock governance tokens from a proposal.
+    /// Unlock governance assets from a proposal.
     ///
     /// # Additional Information
     ///
-    /// Governance tokens are locked whenever a user votes on a proposal.
-    /// This is to ensure a user cannot vote twice on a proposal with the same governance token.
-    /// As 1 token = 1 vote.
+    /// Governance assets are locked whenever a user votes on a proposal.
+    /// This is to ensure a user cannot vote twice on a proposal with the same governance asset.
+    /// As 1 coin = 1 vote.
     /// If the user did not vote on the proposal then nothing happens.
     ///
     /// # Arguments
@@ -119,23 +119,23 @@ abi DaoVoting {
 }
 
 abi Info {
-    /// Return the amount of governance tokens in this contract.
+    /// Return the amount of governance coins in this contract.
     ///
     /// # Returns
     ///
-    /// * [u64] - the amount of governance tokens in this contract.
+    /// * [u64] - the amount of governance coin in this contract.
     #[storage(read)]
     fn balance() -> u64;
 
-    /// Return the amount of governance tokens a user has in this contract.
+    /// Return the amount of governance coins a user has in this contract.
     ///
     /// # Arguments
     ///
-    /// * `user`: [Identity] - Identity to look up governance token balance in this contract.
+    /// * `user`: [Identity] - Identity to look up governance coin balance in this contract.
     ///
     /// # Returns
     ///
-    /// * [u64] - the amount of governance tokens a user has in this contract.
+    /// * [u64] - the amount of governance coins a user has in this contract.
     #[storage(read)]
     fn user_balance(user: Identity) -> u64;
 
@@ -168,17 +168,17 @@ abi Info {
     #[storage(read)]
     fn proposal(id: u64) -> ProposalInfo;
 
-    /// Return governance token id
+    /// Return governance asset id
     ///
     /// # Returns
     ///
-    /// * [AssetId] - AssetId of the token used to vote on governance proposals.
+    /// * [AssetId] - AssetId of the asset used to vote on governance proposals.
     ///
     /// # Reverts
     ///
     /// * When the constructor has not been called to initialize
     #[storage(read)]
-    fn governance_token_id() -> AssetId;
+    fn governance_asset_id() -> AssetId;
 
     /// Return proposal count
     ///

@@ -8,7 +8,7 @@ For simplicity, a specification can be broken into two levels of detail and the 
 
 A non-technical specification is aimed at an audience that may not have the expertise in an area to appreciate the technical challenges involved in achieving the goals and thus it can be seen as an overview or summary.
 
-As an example, this may be a developer explaining how a user would interact with the user interface in order to send a coin / token to someone, without revealing the functionality behind signing a transaction and why a transaction may take some amount of time to be confirmed.
+As an example, this may be a developer explaining how a user would interact with the user interface in order to send a coin / asset to someone, without revealing the functionality behind signing a transaction and why a transaction may take some amount of time to be confirmed.
 
 This type of specification is simple so that any layperson can follow the basic concepts of the workflow.
 

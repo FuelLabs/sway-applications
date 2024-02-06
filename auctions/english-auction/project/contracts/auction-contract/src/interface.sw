@@ -63,7 +63,7 @@ abi EnglishAuction {
     /// * When the `reserve_price` is less than `initial_price` and a reserve is set.
     /// * When the `duration` of the auction is set to zero.
     /// * When the `bid_asset` amount is not zero.
-    /// * When the `initial_price` for tokens is set to zero.
+    /// * When the `initial_price` for coins is set to zero.
     /// * When the native asset amount sent and the `sell_asset` enum do not match.
     /// * When the native asset type sent and the `sell_asset` enum do not match.
     /// * When the `initial_price` for NFTs is not one.

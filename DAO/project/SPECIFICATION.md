@@ -14,7 +14,7 @@ Table of Content
     - [`user_balance()`](#user_balance)
     - [`user_votes()`](#user_votes)
     - [`proposal()`](#proposal)
-    - [`governance_token_id()`](#governance_token_id)
+    - [`governance_asset_id()`](#governance_asset_id)
     - [`proposal_count()`](#proposal_count)
   - [Sequence diagram](#sequence-diagram)
 
@@ -34,7 +34,7 @@ If you are interested in a functional overview then this is the section for you.
 
 ### `constructor()`
 
-1. Initializes the contract by setting the governance token used for voting
+1. Initializes the contract by setting the governance asset used for voting
 
 ### `create_proposal()`
 
@@ -44,13 +44,13 @@ If you are interested in a functional overview then this is the section for you.
 
 ### `deposit()`
 
-1. Allows a user to deposit any number of governance tokens
-   1. Each token deposited equates to one vote the user can cast
+1. Allows a user to deposit any number of governance assets
+   1. Each coin deposited equates to one vote the user can cast
 
 ### `withdraw()`
 
-1. Allows a user to withdraw any number of governance tokens that they have deposited
-   1. The user can only withdraw tokens that have not been bonded as votes in proposals
+1. Allows a user to withdraw any number of governance assets that they have deposited
+   1. The user can only withdraw coins that have not been bonded as votes in proposals
 
 ### `vote()`
 
@@ -76,12 +76,12 @@ If you are interested in a functional overview then this is the section for you.
 
 ### `balance()`
 
-1. Returns the total balance of the governance tokens deposited in the contract
+1. Returns the total balance of the governance coins deposited in the contract
 
 ### `user_balance()`
 
-1. Returns the number of unlocked governance tokens for a user
-   1. If a user has voted on a proposal then those tokens will not be reflected in this balance
+1. Returns the number of unlocked governance coins for a user
+   1. If a user has voted on a proposal then those coins will not be reflected in this balance
 
 ### `user_votes()`
 
@@ -98,9 +98,9 @@ If you are interested in a functional overview then this is the section for you.
    5. The raw number of "yes" and "no" votes
    6. Arbitrary data required for the proposal to execute
 
-### `governance_token_id()`
+### `governance_asset_id()`
 
-1. Returns the ID of the governance token
+1. Returns the ID of the governance asset
 
 ### `proposal_count()`
 
