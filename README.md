@@ -76,8 +76,9 @@ sway-applications/
 
 - [TicTacToe](./games/TicTacToe) is a game where two players compete to align three markers in a row.
 
-#### Archive
-- [Automated Market Maker (AMM)](./archive/AMM/) is a decentralized exchange protocol that manages liquidity pools supplied by its users and determines prices algorithmically while exchanging assets. It is currently archived.
+#### Low maintenance
+The below apps are updated to the latest version, but may have broken tests or broken functionality. Use at your own discretion.
+- [Automated Market Maker (AMM)](./archive/AMM/) is a decentralized exchange protocol that manages liquidity pools supplied by its users and determines prices algorithmically while exchanging assets.
 
 ## Running a project
 
