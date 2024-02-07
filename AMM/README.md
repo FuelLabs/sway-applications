@@ -93,3 +93,7 @@ Before running the tests the programs must be compiled with the command above.
 ```bash
 cargo test --locked
 ```
+
+##### NOTE
+
+The script tests have currently been commented out as they fail randomly.
