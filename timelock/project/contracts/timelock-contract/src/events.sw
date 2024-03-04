@@ -13,7 +13,7 @@ pub struct CancelEvent {
 pub struct ExecuteEvent {
     /// The asset that was transferred.
     asset: Option<Asset>,
-    /// Assosciated payload of the transaction.
+    /// Associated payload of the transaction.
     data: Option<Bytes>,
     /// The id of the transaction that was executed.
     id: b256,
@@ -27,7 +27,7 @@ pub struct ExecuteEvent {
 pub struct QueueEvent {
     /// The asset to be transferred.
     asset: Option<Asset>,
-    /// Assosciated payload of the transaction.
+    /// Associated payload of the transaction.
     data: Option<Bytes>,
     /// The id of the transaction that was queued.
     id: b256,

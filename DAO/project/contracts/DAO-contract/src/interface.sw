@@ -70,7 +70,7 @@ abi DaoVoting {
     /// # Arguments
     ///
     /// * `approve`: [bool] - whether the user voted yes or no on the proposal.
-    /// * `proposal_id`: [u64] - Identifier used to specifiy a proposal (0 <= proposal_id < proposal_count).
+    /// * `proposal_id`: [u64] - Identifier used to specify a proposal (0 <= proposal_id < proposal_count).
     /// * `vote_amount`: [u64] - the amount of votes to cast on the proposal.
     ///
     /// # Reverts
@@ -108,7 +108,7 @@ abi DaoVoting {
     ///
     /// # Arguments
     ///
-    /// * `proposal_id`: [u64] - Identifier used to specifiy a proposal (0 <= proposal_id < proposal_count).
+    /// * `proposal_id`: [u64] - Identifier used to specify a proposal (0 <= proposal_id < proposal_count).
     ///
     /// # Reverts
     ///
