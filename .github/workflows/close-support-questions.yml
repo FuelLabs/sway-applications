@@ -1,0 +1,33 @@
+name: Close Support Issues and Redirect to Forum
+
+on:
+  issues:
+    types: [labeled]
+
+jobs:
+  close_forum_issues:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Comment and Close Issues Tagged with 'forum'
+      if: github.event.label.name == 'forum'
+      uses: peter-evans/create-or-update-comment@v3
+      with:
+        issue-number: ${{ github.event.issue.number }}
+        body: |
+          Hi there! 👋
+          
+          Thank you for bringing your question to us. We noticed this issue is more a support question than a feature request or a bug report. For support queries and discussions, our Fuel Forum is the perfect spot! 🌟 Please visit [forum.fuel.network](https://forum.fuel.network) to get the help you need. 
+          
+          We encourage you to shift the conversation there to keep our GitHub issues streamlined for bug reports and feature requests. 
+          
+          Thanks for understanding and contributing to the Fuel community! 🚀
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Close Issue
+      if: github.event.label.name == 'forum'
+      uses: peter-evans/close-issue@v1
+      with:
+        issue-number: ${{ github.event.issue.number }}
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

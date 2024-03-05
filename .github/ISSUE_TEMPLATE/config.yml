@@ -1,0 +1,6 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Need Support? Visit the Fuel Forum
+    url: https://forum.fuel.network
+    about: >
+      For support queries, please visit the Fuel Forum at https://forum.fuel.network. Only bug reports and feature requests in this repo are guaranteed a response.
