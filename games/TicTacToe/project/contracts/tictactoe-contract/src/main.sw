@@ -80,7 +80,8 @@ impl Game for Contract {
                 .board
                 .get(position)
                 .unwrap()
-                .try_read() == None,
+                .try_read()
+                .unwrap() == None,
             PositionError::CellIsNotEmpty,
         );
 
