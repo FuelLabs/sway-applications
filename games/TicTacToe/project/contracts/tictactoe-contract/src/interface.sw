@@ -15,7 +15,7 @@ abi Game {
     /// # Number of Storage Accesses
     ///
     /// * Reads - `1`
-    /// * Writes - `14`
+    /// * Writes - `6`
     #[storage(read, write)]
     fn new_game(player_one: Identity, player_two: Identity);
 

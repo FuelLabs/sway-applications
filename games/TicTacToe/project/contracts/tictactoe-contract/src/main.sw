@@ -20,11 +20,11 @@ storage {
     /// Keeps track of the move counter for various checks (win, draw, etc.).
     move_counter: u64 = 0,
     /// The first player of the game.
-    player_one: Option<Identity> = Option::None,
+    player_one: Option<Identity> = None,
     /// The current player turn.
-    player_turn: Option<Identity> = Option::None,
+    player_turn: Option<Identity> = None,
     /// The second player of the game.
-    player_two: Option<Identity> = Option::None,
+    player_two: Option<Identity> = None,
     /// Keeps track of the game, its value is either Ended or Playing.
     state: State = State::Ended,
 }
@@ -44,11 +44,8 @@ impl Game for Contract {
         storage.player_turn.write(Some(player_one));
 
         // Once a game has been played we need to reset all values.
-        let mut position = 0;
-        while position < 9 {
-            let _ = storage.board.set(position, None);
-            position += 1;
-        }
+        storage.board.resize(9, None);
+        storage.board.fill(None);
         storage.move_counter.write(0);
         storage.state.write(State::Playing);
 
@@ -87,16 +84,18 @@ impl Game for Contract {
             PositionError::CellIsNotEmpty,
         );
 
-        // Make the move and update positions and player
+        // Make the move and update the board
         storage.board.set(position, Some(msg_sender().unwrap()));
+
+        // Update number of moves
         let last_move_counter = storage.move_counter.read();
         storage.move_counter.write(last_move_counter + 1);
-
         let current_move_counter = last_move_counter + 1;
+
+        // Update the player
         let current_player = storage.player_turn.read().unwrap();
         let player_one = storage.player_one.read().unwrap();
         let player_two = storage.player_two.read().unwrap();
-
         if (current_player == player_one) {
             storage.player_turn.write(Some(player_two));
         } else {
