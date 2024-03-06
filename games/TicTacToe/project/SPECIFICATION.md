@@ -4,6 +4,7 @@ Table of Contents
   - [Core Functionality](#core-functionality)
     - [`new_game()`](#new_game)
     - [`make_move()`](#make_move)
+    - [`get_board()`](#get_board)
   - [Diagrams](#diagrams)
     - [Sequence Diagram](#sequence-diagram)
 
@@ -36,6 +37,10 @@ If you are interested in a functional overview then this is the section for you.
    2. If the incorrect player tries to make a move.
    3. If a player tries to make a move out of bounds.
    4. If a player tries to make a move to an occupied cell.
+
+### `get_board()`
+
+View function to return the player positions in the current game.
 
 ## Diagrams
 
