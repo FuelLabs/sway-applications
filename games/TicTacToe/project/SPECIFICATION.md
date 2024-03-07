@@ -5,6 +5,9 @@ Table of Contents
     - [`new_game()`](#new_game)
     - [`make_move()`](#make_move)
     - [`get_board()`](#get_board)
+    - [`get_game_state()`](#get_game_state)
+    - [`get_current_player()`](#get_current_player)
+    - [`get_players()`](#get_players)
   - [Diagrams](#diagrams)
     - [Sequence Diagram](#sequence-diagram)
 
@@ -41,6 +44,18 @@ If you are interested in a functional overview then this is the section for you.
 ### `get_board()`
 
 View function to return the player positions in the current game.
+
+### `get_game_state()`
+
+View function to return the current state of the game.
+
+### `get_current_player()`
+
+View function to return the player who's turn it is to make a move.
+
+### `get_players()`
+
+View function to return the players of the current game.
 
 ## Diagrams
 

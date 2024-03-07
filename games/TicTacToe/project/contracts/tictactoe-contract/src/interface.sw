@@ -1,5 +1,7 @@
 library;
 
+use ::data_structures::State;
+
 abi Game {
     /// Starts a new game.
     ///
@@ -54,4 +56,40 @@ abi Game {
     /// * Reads - `1`
     #[storage(read)]
     fn get_board() -> Vec<Option<Identity>>;
+
+    /// Returns the current state of the game.
+    ///
+    /// # Returns
+    ///
+    /// * [State] - The current states of the game.
+    ///
+    /// # Number of Storage Accesses
+    ///
+    /// * Reads - `1`
+    #[storage(read)]
+    fn get_game_state() -> State;
+
+    /// Returns the player who's turn it is to make a move.
+    ///
+    /// # Returns
+    ///
+    /// * [Identity] - The current player.
+    ///
+    /// # Number of Storage Accesses
+    ///
+    /// * Reads - `2`
+    #[storage(read)]
+    fn get_current_player() -> Option<Identity>;
+
+    /// Returns the players of the current game.
+    ///
+    /// # Returns
+    ///
+    /// * [(Identity, Identity)] - A tuple of player 1 and player 2.
+    ///
+    /// # Number of Storage Accesses
+    ///
+    /// * Reads - `3`
+    #[storage(read)]
+    fn get_players() -> Option<(Identity, Identity)>;
 }

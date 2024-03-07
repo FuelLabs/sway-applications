@@ -127,4 +127,33 @@ impl Game for Contract {
     fn get_board() -> Vec<Option<Identity>> {
         storage.board.load_vec()
     }
+
+    #[storage(read)]
+    fn get_game_state() -> State {
+        storage.state.read()
+    }
+
+    #[storage(read)]
+    fn get_current_player() -> Option<Identity> {
+        match storage.state.read() {
+            State::Playing => {
+                storage.player_turn.read()
+            },
+            State::Ended => {
+                None
+            }
+        }
+    }
+
+    #[storage(read)]
+    fn get_players() -> Option<(Identity, Identity)> {
+        match storage.state.read() {
+            State::Playing => {
+                Some((storage.player_one.read().unwrap(), storage.player_two.read().unwrap()))
+            },
+            State::Ended => {
+                None
+            }
+        }
+    }
 }
