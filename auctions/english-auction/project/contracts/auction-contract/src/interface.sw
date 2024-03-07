@@ -16,7 +16,7 @@ abi EnglishAuction {
     /// * When the bidding period for the auction has passed.
     /// * When the asset provided does not match the asset accepted for the auction.
     /// * When the bidder is the auction's seller.
-    /// * When transfering of the NFT asset to the auction contract failed.
+    /// * When transferring of the NFT asset to the auction contract failed.
     /// * When the native asset amount sent and the `bid_asset` enum do not match.
     /// * When the native asset type sent and the `bid_asset` enum do not match.
     /// * When the bid amount is less than the initial price.

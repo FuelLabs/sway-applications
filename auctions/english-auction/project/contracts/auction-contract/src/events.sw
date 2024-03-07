@@ -12,7 +12,7 @@ pub struct CancelAuctionEvent {
 pub struct CreateAuctionEvent {
     /// The auction id of the auction that was created.
     auction_id: u64,
-    /// The asset in which bids will be recieved.
+    /// The asset in which bids will be received.
     bid_asset: AssetId,
     /// The asset to be sold.
     sell_asset: AssetId,

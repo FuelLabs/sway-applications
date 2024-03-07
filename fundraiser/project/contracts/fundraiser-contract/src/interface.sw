@@ -116,7 +116,7 @@ abi Info {
     #[storage(read)]
     fn asset_count() -> u64;
 
-    /// Returns information about the specificed asset, specifically if it has been added and the
+    /// Returns information about the specified asset, specifically if it has been added and the
     /// pledged amount.
     ///
     /// # Additional Information
