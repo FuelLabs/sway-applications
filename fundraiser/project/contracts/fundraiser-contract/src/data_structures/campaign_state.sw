@@ -6,7 +6,7 @@ use core::ops::Eq;
 pub enum CampaignState {
     /// The campaign has been cancelled.
     Cancelled: (),
-    /// The campain was successful and the funds have been claimed.
+    /// The campaign was successful and the funds have been claimed.
     Claimed: (),
     /// The campaign is still accepting funds.
     Funding: (),
