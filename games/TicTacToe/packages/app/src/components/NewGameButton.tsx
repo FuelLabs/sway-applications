@@ -6,6 +6,6 @@ export const NewGameButton = () => {
     const newGame = useNewGame();
     
     return (
-        <Button variant="outlined">New Game</Button>
+        <Button variant="outlined" sx={{ marginRight: "20px" }}>New Game</Button>
     );
 };

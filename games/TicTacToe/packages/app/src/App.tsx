@@ -1,11 +1,10 @@
+import { Container, Typography, Stack, CssBaseline, Box } from "@mui/material";
 import {
-  Container,
-  Typography,
-  Stack,
-  CssBaseline,
-  Box,
-} from "@mui/material";
-import { Board, ConnectionInfo, NewGameButton } from "./components";
+  Board,
+  ConnectionInfo,
+  GameStateInfo,
+  NewGameButton,
+} from "./components";
 
 function App() {
   return (
@@ -26,7 +25,10 @@ function App() {
             </Typography>
             <ConnectionInfo />
           </Box>
-          <NewGameButton />
+          <Box display="flex" alignItems="center">
+            <NewGameButton />
+            <GameStateInfo />
+          </Box>
           <Board />
         </Stack>
       </Container>
