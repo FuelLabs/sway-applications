@@ -14,8 +14,10 @@ export const useGetCurrentPlayer = () => {
                 import.meta.env.VITE_CONTRACT_ID,
                 wallet
             );
+            const result = await contract.functions.get_current_player().simulate();
+            return result.value ?? null;
         }
     });
 
-    return query;
+    return { ...query, currentPlayer: query.data };
 }

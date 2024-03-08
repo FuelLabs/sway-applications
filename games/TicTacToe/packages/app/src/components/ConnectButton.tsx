@@ -21,7 +21,7 @@ export const ConnectButton = () => {
     }
 
     return (
-        <Button variant="outlined" sx={{ borderColor: "green", color: "green" }} onClick={() => {
+        <Button variant="outlined" sx={{ borderColor: "green", color: "green", width: "65%" }} onClick={() => {
             if (isConnected) {
                 disconnect();
             } else {
