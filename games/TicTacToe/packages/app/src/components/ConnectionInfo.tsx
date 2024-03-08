@@ -8,7 +8,7 @@ export const ConnectionInfo = () => {
   const { players, isPlayer1Turn } = useGetPlayers();
 
   return (
-    <Stack spacing={1} alignItems="end">
+    <Stack spacing={1} alignItems="end" width="300px">
       <ConnectButton />
       {players.length === 0 ? null : (
         <>

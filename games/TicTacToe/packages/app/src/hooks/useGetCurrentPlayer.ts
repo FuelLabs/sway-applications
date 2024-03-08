@@ -1,12 +1,13 @@
 import { useQuery } from "@tanstack/react-query"
 import { useWallet } from "@fuels/react";
 import { TictactoeContractAbi__factory } from "../contract-types";
+import { TicTacToeQueryKeys } from "../queryKeys";
 
 export const useGetCurrentPlayer = () => {
     const { wallet } = useWallet();
 
     const query = useQuery({
-        queryKey: ['currentPlayer'],
+        queryKey: [TicTacToeQueryKeys.currentPlayer],
         queryFn: async () => {
             if (!wallet) throw new Error(`Cannot get current player if wallet is ${wallet}`);
 

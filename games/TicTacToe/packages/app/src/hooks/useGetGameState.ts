@@ -2,12 +2,13 @@ import { useWallet } from "@fuels/react";
 import { useQuery } from "@tanstack/react-query";
 
 import { TictactoeContractAbi__factory } from "../contract-types";
+import { TicTacToeQueryKeys } from "../queryKeys";
 
 export const useGetGameState = () => {
     const { wallet } = useWallet();
 
     const query = useQuery({
-        queryKey: ['gameState'],
+        queryKey: [TicTacToeQueryKeys.gameState],
         queryFn: async () => {
             if (!wallet) throw new Error(`Cannot get game state if the walelt is ${wallet}`);
 
