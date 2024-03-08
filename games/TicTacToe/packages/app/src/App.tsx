@@ -2,11 +2,10 @@ import {
   Container,
   Typography,
   Stack,
-  Grid,
   CssBaseline,
   Box,
 } from "@mui/material";
-import { Cell, ConnectionInfo, NewGameButton } from "./components";
+import { Board, ConnectionInfo, NewGameButton } from "./components";
 
 function App() {
   return (
@@ -28,17 +27,7 @@ function App() {
             <ConnectionInfo />
           </Box>
           <NewGameButton />
-          <Grid container spacing={2} sx={{ width: "75%" }}>
-            <Cell />
-            <Cell />
-            <Cell />
-            <Cell />
-            <Cell />
-            <Cell />
-            <Cell />
-            <Cell />
-            <Cell />
-          </Grid>
+          <Board />
         </Stack>
       </Container>
     </>
