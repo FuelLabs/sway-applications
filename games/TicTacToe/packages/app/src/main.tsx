@@ -1,13 +1,12 @@
-import React from 'react'
-import ReactDOM from 'react-dom/client'
-import App from './App.tsx'
-import { FuelProvider } from "@fuels/react";
-import { FuelWalletConnector } from "@fuel-wallet/sdk";
+import React from "react";
+import ReactDOM from "react-dom/client";
+import App from "./App.tsx";
+import { Providers } from "./components";
 
-ReactDOM.createRoot(document.getElementById('root')!).render(
+ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <FuelProvider fuelConfig={{ connectors: [new FuelWalletConnector] }}>
+    <Providers>
       <App />
-    </FuelProvider>
-  </React.StrictMode>,
-)
+    </Providers>
+  </React.StrictMode>
+);

@@ -1,27 +1,23 @@
 import { Stack, Typography } from "@mui/material"
-import { useAccounts } from "@fuels/react";
+
+import { useGetPlayers } from "../hooks";
 
 import { ConnectButton } from ".";
 
 export const ConnectionInfo = () => {
-    const { accounts } = useAccounts();
+    const players = useGetPlayers();
 
     return (
         <Stack spacing={1}>
           <ConnectButton />
-          {accounts.length === 0 ? (
+          {players.length === 0 ? (
             null 
-          ) : (accounts.length >= 2 ? (
-            <>
-                <Typography>{`Player 1: ${shortAddress(accounts[0])}`}</Typography>
-                <Typography>{`Player 2: ${shortAddress(accounts[1])}`}</Typography>
-            </>
           ) : (
             <>
-                <Typography>{`Player 1: ${shortAddress(accounts[0])}`}</Typography>
-                <Typography>{`Player 2: ${shortAddress(accounts[0])}`}</Typography>
+                <Typography>{`Player 1: ${shortAddress(players[0])}`}</Typography>
+                <Typography>{`Player 2: ${shortAddress(players[1])}`}</Typography>
             </>
-          ))}
+          )}
         </Stack>
     )
 }
