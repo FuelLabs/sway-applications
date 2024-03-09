@@ -24,7 +24,13 @@ export const useNewGame = (player1Address: string, player2Address: string) => {
     },
     onSuccess: async () => {
       await queryClient.invalidateQueries({
-        queryKey: [TicTacToeQueryKeys.gameBoard, TicTacToeQueryKeys.gameState],
+        queryKey: [TicTacToeQueryKeys.gameBoard],
+      });
+      await queryClient.invalidateQueries({
+        queryKey: [TicTacToeQueryKeys.gameState],
+      });
+      await queryClient.invalidateQueries({
+        queryKey: [TicTacToeQueryKeys.currentPlayer],
       });
     },
     onError: (err) => console.error(err),

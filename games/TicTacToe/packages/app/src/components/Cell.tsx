@@ -13,6 +13,8 @@ export const Cell = ({ playerAddress, boardIndex }: CellProps) => {
   const makeMove = useMakeMove(boardIndex);
   const { players } = useGetPlayers();
 
+  console.log(`makeMove.data`, makeMove.data);
+
   console.log(`playerAddress`, playerAddress);
 
   useEffect(() => {
@@ -21,7 +23,11 @@ export const Cell = ({ playerAddress, boardIndex }: CellProps) => {
          setText("X");
       } else if (playerAddress === Address.fromString(players[1]).toHexString()) {
          setText("O");
+      } else {
+         setText(null);
       }
+   } else {
+      setText(null);
    }
   }, [playerAddress, players]);
 
@@ -35,7 +41,9 @@ export const Cell = ({ playerAddress, boardIndex }: CellProps) => {
           justifyContent: "center",
           display: "flex",
         }}
-        onClick={() => makeMove.mutate()}
+        onClick={() => {
+         makeMove.mutate();
+        }}
       >
         <Typography sx={{ fontSize: "150px" }}>{text}</Typography>
       </Card>

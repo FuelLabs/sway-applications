@@ -4,7 +4,7 @@ import { TictactoeContractAbi__factory } from "../contract-types";
 import { TicTacToeQueryKeys } from "../queryKeys";
 
 export const useGetGameBoard = () => {
-  const { wallet } = useWallet();
+  const { wallet, isError, isLoading } = useWallet();
 
   const query = useQuery({
     queryKey: [TicTacToeQueryKeys.gameBoard],
@@ -16,10 +16,12 @@ export const useGetGameBoard = () => {
         import.meta.env.VITE_CONTRACT_ID,
         wallet
       );
+      console.log(`contract`, contract);
       const result = await contract.functions.get_board().simulate();
       console.log(`result`, result);
       return result.value ?? null;
     },
+    enabled: !!wallet && !isError && !isLoading
   });
 
   return { ...query, gameBoard: query.data };

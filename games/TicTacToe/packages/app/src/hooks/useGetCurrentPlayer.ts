@@ -4,7 +4,7 @@ import { TictactoeContractAbi__factory } from "../contract-types";
 import { TicTacToeQueryKeys } from "../queryKeys";
 
 export const useGetCurrentPlayer = () => {
-    const { wallet } = useWallet();
+    const { wallet, isError, isLoading } = useWallet();
 
     const query = useQuery({
         queryKey: [TicTacToeQueryKeys.currentPlayer],
@@ -17,7 +17,8 @@ export const useGetCurrentPlayer = () => {
             );
             const result = await contract.functions.get_current_player().simulate();
             return result.value ?? null;
-        }
+        },
+        enabled: !!wallet && !isError && !isLoading
     });
 
     return { ...query, currentPlayer: query.data };

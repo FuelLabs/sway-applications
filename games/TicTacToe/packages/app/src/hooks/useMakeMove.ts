@@ -17,12 +17,24 @@ export const useMakeMove = (position: number) => {
         wallet
       );
       const result = await contract.functions.make_move(position).call();
-      return result.value;
+      console.log(`result make move`, result);
+      return result;
     },
     onSuccess: async () => {
+      console.log("one");
       await queryClient.invalidateQueries({
-        queryKey: [TicTacToeQueryKeys.gameBoard, TicTacToeQueryKeys.gameState],
+        queryKey: [TicTacToeQueryKeys.gameBoard],
       });
+      await queryClient.invalidateQueries({
+        queryKey: [TicTacToeQueryKeys.gameState],
+      });
+      await queryClient.invalidateQueries({
+        queryKey: [TicTacToeQueryKeys.currentPlayer],
+      });
+      console.log("two");
+    },
+    onError: (err) => {
+      console.error(err);
     },
   });
 
