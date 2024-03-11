@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 
 import { TictactoeContractAbi__factory } from "../contract-types";
 import { TicTacToeQueryKeys } from "../queryKeys";
+import { CONTRACT_ID } from "../config";
 
 export const useGetGameState = () => {
     const { wallet, isError, isLoading } = useWallet();
@@ -13,7 +14,7 @@ export const useGetGameState = () => {
             if (!wallet) throw new Error(`Cannot get game state if the walelt is ${wallet}`);
 
             const contract = TictactoeContractAbi__factory.connect(
-                import.meta.env.VITE_CONTRACT_ID,
+                CONTRACT_ID,
                 wallet
             );
             const result = await contract.functions.get_game_state().simulate();

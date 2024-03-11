@@ -21,7 +21,9 @@ export const NewGameButton = () => {
     <Button
       variant="outlined"
       sx={{ marginRight: "20px" }}
-      onClick={() => newGame.mutate()}
+      onClick={() => {
+        newGame.mutate()
+      }}
     >
       New Game
     </Button>

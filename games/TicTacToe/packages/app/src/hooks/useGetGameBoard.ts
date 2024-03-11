@@ -2,6 +2,7 @@ import { useWallet } from "@fuels/react";
 import { useQuery } from "@tanstack/react-query";
 import { TictactoeContractAbi__factory } from "../contract-types";
 import { TicTacToeQueryKeys } from "../queryKeys";
+import { CONTRACT_ID } from "../config";
 
 export const useGetGameBoard = () => {
   const { wallet, isError, isLoading } = useWallet();
@@ -13,12 +14,10 @@ export const useGetGameBoard = () => {
         throw new Error(`Cannot get game board if wallet is ${wallet}`);
 
       const contract = TictactoeContractAbi__factory.connect(
-        import.meta.env.VITE_CONTRACT_ID,
+        CONTRACT_ID,
         wallet
       );
-      console.log(`contract`, contract);
       const result = await contract.functions.get_board().simulate();
-      console.log(`result`, result);
       return result.value ?? null;
     },
     enabled: !!wallet && !isError && !isLoading

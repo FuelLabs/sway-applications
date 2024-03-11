@@ -1,18 +1,20 @@
 import { useWallet } from "@fuels/react";
 import { useMutation } from "@tanstack/react-query";
 import { TictactoeContractAbi__factory } from "../contract-types";
-import { queryClient } from "../components";
+import { queryClient, useAppContext } from "../components";
 import { TicTacToeQueryKeys } from "../queryKeys";
+import { CONTRACT_ID } from "../config";
 
 export const useNewGame = (player1Address: string, player2Address: string) => {
   const { wallet } = useWallet();
+  const appContext = useAppContext();
 
   const mutation = useMutation({
     mutationFn: async () => {
       if (!wallet) throw new Error(`Cannot increment if wallet is ${wallet}`);
 
       const contract = TictactoeContractAbi__factory.connect(
-        import.meta.env.VITE_CONTRACT_ID,
+        CONTRACT_ID,
         wallet
       );
       await contract.functions
@@ -32,6 +34,7 @@ export const useNewGame = (player1Address: string, player2Address: string) => {
       await queryClient.invalidateQueries({
         queryKey: [TicTacToeQueryKeys.currentPlayer],
       });
+      appContext?.setAppContext({ ...appContext, showGameBoard: true });
     },
     onError: (err) => console.error(err),
   });

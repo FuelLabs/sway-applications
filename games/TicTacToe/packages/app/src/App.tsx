@@ -2,11 +2,15 @@ import { Container, Typography, Stack, CssBaseline, Box } from "@mui/material";
 import {
   Board,
   ConnectionInfo,
-  GameStateInfo,
   NewGameButton,
 } from "./components";
+import { useGetGameState } from "./hooks";
+import { useAppContext } from "./components";
 
 function App() {
+  const { gameState } = useGetGameState();
+  const appContext = useAppContext();
+
   return (
     <>
       <CssBaseline />
@@ -19,17 +23,16 @@ function App() {
             width="100%"
             flexWrap="wrap"
           >
-            <Box width="180px"></Box>
+            <Box width="300px"></Box>
             <Typography align="center" variant="h3">
               TicTacToe
             </Typography>
             <ConnectionInfo />
           </Box>
           <Box display="flex" alignItems="center">
-            <NewGameButton />
-            <GameStateInfo />
+            {gameState === "Ended" && <NewGameButton />}
           </Box>
-          <Board />
+          {(appContext?.showGameBoard || gameState === "Playing") && <Board />}
         </Stack>
       </Container>
     </>

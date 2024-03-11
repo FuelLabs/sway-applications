@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query"
 import { useWallet } from "@fuels/react";
 import { TictactoeContractAbi__factory } from "../contract-types";
 import { TicTacToeQueryKeys } from "../queryKeys";
+import { CONTRACT_ID } from "../config";
 
 export const useGetCurrentPlayer = () => {
     const { wallet, isError, isLoading } = useWallet();
@@ -12,10 +13,11 @@ export const useGetCurrentPlayer = () => {
             if (!wallet) throw new Error(`Cannot get current player if wallet is ${wallet}`);
 
             const contract = TictactoeContractAbi__factory.connect(
-                import.meta.env.VITE_CONTRACT_ID,
+                CONTRACT_ID,
                 wallet
             );
             const result = await contract.functions.get_current_player().simulate();
+            console.log(`result.value`, result.value);
             return result.value ?? null;
         },
         enabled: !!wallet && !isError && !isLoading
