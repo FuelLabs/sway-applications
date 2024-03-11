@@ -7,5 +7,5 @@ export default createConfig({
   useBuiltinFuelCore: true,
   autoStartFuelCore: true,
   chainConfig: "./chainConfig.json",
-  //privateKey: "0x80acb3fa5b95638671fe39747571ccd82f971da8bd26545542edb81c53848552",
+  privateKey: "0xf65d6448a273b531ee942c133bb91a6f904c7d7f3104cdaf6b9f7f50d3518871",
 });
