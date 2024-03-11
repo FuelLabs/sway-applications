@@ -1,16 +1,12 @@
 import { Container, Typography, Stack, CssBaseline, Box } from "@mui/material";
-import {
-  Board,
-  ConnectionInfo,
-  NewGameButton,
-} from "./components";
+import { Toaster } from "react-hot-toast";
+import { Board, ConnectionInfo, NewGameButton } from "./components";
 import { useGetGameState } from "./hooks";
 import { useAppContext } from "./components";
 
 function App() {
   const { gameState } = useGetGameState();
   const appContext = useAppContext();
-  console.log(`appContext`, appContext);
 
   return (
     <>
@@ -30,12 +26,11 @@ function App() {
             </Typography>
             <ConnectionInfo />
           </Box>
-          <Box display="flex" alignItems="center">
-            {gameState === "Ended" && <NewGameButton />}
-          </Box>
+          {gameState === "Ended" && <NewGameButton />}
           {(appContext?.showGameBoard || gameState === "Playing") && <Board />}
         </Stack>
       </Container>
+      <Toaster />
     </>
   );
 }
