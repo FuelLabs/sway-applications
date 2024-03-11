@@ -1,27 +1,24 @@
 import { Grid, Stack, Typography } from "@mui/material";
 
-import { Cell } from ".";
+import { Cell, useAppContext } from ".";
 import { useGetGameBoard } from "../hooks";
-import { useState } from "react";
+import { shortAddress } from "../utils";
 
 export const Board = () => {
-  const { gameBoard } = useGetGameBoard();
-  const [lastGameOutcome, setLastGameOutcome] = useState<
-    boolean | string | undefined
-  >(undefined);
-
-  console.log(`lastGameOutcome`, lastGameOutcome);
+  const { gameBoard, isLoading } = useGetGameBoard();
+  const appContext = useAppContext();
 
   return (
-    <Stack width="100%" alignItems="center">
-      {lastGameOutcome &&
-        (typeof lastGameOutcome === "boolean" ? (
+    <Stack width="100%" alignItems="center" spacing={1}>
+      {appContext?.lastGameOutcome &&
+        (typeof appContext?.lastGameOutcome === "boolean" ? (
           <Typography>Draw!</Typography>
         ) : (
-          <Typography>{`${lastGameOutcome} won!`}</Typography>
+          <Typography fontSize={20}>{`${shortAddress(appContext?.lastGameOutcome)} won!`}</Typography>
         ))}
       <Grid container spacing={2} sx={{ width: "75%" }}>
-        {gameBoard && (
+        {isLoading && <Typography>Loading...</Typography>}
+        {(gameBoard && !isLoading) && (
           <>
             {[...Array(9)].map((_, i) => {
               return (
@@ -29,7 +26,6 @@ export const Board = () => {
                   key={i}
                   boardIndex={i}
                   playerAddress={gameBoard[i]?.Address?.value}
-                  setLastGameOutcome={setLastGameOutcome}
                 />
               );
             })}

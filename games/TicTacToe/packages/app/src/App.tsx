@@ -10,6 +10,7 @@ import { useAppContext } from "./components";
 function App() {
   const { gameState } = useGetGameState();
   const appContext = useAppContext();
+  console.log(`appContext`, appContext);
 
   return (
     <>

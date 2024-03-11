@@ -13,6 +13,7 @@ export const queryClient = new QueryClient();
 type AppContextType = {
   isGameBoardEnabled: boolean;
   showGameBoard: boolean;
+  lastGameOutcome?: boolean | string;
   setAppContext: (appContext: AppContextType) => void;
 } | null;
 

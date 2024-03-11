@@ -34,7 +34,7 @@ export const useNewGame = (player1Address: string, player2Address: string) => {
       await queryClient.invalidateQueries({
         queryKey: [TicTacToeQueryKeys.currentPlayer],
       });
-      appContext?.setAppContext({ ...appContext, showGameBoard: true });
+      appContext?.setAppContext({ ...appContext, showGameBoard: true, lastGameOutcome: undefined });
     },
     onError: (err) => console.error(err),
   });
