@@ -37,10 +37,8 @@ export const Cell = ({ playerAddress, boardIndex }: CellProps) => {
   }, [playerAddress, players]);
 
   useEffect(() => {
-    console.log(`makeMove.data`, makeMove.data);
     if (makeMove.data?.logs.length === 1) {
       const { logs } = makeMove.data;
-      console.log(`logs`, logs);
       if (logs[0].player) {
         appContext?.setAppContext({
           ...appContext,

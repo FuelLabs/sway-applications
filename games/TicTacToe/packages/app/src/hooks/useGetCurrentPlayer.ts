@@ -17,7 +17,6 @@ export const useGetCurrentPlayer = () => {
                 wallet
             );
             const result = await contract.functions.get_current_player().simulate();
-            console.log(`result.value`, result.value);
             return result.value ?? null;
         },
         enabled: !!wallet && !isError && !isLoading
