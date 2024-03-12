@@ -1,5 +1,5 @@
 {
-  "name": "TicTacToe",
+  "name": "sway-applications",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -10,8 +10,8 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@types/node": "^20.11.25",
+    "@types/node": "^20.11.26",
     "turbo": "^1.12.5",
-    "typescript": "^5.4.2"
+    "typescript": "^5.2.2"
   }
 }
