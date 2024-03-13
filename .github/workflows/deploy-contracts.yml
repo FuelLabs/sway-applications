@@ -40,18 +40,18 @@ jobs:
       - uses: n1hility/cancel-previous-runs@v2
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-  
+
   test-inputs:
     runs-on: ubuntu-latest
     steps:
-        - name: Check provider_url format
-          run: |
-            if ! [[ "${{ github.event.inputs.provider_url }}" =~ ^https?:\/\/([a-z0-9\.-]){1,}(:[0-9]{1,4})?\/graphql$ ]]; then
-              echo "Provider url is not valid";
-              process 1;
-            fi
-          shell: bash
-  
+      - name: Check provider_url format
+        run: |
+          if ! [[ "${{ github.event.inputs.provider_url }}" =~ ^https?:\/\/([a-z0-9\.-]){1,}(:[0-9]{1,4})?\/graphql$ ]]; then
+            echo "Provider url is not valid";
+            process 1;
+          fi
+        shell: bash
+
   build-and-deploy:
     needs: test-inputs
     name: Build and deploy contracts
@@ -59,10 +59,7 @@ jobs:
 
     strategy:
       matrix:
-        project:
-          [
-            "games/TicTacToe/frontend-app",
-          ]
+        project: ["games/TicTacToe/frontend-app"]
 
     steps:
       - name: Checkout repository
@@ -89,18 +86,17 @@ jobs:
         run: |
           cd ${{ matrix.project }}
           pnpm fuels build
-      
+
       - name: Deploy contracts
         run: |
           cd ${{ matrix.project }}
           pnpm fuels deploy
         env:
           NODE_ENV: production
-      
+
       - name: Commit new contract ids
         if: ${{ github.event.inputs.commit_changes && github.ref != 'refs/heads/master' }}
         uses: EndBug/add-and-commit@v9
         with:
-          message: 'chore: update contract ids'
+          message: "chore: update contract ids"
           add: ${{ matrix.project }}/production-contract/contract-ids.json
-      
