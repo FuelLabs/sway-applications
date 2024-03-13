@@ -54,9 +54,7 @@ In order to run the subsequent commands change into the following directory `/pa
 
 ```bash
 pnpm install
-pnpm build
-pnpm fuels dev
-pnpm dev
+pnpm project-setup
 ```
 
 You will need to install the [Fuel wallet](https://wallet.fuel.network/docs/install/) in order to interact with the application. Now you can open your browser and interact with the tic-tac-toe contract through the frontend.  To play connect two of your wallet accounts and switch between them so each can take their turn.  If you want to run this locally you will need to modify the `chainConfig.json` file to fund your wallet locally.  Add your wallet address and give it some amount of asset id 0x0000...0000.
