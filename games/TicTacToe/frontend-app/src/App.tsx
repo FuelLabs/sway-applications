@@ -1,6 +1,6 @@
 import { Container, Typography, Stack, CssBaseline, Box } from "@mui/material";
 import { Toaster } from "react-hot-toast";
-import { useProvider } from "@fuels/react";
+import { useProvider, useIsConnected } from "@fuels/react";
 import { Board, ConnectionInfo, NewGameButton } from "./components";
 import { useGetGameState } from "./hooks";
 import { useAppContext } from "./components";
@@ -10,6 +10,12 @@ function App() {
   const { gameState } = useGetGameState();
   const appContext = useAppContext();
   const { provider, isLoading, isError } = useProvider();
+  const { isConnected, isLoading: isConnectedLoading } = useIsConnected();
+
+  console.log(`gameState`, gameState);
+
+  const showProviderError =
+    (!isLoading && provider && provider.url !== PROVIDER_URL) || isError;
 
   return (
     <>
@@ -29,10 +35,11 @@ function App() {
             </Typography>
             <ConnectionInfo />
           </Box>
-          {((!isLoading && provider && provider.url !== PROVIDER_URL) ||
-            isError) && (
+          {isConnected === false && !isConnectedLoading ? (
+            <Typography fontSize="20px">{`Your wallet is not connected to the app.  Please press the connect button and connect your wallet.`}</Typography>
+          ) : showProviderError ? (
             <Typography fontSize="20px">{`Your wallet is not connected to the correct network.  Please connect to ${PROVIDER_URL}`}</Typography>
-          )}
+          ) : null}
           {gameState === "Ended" && <NewGameButton />}
           {(appContext?.showGameBoard || gameState === "Playing") && <Board />}
         </Stack>
