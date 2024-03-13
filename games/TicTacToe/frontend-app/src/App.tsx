@@ -1,12 +1,23 @@
 import { Container, Typography, Stack, CssBaseline, Box } from "@mui/material";
-import { Toaster } from "react-hot-toast";
+import toast, { Toaster } from "react-hot-toast";
+import { useProvider } from "@fuels/react";
 import { Board, ConnectionInfo, NewGameButton } from "./components";
 import { useGetGameState } from "./hooks";
 import { useAppContext } from "./components";
+import { PROVIDER_URL } from "./config";
+import { useEffect } from "react";
 
 function App() {
   const { gameState } = useGetGameState();
   const appContext = useAppContext();
+  const { provider, isLoading } = useProvider();
+
+
+  useEffect(() => {
+    if (!isLoading && provider && provider.url !== PROVIDER_URL) {
+      toast.error(`Your wallet is not connected to the correct network.  Please connect to ${PROVIDER_URL}`);
+    }
+  }, [provider, isLoading]);
 
   return (
     <>

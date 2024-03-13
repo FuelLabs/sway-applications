@@ -30,15 +30,14 @@ The project consists of a smart contract.
 
 ```sh
 TicTacToe
-├── packages
-├────── project
+├── project
 │   ├────── contracts
 │   │   └────── tictactoe-contract
 │   │       ├────── src/main.sw
 │   │       └────── tests/harness.rs
 │   ├────── README.md
 │   └────── SPECIFICATION.md
-├────── app
+├── app
 │   ├────── package.json
 │   ├────── index.html
 │   └────── src/main.tsx
@@ -60,7 +59,7 @@ pnpm fuels dev
 pnpm dev
 ```
 
-You will need to install the [Fuel wallet](https://wallet.fuel.network/docs/install/) in order to interact with the application. Now you can open your browser and interact with the tic-tac-toe contract through the frontend.
+You will need to install the [Fuel wallet](https://wallet.fuel.network/docs/install/) in order to interact with the application. Now you can open your browser and interact with the tic-tac-toe contract through the frontend.  To play connect two of your wallet accounts and switch between them so each can take their turn.  If you want to run this locally you will need to modify the `chainConfig.json` file to fund your wallet locally.  Add your wallet address and give it some amount of asset id 0x0000...0000.
 
 ### Project
 

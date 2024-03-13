@@ -11,7 +11,7 @@ export const useGetGameState = () => {
     const query = useQuery({
         queryKey: [TicTacToeQueryKeys.gameState],
         queryFn: async () => {
-            if (!wallet) throw new Error(`Cannot get game state if the walelt is ${wallet}`);
+            if (!wallet) throw new Error(`Cannot get game state if the wallet is ${wallet}`);
 
             const contract = TictactoeContractAbi__factory.connect(
                 CONTRACT_ID,

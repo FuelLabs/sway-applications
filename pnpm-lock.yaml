@@ -25,7 +25,7 @@ importers:
         specifier: ^5.2.2
         version: 5.4.2
 
-  games/TicTacToe/app:
+  games/TicTacToe/frontend-app:
     dependencies:
       '@emotion/react':
         specifier: ^11.11.4
