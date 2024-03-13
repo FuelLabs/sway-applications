@@ -63,10 +63,10 @@ jobs:
 
     steps:
       - name: Checkout repository
-      - uses: actions/checkout@v3
+        uses: actions/checkout@v3
 
       - name: Install rust toolchain
-      - uses: dtolnay/rust-toolchain@master
+        uses: dtolnay/rust-toolchain@master
         with:
           toolchain: ${{ env.RUST_VERSION }}
 
