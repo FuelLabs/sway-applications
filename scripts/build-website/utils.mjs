@@ -26,7 +26,7 @@ export function setEnv() {
     // Log env vars
     console.log("Output urls:");
     console.log("BASE_URL", process.env.BASE_URL);
-    console.log("TICTACTOE_URL", process.env.TICTACTOE_URL);
+    console.log("TICTACTOE_BASE_URL", process.env.TICTACTOE_BASE_URL);
 }
 
 export async function runPnpmCommand(commands) {
@@ -36,5 +36,6 @@ export async function runPnpmCommand(commands) {
 export async function buildWebsite() {
     fs.rmSync(DIST_FOLDER, { recursive: true, force: true });
     await runPnpmCommand(["build:all", "--force", "--no-cache"]);
+    fs.cpSync(join(ROOT_PATH, "index.html"), join(DIST_FOLDER, "index.html"));
 }
 
