@@ -1,0 +1,106 @@
+name: "Deploy Contracts"
+
+on:
+  workflow_dispatch:
+    inputs:
+      provider_url:
+        description: "Provider url"
+        required: true
+        default: "https://beta-5.fuel.network/graphql"
+        type: string
+      wallet_secret:
+        description: "Wallet secret used to deploy contracts"
+        required: true
+        type: string
+      gas_price:
+        description: "Min gas price required from the provider"
+        required: true
+        default: 1
+        type: number
+      commit_changes:
+        description: "Commit contract ids on the current branch"
+        required: true
+        default: true
+        type: boolean
+
+env:
+  RUST_VERSION: 1.74.0
+  NODE_VERSION: 18
+  PNPM_VERSION: 8
+  WALLET_SECRET: ${{ github.event.inputs.wallet_secret }}
+  PROVIDER_URL: ${{ github.event.inputs.provider_url }}
+  GAS_PRICE: ${{ github.event.inputs.gas_price }}
+
+jobs:
+  cancel-previous-run:
+    name: Cancel previous actions
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: n1hility/cancel-previous-runs@v2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+  
+  test-inputs:
+    runs-on: ubuntu-latest
+    steps:
+        - name: Check provider_url format
+          run: |
+            if ! [[ "${{ github.event.inputs.provider_url }}" =~ ^https?:\/\/([a-z0-9\.-]){1,}(:[0-9]{1,4})?\/graphql$ ]]; then
+              echo "Provider url is not valid";
+              process 1;
+            fi
+          shell: bash
+  
+  build-and-deploy:
+    needs: test-inputs
+    name: Build and deploy contracts
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        project:
+          [
+            "games/TicTacToe/frontend-app",
+          ]
+
+    steps:
+      - name: Checkout repository
+      - uses: actions/checkout@v3
+
+      - name: Install rust toolchain
+      - uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: ${{ env.RUST_VERSION }}
+
+      - name: Install Fuel toolchain
+        uses: FuelLabs/action-fuel-toolchain@v0.6.0
+        with:
+          toolchain: nightly
+          date: 2024-01-24
+
+      - name: PNPM install
+        id: pnpm-cache
+        run: |
+          cd ${{ matrix.project }}
+          pnpm recursive install --frozen-lockfile
+
+      - name: Build contracts
+        run: |
+          cd ${{ matrix.project }}
+          pnpm fuels build
+      
+      - name: Deploy contracts
+        run: |
+          cd ${{ matrix.project }}
+          pnpm fuels deploy
+        env:
+          NODE_ENV: production
+      
+      - name: Commit new contract ids
+        if: ${{ github.event.inputs.commit_changes && github.ref != 'refs/heads/master' }}
+        uses: EndBug/add-and-commit@v9
+        with:
+          message: 'chore: update contract ids'
+          add: ${{ matrix.project }}/production-contract/contract-ids.json
+      
