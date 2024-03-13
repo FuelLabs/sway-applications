@@ -1,4 +1,4 @@
-name: "Deploy Contracts"
+name: Deploy Contracts
 
 on:
   workflow_dispatch:
