@@ -14,8 +14,8 @@ function setEnvVar(key, value) {
 // We need to set a path to the build and a url for each frontend
 export function setEnv() {
     // Website urls
-    setEnvVar('BASE_URL', '');
-    setEnvVar("TICTACTOE_URL", TICTACTOE_APP_PATH);
+    setEnvVar('TICTACTOE_BASE_URL', TICTACTOE_APP_PATH);
+    //setEnvVar("TICTACTOE_URL", TICTACTOE_APP_PATH);
     // Dist folders
     setEnvVar("TICTACTOE_DIST", join(DIST_FOLDER, TICTACTOE_APP_PATH));
     // TODO do we need to set next env vars?
