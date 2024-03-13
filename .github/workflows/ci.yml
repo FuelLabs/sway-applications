@@ -47,7 +47,7 @@ jobs:
             "DAO",
             "escrow",
             "fundraiser",
-            "games/TicTacToe/packages",
+            "games/TicTacToe",
             "multisig-wallet",
             "name-registry",
             "native-assets/NFT",
