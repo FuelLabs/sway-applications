@@ -35,7 +35,6 @@ export async function runPnpmCommand(commands) {
 
 export async function buildWebsite() {
     fs.rmSync(DIST_FOLDER, { recursive: true, force: true });
-    await runPnpmCommand(["build:preview", "--force", "--no-cache"]);
     await runPnpmCommand(["build:all", "--force", "--no-cache"]);
 }
 

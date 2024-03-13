@@ -13,11 +13,7 @@
       },
       "build:all": {
         "dependsOn": ["^build"],
-        "outputs": ["dist/**"]
-      },
-      "build:preview": {
-        "dependsOn": ["^build"],
-        "outputs": ["./dist/"]
+        "outputs": ["dist/**", "./dist"]
       }
     }
   }
