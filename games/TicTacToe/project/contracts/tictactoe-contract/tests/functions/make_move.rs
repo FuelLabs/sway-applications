@@ -62,7 +62,7 @@ mod success {
     }
 
     #[tokio::test]
-    async fn when_player_one_wins_in_game_with_one_address() { 
+    async fn when_player_one_wins_in_game_with_one_address() {
         let (player_one, _) = setup().await;
         new_game(
             &player_one.contract,
@@ -89,7 +89,7 @@ mod success {
     }
 
     #[tokio::test]
-    async fn when_player_two_wins_in_game_with_one_address() { 
+    async fn when_player_two_wins_in_game_with_one_address() {
         let (_, player_two) = setup().await;
         new_game(
             &player_two.contract,
