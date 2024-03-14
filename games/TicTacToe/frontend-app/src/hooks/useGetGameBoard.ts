@@ -8,7 +8,7 @@ export const useGetGameBoard = () => {
   const { wallet, isError, isLoading } = useWallet();
 
   const query = useQuery({
-    queryKey: [TicTacToeQueryKeys.gameBoard],
+    queryKey: [TicTacToeQueryKeys.gameBoard, wallet?.provider.url],
     queryFn: async () => {
       if (!wallet)
         throw new Error(`Cannot get game board if wallet is ${wallet}`);

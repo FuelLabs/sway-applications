@@ -1,10 +1,10 @@
 import { useAccounts } from "@fuels/react";
-import { useGetCurrentPlayer } from ".";
-import { Address } from "fuels";
+import { useGetCurrentPlayer, useGetMoveCounter } from ".";
 
 export const useGetPlayers = () => {
   const { accounts } = useAccounts();
   const { currentPlayer } = useGetCurrentPlayer();
+  const { moveCounter } = useGetMoveCounter();
 
   let players: string[] = [];
   if (accounts.length === 1) {
@@ -13,9 +13,9 @@ export const useGetPlayers = () => {
     players = [accounts[0], accounts[1]];
   }
   const isPlayer1Turn =
-    accounts.length > 0 && !!currentPlayer
-      ? currentPlayer?.Address?.value ===
-        Address.fromString(accounts[0]).toHexString()
+    accounts.length > 0 && !!currentPlayer && !!moveCounter
+      ? moveCounter.toNumber() % 2 === 0
       : undefined;
-  return { players, isPlayer1Turn };
+
+  return { players, isPlayer1Turn, currentPlayer };
 };

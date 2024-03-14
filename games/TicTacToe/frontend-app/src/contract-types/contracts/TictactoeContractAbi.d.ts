@@ -49,6 +49,7 @@ interface TictactoeContractAbiInterface extends Interface {
     get_board: FunctionFragment;
     get_current_player: FunctionFragment;
     get_game_state: FunctionFragment;
+    get_move_counter: FunctionFragment;
     get_players: FunctionFragment;
     make_move: FunctionFragment;
     new_game: FunctionFragment;
@@ -57,6 +58,7 @@ interface TictactoeContractAbiInterface extends Interface {
   encodeFunctionData(functionFragment: 'get_board', values: []): Uint8Array;
   encodeFunctionData(functionFragment: 'get_current_player', values: []): Uint8Array;
   encodeFunctionData(functionFragment: 'get_game_state', values: []): Uint8Array;
+  encodeFunctionData(functionFragment: 'get_move_counter', values: []): Uint8Array;
   encodeFunctionData(functionFragment: 'get_players', values: []): Uint8Array;
   encodeFunctionData(functionFragment: 'make_move', values: [BigNumberish]): Uint8Array;
   encodeFunctionData(functionFragment: 'new_game', values: [IdentityInput, IdentityInput]): Uint8Array;
@@ -64,6 +66,7 @@ interface TictactoeContractAbiInterface extends Interface {
   decodeFunctionData(functionFragment: 'get_board', data: BytesLike): DecodedValue;
   decodeFunctionData(functionFragment: 'get_current_player', data: BytesLike): DecodedValue;
   decodeFunctionData(functionFragment: 'get_game_state', data: BytesLike): DecodedValue;
+  decodeFunctionData(functionFragment: 'get_move_counter', data: BytesLike): DecodedValue;
   decodeFunctionData(functionFragment: 'get_players', data: BytesLike): DecodedValue;
   decodeFunctionData(functionFragment: 'make_move', data: BytesLike): DecodedValue;
   decodeFunctionData(functionFragment: 'new_game', data: BytesLike): DecodedValue;
@@ -72,9 +75,10 @@ interface TictactoeContractAbiInterface extends Interface {
 export class TictactoeContractAbi extends Contract {
   interface: TictactoeContractAbiInterface;
   functions: {
-    get_board: InvokeFunction<[], Vec<Option<IdentityOutput>>>;
+    get_board: InvokeFunction<[], Vec<Option<boolean>>>;
     get_current_player: InvokeFunction<[], Option<IdentityOutput>>;
     get_game_state: InvokeFunction<[], StateOutput>;
+    get_move_counter: InvokeFunction<[], BN>;
     get_players: InvokeFunction<[], Option<[IdentityOutput, IdentityOutput]>>;
     make_move: InvokeFunction<[position: BigNumberish], void>;
     new_game: InvokeFunction<[player_one: IdentityInput, player_two: IdentityInput], void>;

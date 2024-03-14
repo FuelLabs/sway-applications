@@ -27,12 +27,12 @@ const _abi = {
       "components": [
         {
           "name": "__tuple_element",
-          "type": 4,
+          "type": 5,
           "typeArguments": null
         },
         {
           "name": "__tuple_element",
-          "type": 4,
+          "type": 5,
           "typeArguments": null
         }
       ],
@@ -46,6 +46,12 @@ const _abi = {
     },
     {
       "typeId": 3,
+      "type": "bool",
+      "components": null,
+      "typeParameters": null
+    },
+    {
+      "typeId": 4,
       "type": "enum GameStateError",
       "components": [
         {
@@ -62,24 +68,24 @@ const _abi = {
       "typeParameters": null
     },
     {
-      "typeId": 4,
+      "typeId": 5,
       "type": "enum Identity",
       "components": [
         {
           "name": "Address",
-          "type": 11,
+          "type": 12,
           "typeArguments": null
         },
         {
           "name": "ContractId",
-          "type": 12,
+          "type": 13,
           "typeArguments": null
         }
       ],
       "typeParameters": null
     },
     {
-      "typeId": 5,
+      "typeId": 6,
       "type": "enum Option",
       "components": [
         {
@@ -89,16 +95,16 @@ const _abi = {
         },
         {
           "name": "Some",
-          "type": 9,
+          "type": 10,
           "typeArguments": null
         }
       ],
       "typeParameters": [
-        9
+        10
       ]
     },
     {
-      "typeId": 6,
+      "typeId": 7,
       "type": "enum PlayerError",
       "components": [
         {
@@ -110,7 +116,7 @@ const _abi = {
       "typeParameters": null
     },
     {
-      "typeId": 7,
+      "typeId": 8,
       "type": "enum PositionError",
       "components": [
         {
@@ -127,7 +133,7 @@ const _abi = {
       "typeParameters": null
     },
     {
-      "typeId": 8,
+      "typeId": 9,
       "type": "enum State",
       "components": [
         {
@@ -144,19 +150,19 @@ const _abi = {
       "typeParameters": null
     },
     {
-      "typeId": 9,
+      "typeId": 10,
       "type": "generic T",
       "components": null,
       "typeParameters": null
     },
     {
-      "typeId": 10,
+      "typeId": 11,
       "type": "raw untyped ptr",
       "components": null,
       "typeParameters": null
     },
     {
-      "typeId": 11,
+      "typeId": 12,
       "type": "struct Address",
       "components": [
         {
@@ -168,7 +174,7 @@ const _abi = {
       "typeParameters": null
     },
     {
-      "typeId": 12,
+      "typeId": 13,
       "type": "struct ContractId",
       "components": [
         {
@@ -180,29 +186,17 @@ const _abi = {
       "typeParameters": null
     },
     {
-      "typeId": 13,
+      "typeId": 14,
       "type": "struct GameDrawnEvent",
       "components": [
         {
           "name": "player_one",
-          "type": 4,
+          "type": 5,
           "typeArguments": null
         },
         {
           "name": "player_two",
-          "type": 4,
-          "typeArguments": null
-        }
-      ],
-      "typeParameters": null
-    },
-    {
-      "typeId": 14,
-      "type": "struct GameWonEvent",
-      "components": [
-        {
-          "name": "player",
-          "type": 4,
+          "type": 5,
           "typeArguments": null
         }
       ],
@@ -210,16 +204,11 @@ const _abi = {
     },
     {
       "typeId": 15,
-      "type": "struct NewGameEvent",
+      "type": "struct GameWonEvent",
       "components": [
         {
-          "name": "player_one",
-          "type": 4,
-          "typeArguments": null
-        },
-        {
-          "name": "player_two",
-          "type": 4,
+          "name": "player",
+          "type": 5,
           "typeArguments": null
         }
       ],
@@ -227,50 +216,67 @@ const _abi = {
     },
     {
       "typeId": 16,
+      "type": "struct NewGameEvent",
+      "components": [
+        {
+          "name": "player_one",
+          "type": 5,
+          "typeArguments": null
+        },
+        {
+          "name": "player_two",
+          "type": 5,
+          "typeArguments": null
+        }
+      ],
+      "typeParameters": null
+    },
+    {
+      "typeId": 17,
       "type": "struct RawVec",
       "components": [
         {
           "name": "ptr",
-          "type": 10,
+          "type": 11,
           "typeArguments": null
         },
         {
           "name": "cap",
-          "type": 18,
+          "type": 19,
           "typeArguments": null
         }
       ],
       "typeParameters": [
-        9
+        10
       ]
     },
     {
-      "typeId": 17,
+      "typeId": 18,
       "type": "struct Vec",
       "components": [
         {
           "name": "buf",
-          "type": 16,
+          "type": 17,
           "typeArguments": [
             {
               "name": "",
-              "type": 9,
+              "type": 10,
               "typeArguments": null
             }
           ]
         },
         {
           "name": "len",
-          "type": 18,
+          "type": 19,
           "typeArguments": null
         }
       ],
       "typeParameters": [
-        9
+        10
       ]
     },
     {
-      "typeId": 18,
+      "typeId": 19,
       "type": "u64",
       "components": null,
       "typeParameters": null
@@ -282,15 +288,15 @@ const _abi = {
       "name": "get_board",
       "output": {
         "name": "",
-        "type": 17,
+        "type": 18,
         "typeArguments": [
           {
             "name": "",
-            "type": 5,
+            "type": 6,
             "typeArguments": [
               {
                 "name": "",
-                "type": 4,
+                "type": 3,
                 "typeArguments": null
               }
             ]
@@ -311,11 +317,11 @@ const _abi = {
       "name": "get_current_player",
       "output": {
         "name": "",
-        "type": 5,
+        "type": 6,
         "typeArguments": [
           {
             "name": "",
-            "type": 4,
+            "type": 5,
             "typeArguments": null
           }
         ]
@@ -334,7 +340,24 @@ const _abi = {
       "name": "get_game_state",
       "output": {
         "name": "",
-        "type": 8,
+        "type": 9,
+        "typeArguments": null
+      },
+      "attributes": [
+        {
+          "name": "storage",
+          "arguments": [
+            "read"
+          ]
+        }
+      ]
+    },
+    {
+      "inputs": [],
+      "name": "get_move_counter",
+      "output": {
+        "name": "",
+        "type": 19,
         "typeArguments": null
       },
       "attributes": [
@@ -351,7 +374,7 @@ const _abi = {
       "name": "get_players",
       "output": {
         "name": "",
-        "type": 5,
+        "type": 6,
         "typeArguments": [
           {
             "name": "",
@@ -373,7 +396,7 @@ const _abi = {
       "inputs": [
         {
           "name": "position",
-          "type": 18,
+          "type": 19,
           "typeArguments": null
         }
       ],
@@ -397,12 +420,12 @@ const _abi = {
       "inputs": [
         {
           "name": "player_one",
-          "type": 4,
+          "type": 5,
           "typeArguments": null
         },
         {
           "name": "player_two",
-          "type": 4,
+          "type": 5,
           "typeArguments": null
         }
       ],
@@ -428,7 +451,7 @@ const _abi = {
       "logId": 0,
       "loggedType": {
         "name": "",
-        "type": 3,
+        "type": 4,
         "typeArguments": []
       }
     },
@@ -436,7 +459,7 @@ const _abi = {
       "logId": 1,
       "loggedType": {
         "name": "",
-        "type": 6,
+        "type": 7,
         "typeArguments": []
       }
     },
@@ -444,7 +467,7 @@ const _abi = {
       "logId": 2,
       "loggedType": {
         "name": "",
-        "type": 7,
+        "type": 8,
         "typeArguments": []
       }
     },
@@ -452,7 +475,7 @@ const _abi = {
       "logId": 3,
       "loggedType": {
         "name": "",
-        "type": 7,
+        "type": 8,
         "typeArguments": []
       }
     },
@@ -460,7 +483,7 @@ const _abi = {
       "logId": 4,
       "loggedType": {
         "name": "",
-        "type": 14,
+        "type": 15,
         "typeArguments": []
       }
     },
@@ -468,7 +491,7 @@ const _abi = {
       "logId": 5,
       "loggedType": {
         "name": "",
-        "type": 13,
+        "type": 14,
         "typeArguments": []
       }
     },
@@ -476,7 +499,7 @@ const _abi = {
       "logId": 6,
       "loggedType": {
         "name": "",
-        "type": 3,
+        "type": 4,
         "typeArguments": []
       }
     },
@@ -484,7 +507,7 @@ const _abi = {
       "logId": 7,
       "loggedType": {
         "name": "",
-        "type": 15,
+        "type": 16,
         "typeArguments": []
       }
     }

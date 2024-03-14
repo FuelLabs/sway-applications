@@ -1,32 +1,29 @@
 import { Card, CardActionArea, Grid, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
-import { useGetCurrentPlayer, useGetPlayers, useMakeMove } from "../hooks";
+import { useGetPlayers, useMakeMove } from "../hooks";
 import { Address } from "fuels";
 import { useAppContext } from ".";
 import { useAccount } from "@fuels/react";
 import { toast } from "react-hot-toast";
 
 type CellProps = {
-  playerAddress?: string;
+  isPlayer1?: boolean;
   boardIndex: number;
 };
 
-export const Cell = ({ playerAddress, boardIndex }: CellProps) => {
+export const Cell = ({ isPlayer1, boardIndex }: CellProps) => {
   const [text, setText] = useState<"X" | "O" | null>();
   const makeMove = useMakeMove(boardIndex);
   // TODO we call this 9 times (once for every cell), could be improved
-  const { players } = useGetPlayers();
+  const { players, currentPlayer } = useGetPlayers();
   const { account } = useAccount();
-  const { currentPlayer } = useGetCurrentPlayer();
   const appContext = useAppContext();
 
   useEffect(() => {
     if (players.length === 2) {
-      if (playerAddress === Address.fromString(players[0]).toHexString()) {
+      if (isPlayer1) {
         setText("X");
-      } else if (
-        playerAddress === Address.fromString(players[1]).toHexString()
-      ) {
+      } else if (!isPlayer1 && isPlayer1 !== undefined) {
         setText("O");
       } else {
         setText(null);
@@ -34,7 +31,7 @@ export const Cell = ({ playerAddress, boardIndex }: CellProps) => {
     } else {
       setText(null);
     }
-  }, [playerAddress, players]);
+  }, [players, isPlayer1]);
 
   useEffect(() => {
     if (makeMove.data?.logs.length === 1) {

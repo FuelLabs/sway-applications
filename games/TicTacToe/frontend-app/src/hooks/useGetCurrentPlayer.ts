@@ -8,7 +8,7 @@ export const useGetCurrentPlayer = () => {
     const { wallet, isError, isLoading } = useWallet();
 
     const query = useQuery({
-        queryKey: [TicTacToeQueryKeys.currentPlayer],
+        queryKey: [TicTacToeQueryKeys.currentPlayer, wallet?.provider.url],
         queryFn: async () => {
             if (!wallet) throw new Error(`Cannot get current player if wallet is ${wallet}`);
 

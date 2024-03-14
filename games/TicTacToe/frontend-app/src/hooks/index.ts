@@ -4,3 +4,4 @@ export * from "./useGetCurrentPlayer";
 export * from "./useGetGameState";
 export * from "./useGetGameBoard";
 export * from "./useMakeMove";
+export * from "./useGetMoveCounter";

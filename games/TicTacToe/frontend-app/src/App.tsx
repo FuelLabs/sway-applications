@@ -12,8 +12,6 @@ function App() {
   const { provider, isLoading, isError } = useProvider();
   const { isConnected, isLoading: isConnectedLoading } = useIsConnected();
 
-  console.log(`gameState`, gameState);
-
   const showProviderError =
     (!isLoading && provider && provider.url !== PROVIDER_URL) || isError;
 

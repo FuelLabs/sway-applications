@@ -28,7 +28,7 @@ export const Board = () => {
                 <Cell
                   key={i}
                   boardIndex={i}
-                  playerAddress={gameBoard[i]?.Address?.value}
+                  isPlayer1={gameBoard[i]}
                 />
               );
             })}

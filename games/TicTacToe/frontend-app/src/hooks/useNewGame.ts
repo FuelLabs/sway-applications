@@ -2,7 +2,6 @@ import { useWallet } from "@fuels/react";
 import { useMutation } from "@tanstack/react-query";
 import { TictactoeContractAbi__factory } from "../contract-types";
 import { queryClient, useAppContext } from "../components";
-import { TicTacToeQueryKeys } from "../queryKeys";
 import { CONTRACT_ID } from "../config";
 
 export const useNewGame = (player1Address: string, player2Address: string) => {
@@ -25,16 +24,12 @@ export const useNewGame = (player1Address: string, player2Address: string) => {
         .call();
     },
     onSuccess: async () => {
-      await queryClient.invalidateQueries({
-        queryKey: [TicTacToeQueryKeys.gameBoard],
+      await queryClient.invalidateQueries();
+      appContext?.setAppContext({
+        ...appContext,
+        showGameBoard: true,
+        lastGameOutcome: undefined,
       });
-      await queryClient.invalidateQueries({
-        queryKey: [TicTacToeQueryKeys.gameState],
-      });
-      await queryClient.invalidateQueries({
-        queryKey: [TicTacToeQueryKeys.currentPlayer],
-      });
-      appContext?.setAppContext({ ...appContext, showGameBoard: true, lastGameOutcome: undefined });
     },
     onError: (err) => console.error(err),
   });

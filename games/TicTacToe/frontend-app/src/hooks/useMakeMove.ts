@@ -3,7 +3,6 @@ import { useMutation } from "@tanstack/react-query";
 import { useWallet } from "@fuels/react";
 import { TictactoeContractAbi__factory } from "../contract-types";
 import { queryClient } from "../components";
-import { TicTacToeQueryKeys } from "../queryKeys";
 import { CONTRACT_ID } from "../config";
 
 export const useMakeMove = (position: number) => {
@@ -21,15 +20,7 @@ export const useMakeMove = (position: number) => {
       return result;
     },
     onSuccess: async () => {
-      await queryClient.invalidateQueries({
-        queryKey: [TicTacToeQueryKeys.gameBoard],
-      });
-      await queryClient.invalidateQueries({
-        queryKey: [TicTacToeQueryKeys.gameState],
-      });
-      await queryClient.invalidateQueries({
-        queryKey: [TicTacToeQueryKeys.currentPlayer],
-      });
+      await queryClient.invalidateQueries();
     },
     onError: (err) => {
       console.error(err);
