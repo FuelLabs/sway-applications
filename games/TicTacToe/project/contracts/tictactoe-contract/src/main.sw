@@ -16,7 +16,7 @@ use ::utils::{draw, win_check};
 
 storage {
     /// Keeps track of each player move by whether or not the player was player 1.
-    board: StorageVec<Option<(bool)>> = StorageVec {},
+    board: StorageVec<Option<bool>> = StorageVec {},
     /// Keeps track of the move counter for various checks (win, draw, etc.).
     move_counter: u64 = 0,
     /// The first player of the game.
