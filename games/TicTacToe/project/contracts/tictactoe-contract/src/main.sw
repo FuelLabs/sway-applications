@@ -86,10 +86,10 @@ impl Game for Contract {
         );
 
         let last_move_counter = storage.move_counter.read();
-        let isPlayer1 = last_move_counter % 2 == 0;
+        let is_player_one = last_move_counter % 2 == 0;
 
         // Make the move and update the board
-        storage.board.set(position, Some(isPlayer1));
+        storage.board.set(position, Some(is_player_one));
 
         // Update number of moves
         storage.move_counter.write(last_move_counter + 1);
@@ -109,7 +109,7 @@ impl Game for Contract {
         if (current_move_counter > 4) {
             let mut board = storage.board.load_vec();
 
-            if win_check(board, current_player == player_one) {
+            if win_check(board, is_player_one) {
                 storage.state.write(State::Ended);
                 log(GameWonEvent {
                     player: msg_sender().unwrap(),
