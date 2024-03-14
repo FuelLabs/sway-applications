@@ -20,7 +20,7 @@ export const useGetGameBoard = () => {
       const result = await contract.functions.get_board().simulate();
       return result.value ?? null;
     },
-    enabled: !!wallet && !isError && !isLoading
+    enabled: !!wallet && !isError && !isLoading,
   });
 
   return { ...query, gameBoard: query.data };

@@ -15,6 +15,8 @@ function App() {
   const showProviderError =
     (!isLoading && provider && provider.url !== PROVIDER_URL) || isError;
 
+  console.log(`appContext`, appContext);
+
   return (
     <>
       <CssBaseline />
@@ -39,7 +41,7 @@ function App() {
             <Typography fontSize="20px">{`Your wallet is not connected to the correct network.  Please connect to ${PROVIDER_URL}`}</Typography>
           ) : null}
           {gameState === "Ended" && <NewGameButton />}
-          {(appContext?.showGameBoard || gameState === "Playing") && <Board />}
+          {(appContext?.appContextData.showGameBoard || gameState === "Playing") && <Board />}
         </Stack>
       </Container>
       <Toaster />

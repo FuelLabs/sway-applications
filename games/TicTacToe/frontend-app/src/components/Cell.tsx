@@ -38,13 +38,13 @@ export const Cell = ({ isPlayer1, boardIndex }: CellProps) => {
       const { logs } = makeMove.data;
       if (logs[0].player) {
         appContext?.setAppContext({
-          ...appContext,
+          ...appContext.appContextData,
           lastGameOutcome: logs[0].player.Address.value,
           isGameBoardEnabled: false,
         });
       } else {
         appContext?.setAppContext({
-          ...appContext,
+          ...appContext.appContextData,
           lastGameOutcome: true,
           isGameBoardEnabled: false,
         });
@@ -75,7 +75,7 @@ export const Cell = ({ isPlayer1, boardIndex }: CellProps) => {
               makeMove.mutate();
             }
           }}
-          disabled={text !== null && !appContext?.isGameBoardEnabled}
+          disabled={text !== null || !appContext?.appContextData.isGameBoardEnabled}
         >
           <Typography sx={{ fontSize: "150px" }}>{text}</Typography>
         </CardActionArea>

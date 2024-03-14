@@ -28,6 +28,7 @@ export const useNewGame = (player1Address: string, player2Address: string) => {
       appContext?.setAppContext({
         ...appContext,
         showGameBoard: true,
+        isGameBoardEnabled: true,
         lastGameOutcome: undefined,
       });
     },
