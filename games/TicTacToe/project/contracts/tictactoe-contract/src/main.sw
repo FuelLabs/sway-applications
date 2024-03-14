@@ -114,8 +114,7 @@ impl Game for Contract {
                 log(GameWonEvent {
                     player: msg_sender().unwrap(),
                 });
-            } else if draw(board, current_move_counter)
-            {
+            } else if draw(board, current_move_counter) {
                 storage.state.write(State::Ended);
                 log(GameDrawnEvent {
                     player_one,
