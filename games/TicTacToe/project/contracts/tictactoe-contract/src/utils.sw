@@ -46,10 +46,7 @@ pub fn win_check(board: Vec<Option<bool>>, is_player1: bool) -> bool {
 /// # Returns
 ///
 /// * [bool] - True if the game has ended in a draw, false otherwise.
-pub fn draw(
-    board: Vec<Option<bool>>,
-    move_counter: u64,
-) -> bool {
+pub fn draw(board: Vec<Option<bool>>, move_counter: u64) -> bool {
     if move_counter != 9 {
         return false;
     }
