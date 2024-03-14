@@ -55,7 +55,7 @@ abi Game {
     ///
     /// * Reads - `1`
     #[storage(read)]
-    fn get_board() -> Vec<Option<Identity>>;
+    fn get_board() -> Vec<Option<bool>>;
 
     /// Returns the current state of the game.
     ///
@@ -92,4 +92,16 @@ abi Game {
     /// * Reads - `3`
     #[storage(read)]
     fn get_players() -> Option<(Identity, Identity)>;
+
+    /// Returns the number of moves made in the current game.
+    ///
+    /// # Returns
+    ///
+    /// * [u64] - The number of moves in the game
+    ///
+    /// # Number of Storage Accesses
+    ///
+    /// * Reads - `1`
+    #[storage(read)]
+    fn get_move_counter() -> u64;
 }
