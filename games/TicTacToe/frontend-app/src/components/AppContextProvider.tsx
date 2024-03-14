@@ -1,6 +1,6 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useState } from "react";
 import type { ReactNode } from "react";
-import { useGetGameBoard } from "../hooks";
+import { useGetGameBoard, useGetGameState } from "../hooks";
 
 type AppContextObject = {
   isGameBoardEnabled: boolean;
@@ -24,24 +24,28 @@ type AppContextProviderProps = {
 };
 
 export const AppContextProvider = ({ children }: AppContextProviderProps) => {
-  const { gameBoard } = useGetGameBoard();
-  console.log(`gameBoard`, gameBoard);
+  const { gameBoard, isLoading: isGameBoardLoading } = useGetGameBoard();
+  const { gameState, isLoading: isGameStateLoading } = useGetGameState();
   const [appContext, setAppContext] = useState<AppContextObject>({
     isGameBoardEnabled: true,
-    showGameBoard: !!gameBoard,
+    showGameBoard: false,
   });
 
-  useEffect(() => {
-    if (gameBoard) {
-      setAppContext({
-        ...appContext,
-        showGameBoard: !!gameBoard,
-    });
-    }
-  }, [gameBoard]);
+  if (isGameBoardLoading || isGameStateLoading) {
+    return null;
+  }
 
   return (
-    <AppContext.Provider value={{ appContextData: appContext, setAppContext }}>
+    <AppContext.Provider
+      value={{
+        appContextData: {
+          ...appContext,
+          isGameBoardEnabled: gameState === "Playing",
+          showGameBoard: !!gameBoard && gameBoard.length > 0,
+        },
+        setAppContext,
+      }}
+    >
       {children}
     </AppContext.Provider>
   );

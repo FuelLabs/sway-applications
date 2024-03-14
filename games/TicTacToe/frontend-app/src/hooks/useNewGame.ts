@@ -26,7 +26,7 @@ export const useNewGame = (player1Address: string, player2Address: string) => {
     onSuccess: async () => {
       await queryClient.invalidateQueries();
       appContext?.setAppContext({
-        ...appContext,
+        ...appContext.appContextData,
         showGameBoard: true,
         isGameBoardEnabled: true,
         lastGameOutcome: undefined,

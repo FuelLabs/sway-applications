@@ -16,22 +16,20 @@ export const Board = () => {
         (typeof appContext?.appContextData.lastGameOutcome === "boolean" ? (
           <Typography>Draw!</Typography>
         ) : (
-          <Typography fontSize={20}>{`${!isPlayer1Turn ? "Player 1:" : "Player 2:"} ${shortAddress(
-            Address.fromString(appContext?.appContextData.lastGameOutcome).toString()
-          )} won!`}</Typography>
+          <Typography fontSize={20}>
+            {`${!isPlayer1Turn ? "Player 1:" : "Player 2:"} ${shortAddress(
+              Address.fromString(
+                appContext?.appContextData.lastGameOutcome
+              ).toString()
+            )} won!`}
+          </Typography>
         ))}
       <Grid container spacing={2} sx={{ width: "75%" }}>
         {isLoading && <Typography>Loading...</Typography>}
         {gameBoard && !isLoading && (
           <>
             {[...Array(9)].map((_, i) => {
-              return (
-                <Cell
-                  key={i}
-                  boardIndex={i}
-                  isPlayer1={gameBoard[i]}
-                />
-              );
+              return <Cell key={i} boardIndex={i} isPlayer1={gameBoard[i]} />;
             })}
           </>
         )}

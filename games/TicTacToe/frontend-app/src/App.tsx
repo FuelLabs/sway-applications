@@ -15,8 +15,6 @@ function App() {
   const showProviderError =
     (!isLoading && provider && provider.url !== PROVIDER_URL) || isError;
 
-  console.log(`appContext`, appContext);
-
   return (
     <>
       <CssBaseline />
