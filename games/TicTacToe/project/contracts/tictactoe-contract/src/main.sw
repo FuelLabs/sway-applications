@@ -15,8 +15,8 @@ use std::{auth::msg_sender, hash::Hash, storage::storage_vec::*};
 use ::utils::{draw, win_check};
 
 storage {
-    /// Keeps track of each player move.
-    board: StorageVec<Option<Identity>> = StorageVec {},
+    /// Keeps track of each player move by whether or not the player was player 1.
+    board: StorageVec<Option<bool>> = StorageVec {},
     /// Keeps track of the move counter for various checks (win, draw, etc.).
     move_counter: u64 = 0,
     /// The first player of the game.
@@ -85,11 +85,13 @@ impl Game for Contract {
             PositionError::CellIsNotEmpty,
         );
 
+        let last_move_counter = storage.move_counter.read();
+        let is_player_one = last_move_counter % 2 == 0;
+
         // Make the move and update the board
-        storage.board.set(position, Some(msg_sender().unwrap()));
+        storage.board.set(position, Some(is_player_one));
 
         // Update number of moves
-        let last_move_counter = storage.move_counter.read();
         storage.move_counter.write(last_move_counter + 1);
         let current_move_counter = last_move_counter + 1;
 
@@ -107,13 +109,12 @@ impl Game for Contract {
         if (current_move_counter > 4) {
             let mut board = storage.board.load_vec();
 
-            if win_check(board, current_player) {
+            if win_check(board, is_player_one) {
                 storage.state.write(State::Ended);
                 log(GameWonEvent {
                     player: msg_sender().unwrap(),
                 });
-            } else if draw(board, player_one, player_two, current_move_counter)
-            {
+            } else if draw(board, current_move_counter) {
                 storage.state.write(State::Ended);
                 log(GameDrawnEvent {
                     player_one,
@@ -124,7 +125,7 @@ impl Game for Contract {
     }
 
     #[storage(read)]
-    fn get_board() -> Vec<Option<Identity>> {
+    fn get_board() -> Vec<Option<bool>> {
         storage.board.load_vec()
     }
 
@@ -155,5 +156,10 @@ impl Game for Contract {
                 None
             }
         }
+    }
+
+    #[storage(read)]
+    fn get_move_counter() -> u64 {
+        storage.move_counter.read()
     }
 }

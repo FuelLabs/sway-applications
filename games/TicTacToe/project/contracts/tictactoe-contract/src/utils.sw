@@ -10,12 +10,12 @@ const MATCHES = [
 /// # Arguments
 ///
 /// * `board`: [Vec<Option<Identity>>] - A vector of all the markers on the board.
-/// * `player`: [Identity] - The player to check for.
+/// * `is_player1`: [bool] - The boolean corresponding to if the player is player 1 or 2.
 ///
 /// # Returns
 ///
 /// * [bool] - True if the player has won, false otherwise.
-pub fn win_check(board: Vec<Option<Identity>>, player: Identity) -> bool {
+pub fn win_check(board: Vec<Option<bool>>, is_player1: bool) -> bool {
     let mut i = 0;
     while (i < 8) {
         let marker_one = board.get(MATCHES[i][0]).unwrap();
@@ -23,11 +23,11 @@ pub fn win_check(board: Vec<Option<Identity>>, player: Identity) -> bool {
         let marker_three = board.get(MATCHES[i][2]).unwrap();
 
         if (marker_one.is_some()
-            && marker_one.unwrap() == player)
+            && marker_one.unwrap() == is_player1)
             && (marker_two.is_some()
-            && marker_two.unwrap() == player)
+            && marker_two.unwrap() == is_player1)
             && (marker_three.is_some()
-            && marker_three.unwrap() == player)
+            && marker_three.unwrap() == is_player1)
         {
             return true;
         }
@@ -41,19 +41,12 @@ pub fn win_check(board: Vec<Option<Identity>>, player: Identity) -> bool {
 /// # Arguments
 ///
 /// * `board`: [Vec<Option<Identity>>] - A vector of all the markers on the board.
-/// * `player_one`: [Identity] - The first player.
-/// * `player_two`: [Identity] - The second player.
 /// * `move_counter`: [u64] - The number of moves made.
 ///
 /// # Returns
 ///
 /// * [bool] - True if the game has ended in a draw, false otherwise.
-pub fn draw(
-    board: Vec<Option<Identity>>,
-    player_one: Identity,
-    player_two: Identity,
-    move_counter: u64,
-) -> bool {
+pub fn draw(board: Vec<Option<bool>>, move_counter: u64) -> bool {
     if move_counter != 9 {
         return false;
     }
@@ -67,27 +60,27 @@ pub fn draw(
         if ((marker_one
                     .is_some()
                 && marker_one
-                    .unwrap() == player_one)
+                    .unwrap())
             && (marker_two
                     .is_some()
                 && marker_two
-                    .unwrap() == player_one)
+                    .unwrap())
             && (marker_three
                     .is_some()
                 && marker_three
-                    .unwrap() == player_one)
+                    .unwrap())
                 || (marker_one
                         .is_some()
-                    && marker_one
-                        .unwrap() == player_two)
+                    && !marker_one
+                        .unwrap())
                 && (marker_two
                         .is_some()
-                    && marker_two
-                        .unwrap() == player_two)
+                    && !marker_two
+                        .unwrap())
                 && (marker_three
                         .is_some()
-                    && marker_three
-                        .unwrap() == player_two))
+                    && !marker_three
+                        .unwrap()))
         {
             return false;
         }
