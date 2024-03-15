@@ -1,9 +1,9 @@
 import { useWallet } from '@fuels/react';
 import { useQuery } from '@tanstack/react-query';
 
+import { CONTRACT_ID } from '../config';
 import { TictactoeContractAbi__factory } from '../contract-types';
 import { TicTacToeQueryKeys } from '../queryKeys';
-import { CONTRACT_ID } from '../config';
 
 export const useGetGameState = () => {
   const { wallet, isError, isLoading } = useWallet();

@@ -1,10 +1,13 @@
-import { Card, CardActionArea, Grid, Typography } from '@mui/material';
-import { useEffect, useState } from 'react';
-import { useGetPlayers, useMakeMove } from '../hooks';
-import { Address } from 'fuels';
-import { useAppContext } from '.';
 import { useAccount } from '@fuels/react';
+import { Card, CardActionArea, Grid, Typography } from '@mui/material';
+import { Address } from 'fuels';
+import { useEffect, useState } from 'react';
 import { toast } from 'react-hot-toast';
+
+import { useGetPlayers, useMakeMove } from '../hooks';
+
+import { useAppContext } from '.';
+
 
 type CellProps = {
   isPlayer1?: boolean;

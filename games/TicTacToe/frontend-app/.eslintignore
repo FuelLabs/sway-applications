@@ -1,0 +1,14 @@
+
+**/node_modules/
+**/coverage/
+*.js
+*.html
+dist
+CHANGELOG.md
+src/contract-types
+contracts
+**/*.typegen.ts
+.eslintrc.js
+**/__generated__/
+**/generated/*
+.changeset/**.md

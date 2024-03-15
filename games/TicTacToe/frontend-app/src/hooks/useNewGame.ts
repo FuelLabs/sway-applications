@@ -1,8 +1,9 @@
 import { useWallet } from '@fuels/react';
 import { useMutation } from '@tanstack/react-query';
-import { TictactoeContractAbi__factory } from '../contract-types';
+
 import { queryClient, useAppContext } from '../components';
 import { CONTRACT_ID } from '../config';
+import { TictactoeContractAbi__factory } from '../contract-types';
 
 export const useNewGame = (player1Address: string, player2Address: string) => {
   const { wallet } = useWallet();
@@ -35,6 +36,7 @@ export const useNewGame = (player1Address: string, player2Address: string) => {
     onError: async (err) => {
       // TODO: remove once we figure out why a successful call returns an error from the ts sdk
       await queryClient.invalidateQueries();
+      // eslint-disable-next-line no-console
       console.error(err);
     },
   });

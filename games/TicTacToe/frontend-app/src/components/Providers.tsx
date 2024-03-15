@@ -1,7 +1,8 @@
-import type { ReactNode } from 'react';
-import { FuelProvider } from '@fuels/react';
 import { FuelWalletConnector } from '@fuel-wallet/sdk';
+import { FuelProvider } from '@fuels/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import type { ReactNode } from 'react';
+
 import { AppContextProvider } from '.';
 
 type ProvidersProps = {

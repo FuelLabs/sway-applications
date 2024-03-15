@@ -1,7 +1,7 @@
 import { Button, Typography } from '@mui/material';
+import { Address } from 'fuels';
 
 import { useGetPlayers, useNewGame } from '../hooks';
-import { Address } from 'fuels';
 
 export const NewGameButton = () => {
   const { players } = useGetPlayers();

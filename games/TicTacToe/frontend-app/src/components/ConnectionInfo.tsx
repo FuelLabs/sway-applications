@@ -1,9 +1,9 @@
 import { Stack, Typography } from '@mui/material';
 
 import { useGetPlayers } from '../hooks';
+import { shortAddress } from '../utils';
 
 import { ConnectButton } from '.';
-import { shortAddress } from '../utils';
 
 export const ConnectionInfo = () => {
   const { players, isPlayer1Turn } = useGetPlayers();

@@ -6,7 +6,9 @@
     "dev": "vite",
     "build:all": "NODE_ENV=production run-s build",
     "build": "tsc && vite build",
-    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "lint": "run-s lint:check prettier:check",
+    "lint:check": "eslint . --ext .ts,.tsx,.js,.jsx",
+    "lint:fix": "pnpm lint:check --fix",
     "preview": "vite preview",
     "contracts-setup": "fuels dev",
     "prettier:write": "prettier --write .",
@@ -27,6 +29,7 @@
     "react-hot-toast": "^2.4.1"
   },
   "devDependencies": {
+    "@fuels/eslint-plugin": "^0.16.0",
     "@fuels/prettier-config": "^0.16.0",
     "@types/react": "^18.2.56",
     "@types/react-dom": "^18.2.19",

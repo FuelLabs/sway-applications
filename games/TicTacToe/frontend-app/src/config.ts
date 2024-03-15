@@ -1,5 +1,6 @@
-import contractIds from './contract-types/contract-ids.json';
 import productionContractIds from '../production-contract/contract-ids.json';
+
+import contractIds from './contract-types/contract-ids.json';
 
 export const CONTRACT_ID = import.meta.env.PROD
   ? productionContractIds.tictactoeContract

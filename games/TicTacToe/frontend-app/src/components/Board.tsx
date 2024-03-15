@@ -1,9 +1,11 @@
 import { Grid, Stack, Typography } from '@mui/material';
+import { Address } from 'fuels';
 
-import { Cell, useAppContext } from '.';
 import { useGetGameBoard, useGetPlayers } from '../hooks';
 import { shortAddress } from '../utils';
-import { Address } from 'fuels';
+
+import { Cell, useAppContext } from '.';
+
 
 export const Board = () => {
   const { gameBoard, isLoading } = useGetGameBoard();

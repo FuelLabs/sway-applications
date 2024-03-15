@@ -1,9 +1,9 @@
 import { useWallet } from '@fuels/react';
 import { useQuery } from '@tanstack/react-query';
 
-import { TicTacToeQueryKeys } from '../queryKeys';
-import { TictactoeContractAbi__factory } from '../contract-types';
 import { CONTRACT_ID } from '../config';
+import { TictactoeContractAbi__factory } from '../contract-types';
+import { TicTacToeQueryKeys } from '../queryKeys';
 
 export const useGetMoveCounter = () => {
   const { wallet, isError, isLoading } = useWallet();

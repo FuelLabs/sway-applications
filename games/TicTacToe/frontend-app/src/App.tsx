@@ -1,10 +1,10 @@
+import { useProvider, useIsConnected } from '@fuels/react';
 import { Container, Typography, Stack, CssBaseline, Box } from '@mui/material';
 import { Toaster } from 'react-hot-toast';
-import { useProvider, useIsConnected } from '@fuels/react';
-import { Board, ConnectionInfo, NewGameButton } from './components';
-import { useGetGameState } from './hooks';
-import { useAppContext } from './components';
+
+import { Board, ConnectionInfo, NewGameButton , useAppContext } from './components';
 import { PROVIDER_URL } from './config';
+import { useGetGameState } from './hooks';
 
 function App() {
   const { gameState } = useGetGameState();
