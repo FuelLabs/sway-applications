@@ -1,0 +1,49 @@
+{
+  "name": "frontend-app",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build:all": "NODE_ENV=production run-s build",
+    "build": "tsc && vite build",
+    "lint": "run-s lint:check prettier:check",
+    "lint:check": "eslint . --ext .ts,.tsx,.js,.jsx",
+    "lint:fix": "pnpm lint:check --fix",
+    "preview": "vite preview",
+    "contracts-setup": "fuels dev",
+    "prettier:write": "prettier --write .",
+    "project-setup": "run-p contracts-setup dev"
+  },
+  "dependencies": {
+    "@emotion/react": "^11.11.4",
+    "@emotion/styled": "^11.11.0",
+    "@fontsource/roboto": "^5.0.12",
+    "@fuel-wallet/sdk": "^0.15.2",
+    "@fuels/react": "^0.15.3",
+    "@mui/icons-material": "^5.15.12",
+    "@mui/material": "^5.15.12",
+    "@tanstack/react-query": "^5.25.0",
+    "fuels": "^0.76.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-hot-toast": "^2.4.1"
+  },
+  "devDependencies": {
+    "@fuels/eslint-plugin": "^0.16.0",
+    "@fuels/prettier-config": "^0.16.0",
+    "@types/react": "^18.2.56",
+    "@types/react-dom": "^18.2.19",
+    "@typescript-eslint/eslint-plugin": "^7.0.2",
+    "@typescript-eslint/parser": "^7.0.2",
+    "@vitejs/plugin-react": "^4.2.1",
+    "eslint": "^8.56.0",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "eslint-plugin-react-refresh": "^0.4.5",
+    "npm-run-all": "^4.1.5",
+    "prettier": "^3.2.5",
+    "typescript": "^5.2.2",
+    "vite": "^5.1.4",
+    "vite-plugin-static-copy": "^1.0.1"
+  }
+}

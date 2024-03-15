@@ -1,0 +1,12 @@
+{
+  "extends": ["plugin:@fuels/base"],
+  "rules": {
+    "import/prefer-default-export": "off",
+    "import/no-named-as-default": "off",
+    "import/export": "off",
+    "import/default": "off",
+    "no-console": "error",
+    "@typescript-eslint/no-empty-function": "off",
+    "jsx-a11y/alt-text": "off"
+  }
+}
