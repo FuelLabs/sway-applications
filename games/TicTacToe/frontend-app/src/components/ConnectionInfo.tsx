@@ -1,9 +1,9 @@
-import { Stack, Typography } from "@mui/material";
+import { Stack, Typography } from '@mui/material';
 
-import { useGetPlayers } from "../hooks";
+import { useGetPlayers } from '../hooks';
 
-import { ConnectButton } from ".";
-import { shortAddress } from "../utils";
+import { ConnectButton } from '.';
+import { shortAddress } from '../utils';
 
 export const ConnectionInfo = () => {
   const { players, isPlayer1Turn } = useGetPlayers();
@@ -14,10 +14,10 @@ export const ConnectionInfo = () => {
       {players.length === 0 ? null : (
         <>
           <Typography>{`${
-            isPlayer1Turn ? "Turn ------->" : ""
+            isPlayer1Turn ? 'Turn ------->' : ''
           } Player 1: ${shortAddress(players[0])}`}</Typography>
           <Typography>{`${
-            !isPlayer1Turn && isPlayer1Turn !== undefined ? "Turn ------->" : ""
+            !isPlayer1Turn && isPlayer1Turn !== undefined ? 'Turn ------->' : ''
           } Player 2: ${shortAddress(players[1])}`}</Typography>
         </>
       )}

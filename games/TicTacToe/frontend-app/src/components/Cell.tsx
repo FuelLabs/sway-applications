@@ -1,10 +1,10 @@
-import { Card, CardActionArea, Grid, Typography } from "@mui/material";
-import { useEffect, useState } from "react";
-import { useGetPlayers, useMakeMove } from "../hooks";
-import { Address } from "fuels";
-import { useAppContext } from ".";
-import { useAccount } from "@fuels/react";
-import { toast } from "react-hot-toast";
+import { Card, CardActionArea, Grid, Typography } from '@mui/material';
+import { useEffect, useState } from 'react';
+import { useGetPlayers, useMakeMove } from '../hooks';
+import { Address } from 'fuels';
+import { useAppContext } from '.';
+import { useAccount } from '@fuels/react';
+import { toast } from 'react-hot-toast';
 
 type CellProps = {
   isPlayer1?: boolean;
@@ -12,7 +12,7 @@ type CellProps = {
 };
 
 export const Cell = ({ isPlayer1, boardIndex }: CellProps) => {
-  const [text, setText] = useState<"X" | "O" | null>();
+  const [text, setText] = useState<'X' | 'O' | null>();
   const makeMove = useMakeMove(boardIndex);
   // TODO we call this 9 times (once for every cell), could be improved
   const { players, currentPlayer } = useGetPlayers();
@@ -22,9 +22,9 @@ export const Cell = ({ isPlayer1, boardIndex }: CellProps) => {
   useEffect(() => {
     if (players.length === 2) {
       if (isPlayer1) {
-        setText("X");
+        setText('X');
       } else if (!isPlayer1 && isPlayer1 !== undefined) {
-        setText("O");
+        setText('O');
       } else {
         setText(null);
       }
@@ -57,10 +57,10 @@ export const Cell = ({ isPlayer1, boardIndex }: CellProps) => {
       <Card variant="outlined">
         <CardActionArea
           sx={{
-            height: "150px",
-            alignItems: "center",
-            justifyContent: "center",
-            display: "flex",
+            height: '150px',
+            alignItems: 'center',
+            justifyContent: 'center',
+            display: 'flex',
           }}
           onClick={() => {
             if (
@@ -69,15 +69,17 @@ export const Cell = ({ isPlayer1, boardIndex }: CellProps) => {
                 currentPlayer?.Address?.value
             ) {
               toast.error(
-                "Error: it is not your turn.  Please switch to the correct player."
+                'Error: it is not your turn.  Please switch to the correct player.'
               );
             } else {
               makeMove.mutate();
             }
           }}
-          disabled={text !== null || !appContext?.appContextData.isGameBoardEnabled}
+          disabled={
+            text !== null || !appContext?.appContextData.isGameBoardEnabled
+          }
         >
-          <Typography sx={{ fontSize: "150px" }}>{text}</Typography>
+          <Typography sx={{ fontSize: '150px' }}>{text}</Typography>
         </CardActionArea>
       </Card>
     </Grid>

@@ -1,7 +1,7 @@
-import { Button } from "@mui/material";
+import { Button } from '@mui/material';
 
-import { useIsConnected, useConnect, useDisconnect } from "@fuels/react";
-import { useAppContext } from ".";
+import { useIsConnected, useConnect, useDisconnect } from '@fuels/react';
+import { useAppContext } from '.';
 
 export const ConnectButton = () => {
   const { isConnected } = useIsConnected();
@@ -11,21 +11,21 @@ export const ConnectButton = () => {
 
   function getButtonText() {
     if (isConnectLoading) {
-      return "Connecting...";
+      return 'Connecting...';
     }
     if (isDisconnectLoading) {
-      return "Disconnecting...";
+      return 'Disconnecting...';
     }
     if (isConnected) {
-      return "Disconnect";
+      return 'Disconnect';
     }
-    return "Connect";
+    return 'Connect';
   }
 
   return (
     <Button
       variant="outlined"
-      sx={{ borderColor: "green", color: "green", width: "65%" }}
+      sx={{ borderColor: 'green', color: 'green', width: '65%' }}
       onClick={() => {
         if (isConnected) {
           disconnect();

@@ -1,6 +1,6 @@
-import { useAccounts } from "@fuels/react";
-import { useGetCurrentPlayer, useGetMoveCounter } from ".";
-import { useEffect, useState } from "react";
+import { useAccounts } from '@fuels/react';
+import { useGetCurrentPlayer, useGetMoveCounter } from '.';
+import { useEffect, useState } from 'react';
 
 export const useGetPlayers = () => {
   const { accounts } = useAccounts();

@@ -1,10 +1,10 @@
-import { Container, Typography, Stack, CssBaseline, Box } from "@mui/material";
-import { Toaster } from "react-hot-toast";
-import { useProvider, useIsConnected } from "@fuels/react";
-import { Board, ConnectionInfo, NewGameButton } from "./components";
-import { useGetGameState } from "./hooks";
-import { useAppContext } from "./components";
-import { PROVIDER_URL } from "./config";
+import { Container, Typography, Stack, CssBaseline, Box } from '@mui/material';
+import { Toaster } from 'react-hot-toast';
+import { useProvider, useIsConnected } from '@fuels/react';
+import { Board, ConnectionInfo, NewGameButton } from './components';
+import { useGetGameState } from './hooks';
+import { useAppContext } from './components';
+import { PROVIDER_URL } from './config';
 
 function App() {
   const { gameState } = useGetGameState();
@@ -19,7 +19,7 @@ function App() {
     <>
       <CssBaseline />
       <Container>
-        <Stack alignItems="center" spacing={2} sx={{ marginTop: "32px" }}>
+        <Stack alignItems="center" spacing={2} sx={{ marginTop: '32px' }}>
           <Box
             display="flex"
             alignItems="center"
@@ -38,8 +38,9 @@ function App() {
           ) : showProviderError ? (
             <Typography fontSize="20px">{`Your wallet is not connected to the correct network.  Please connect to ${PROVIDER_URL}`}</Typography>
           ) : null}
-          {gameState === "Ended" && <NewGameButton />}
-          {(appContext?.appContextData.showGameBoard || gameState === "Playing") && <Board />}
+          {gameState === 'Ended' && <NewGameButton />}
+          {(appContext?.appContextData.showGameBoard ||
+            gameState === 'Playing') && <Board />}
         </Stack>
       </Container>
       <Toaster />

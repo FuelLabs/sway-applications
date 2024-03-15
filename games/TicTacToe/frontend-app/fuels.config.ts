@@ -1,16 +1,15 @@
-import { createConfig } from "fuels";
+import { createConfig } from 'fuels';
 
-const isProd = process.env.NODE_ENV === "production";
+const isProd = process.env.NODE_ENV === 'production';
 
 export default createConfig({
-  workspace: "../project",
-  output: isProd ? "./production-contract" : "./src/contract-types",
+  workspace: '../project',
+  output: isProd ? './production-contract' : './src/contract-types',
   useBuiltinForc: false,
   useBuiltinFuelCore: true,
   autoStartFuelCore: true,
-  chainConfig: "./chainConfig.json",
-  providerUrl:
-    isProd
-      ? "https://beta-5.fuel.network/graphql"
-      : "http://127.0.0.1:4000/graphql",
+  chainConfig: './chainConfig.json',
+  providerUrl: isProd
+    ? 'https://beta-5.fuel.network/graphql'
+    : 'http://127.0.0.1:4000/graphql',
 });

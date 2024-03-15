@@ -1,6 +1,6 @@
 export const TicTacToeQueryKeys = {
-  currentPlayer: "currentPlayer",
-  gameBoard: "gameBoard",
-  gameState: "gameState",
-  moveCounter: "moveCounter",
+  currentPlayer: 'currentPlayer',
+  gameBoard: 'gameBoard',
+  gameState: 'gameState',
+  moveCounter: 'moveCounter',
 };

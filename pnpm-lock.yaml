@@ -64,6 +64,9 @@ importers:
         specifier: ^2.4.1
         version: 2.4.1(csstype@3.1.3)(react-dom@18.2.0)(react@18.2.0)
     devDependencies:
+      '@fuels/prettier-config':
+        specifier: ^0.16.0
+        version: 0.16.0(prettier@3.2.5)
       '@types/react':
         specifier: ^18.2.56
         version: 18.2.65
@@ -91,6 +94,9 @@ importers:
       npm-run-all:
         specifier: ^4.1.5
         version: 4.1.5
+      prettier:
+        specifier: ^3.2.5
+        version: 3.2.5
       typescript:
         specifier: ^5.2.2
         version: 5.4.2
@@ -1015,6 +1021,14 @@ packages:
   /@fuels/assets@0.1.5:
     resolution: {integrity: sha512-3rFZdY2f5/h7e2Rlhv/+WKz1CVsTnydKoxLdVjQfUaNsj7zbMLSfT37bsBSB42AnXKOlPs/vyMbS77LxhN8a2A==}
     dev: false
+
+  /@fuels/prettier-config@0.16.0(prettier@3.2.5):
+    resolution: {integrity: sha512-XaqghwDBYBCbTElr/0CiR32BtWfnmMQv44M+fGkYwIuILngmrl53tNT2rzNIvAnzG79TzrdYVuvh0xSk2GILHw==}
+    peerDependencies:
+      prettier: ^3.0.3
+    dependencies:
+      prettier: 3.2.5
+    dev: true
 
   /@fuels/react@0.15.3(@types/react-dom@18.2.21)(@types/react@18.2.65)(fuels@0.76.0)(react-dom@18.2.0)(react@18.2.0):
     resolution: {integrity: sha512-0BYtU1P15rcUyywnbdVRtPRkLHAdahi3Yu7PpdNaQ0Kg1B8tlVXh2NDFLY6ud3+9TZHsq3Xv03aYsvtFC2WvLQ==}
@@ -4148,6 +4162,12 @@ packages:
   /prelude-ls@1.2.1:
     resolution: {integrity: sha512-vkcDPrRZo1QZLbn5RLGPpg/WmIQ65qoWWhcGKf/b5eplkkarX0m9z8ppCat4mlOqUsWpyNuYgO3VRyrYHSzX5g==}
     engines: {node: '>= 0.8.0'}
+    dev: true
+
+  /prettier@3.2.5:
+    resolution: {integrity: sha512-3/GWa9aOC0YeD7LUfvOG2NiDyhOWRvt1k+rcKhOuYnMY24iiCphgneUfJDyFXd6rZCAnuLBv6UeAULtrhT/F4A==}
+    engines: {node: '>=14'}
+    hasBin: true
     dev: true
 
   /prop-types@15.8.1:

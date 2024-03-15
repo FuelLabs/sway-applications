@@ -1,9 +1,9 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation } from '@tanstack/react-query';
 
-import { useWallet } from "@fuels/react";
-import { TictactoeContractAbi__factory } from "../contract-types";
-import { queryClient } from "../components";
-import { CONTRACT_ID } from "../config";
+import { useWallet } from '@fuels/react';
+import { TictactoeContractAbi__factory } from '../contract-types';
+import { queryClient } from '../components';
+import { CONTRACT_ID } from '../config';
 
 export const useMakeMove = (position: number) => {
   const { wallet } = useWallet();
@@ -16,13 +16,16 @@ export const useMakeMove = (position: number) => {
         CONTRACT_ID,
         wallet
       );
+      
       const result = await contract.functions.make_move(position).call();
       return result;
     },
     onSuccess: async () => {
       await queryClient.invalidateQueries();
     },
-    onError: (err) => {
+    onError: async (err) => {
+      // TODO: remove once we figure out why a successful call returns an error from the ts sdk
+      await queryClient.invalidateQueries();
       console.error(err);
     },
   });

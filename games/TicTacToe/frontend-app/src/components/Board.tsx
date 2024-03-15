@@ -1,9 +1,9 @@
-import { Grid, Stack, Typography } from "@mui/material";
+import { Grid, Stack, Typography } from '@mui/material';
 
-import { Cell, useAppContext } from ".";
-import { useGetGameBoard, useGetPlayers } from "../hooks";
-import { shortAddress } from "../utils";
-import { Address } from "fuels";
+import { Cell, useAppContext } from '.';
+import { useGetGameBoard, useGetPlayers } from '../hooks';
+import { shortAddress } from '../utils';
+import { Address } from 'fuels';
 
 export const Board = () => {
   const { gameBoard, isLoading } = useGetGameBoard();
@@ -13,18 +13,18 @@ export const Board = () => {
   return (
     <Stack width="100%" alignItems="center" spacing={1}>
       {appContext?.appContextData.lastGameOutcome &&
-        (typeof appContext?.appContextData.lastGameOutcome === "boolean" ? (
+        (typeof appContext?.appContextData.lastGameOutcome === 'boolean' ? (
           <Typography>Draw!</Typography>
         ) : (
           <Typography fontSize={20}>
-            {`${!isPlayer1Turn ? "Player 1:" : "Player 2:"} ${shortAddress(
+            {`${!isPlayer1Turn ? 'Player 1:' : 'Player 2:'} ${shortAddress(
               Address.fromString(
                 appContext?.appContextData.lastGameOutcome
               ).toString()
             )} won!`}
           </Typography>
         ))}
-      <Grid container spacing={2} sx={{ width: "75%" }}>
+      <Grid container spacing={2} sx={{ width: '75%' }}>
         {isLoading && <Typography>Loading...</Typography>}
         {gameBoard && !isLoading && (
           <>

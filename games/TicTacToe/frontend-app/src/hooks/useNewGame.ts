@@ -1,8 +1,8 @@
-import { useWallet } from "@fuels/react";
-import { useMutation } from "@tanstack/react-query";
-import { TictactoeContractAbi__factory } from "../contract-types";
-import { queryClient, useAppContext } from "../components";
-import { CONTRACT_ID } from "../config";
+import { useWallet } from '@fuels/react';
+import { useMutation } from '@tanstack/react-query';
+import { TictactoeContractAbi__factory } from '../contract-types';
+import { queryClient, useAppContext } from '../components';
+import { CONTRACT_ID } from '../config';
 
 export const useNewGame = (player1Address: string, player2Address: string) => {
   const { wallet } = useWallet();
@@ -32,7 +32,11 @@ export const useNewGame = (player1Address: string, player2Address: string) => {
         lastGameOutcome: undefined,
       });
     },
-    onError: (err) => console.error(err),
+    onError: async (err) => {
+      // TODO: remove once we figure out why a successful call returns an error from the ts sdk
+      await queryClient.invalidateQueries();
+      console.error(err);
+    },
   });
 
   return mutation;
