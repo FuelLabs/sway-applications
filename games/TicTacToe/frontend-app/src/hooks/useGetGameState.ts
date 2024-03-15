@@ -1,7 +1,7 @@
 import { useWallet } from '@fuels/react';
 import { useQuery } from '@tanstack/react-query';
 
-import { CONTRACT_ID } from '../config';
+import { CONTRACT_ID, PROVIDER_URL } from '../config';
 import { TictactoeContractAbi__factory } from '../contract-types';
 import { TicTacToeQueryKeys } from '../queryKeys';
 
@@ -13,6 +13,10 @@ export const useGetGameState = () => {
     queryFn: async () => {
       if (!wallet)
         throw new Error(`Cannot get game state if the wallet is ${wallet}`);
+
+      if (PROVIDER_URL !== wallet.provider.url) {
+        return null;
+      }
 
       const contract = TictactoeContractAbi__factory.connect(
         CONTRACT_ID,

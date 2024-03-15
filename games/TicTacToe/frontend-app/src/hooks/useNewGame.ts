@@ -35,6 +35,7 @@ export const useNewGame = (player1Address: string, player2Address: string) => {
     },
     onError: async (err) => {
       // TODO: remove once we figure out why a successful call returns an error from the ts sdk
+      // on beta-5
       await queryClient.invalidateQueries();
       // eslint-disable-next-line no-console
       console.error(err);
