@@ -37,5 +37,6 @@ export async function buildWebsite() {
     fs.rmSync(DIST_FOLDER, { recursive: true, force: true });
     await runPnpmCommand(["build:all", "--force", "--no-cache"]);
     fs.cpSync(join(ROOT_PATH, "index.html"), join(DIST_FOLDER, "index.html"));
+    fs.cpSync(join(ROOT_PATH, "public/"), join(DIST_FOLDER, "public/"), { recursive: true });
 }
 
