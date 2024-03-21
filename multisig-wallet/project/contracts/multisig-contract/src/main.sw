@@ -306,7 +306,6 @@ impl Info for Contract {
 /// # Number of Storage Accesses
 ///
 /// * Reads: `2`
-#[inline(never)]
 #[storage(read)]
 fn count_approvals(signatures: Vec<SignatureInfo>, transaction_hash: b256) -> u64 {
     // The signers must have increasing values in order to check for duplicates or a zero-value.
