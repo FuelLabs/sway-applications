@@ -31,15 +31,16 @@ The project consists of a smart contract.
 ```sh
 TicTacToe
 ├── project
-│   ├── contracts
-│   │   └── tictactoe-contract
-│   │       ├── src/main.sw
-│   │       └── tests/harness.rs
-│   ├── README.md
-│   └── SPECIFICATION.md
-├── ui
-│   ├── README.md
-│   └── SPECIFICATION.md
+│   ├────── contracts
+│   │   └────── tictactoe-contract
+│   │       ├────── src/main.sw
+│   │       └────── tests/harness.rs
+│   ├────── README.md
+│   └────── SPECIFICATION.md
+├── app
+│   ├────── package.json
+│   ├────── index.html
+│   └────── src/main.tsx
 └── README.md
 ```
 
@@ -47,11 +48,20 @@ TicTacToe
 
 ### User interface
 
-TODO: The user interface does not currently exist therefore its [README.md](ui/README.md) and [SPECIFICATION.md](ui/SPECIFICATION.md) are empty.
+In order to run the subsequent commands change into the following directory `/path/to/TicTacToe/packages/app/<here>`.
+
+#### Run the frontend application
+
+```bash
+pnpm install
+pnpm project-setup
+```
+
+You will need to install the [Fuel wallet](https://wallet.fuel.network/docs/install/) in order to interact with the application. Now you can open your browser and interact with the tic-tac-toe contract through the frontend.  To play connect two of your wallet accounts and switch between them so each can take their turn.  If you want to run this locally you will need to modify the `chainConfig.json` file to fund your wallet locally.  Add your wallet address and give it some amount of asset id 0x0000...0000.
 
 ### Project
 
-In order to run the subsequent commands change into the following directory `/path/to/TicTacToe/project/<here>`.
+In order to run the subsequent commands change into the following directory `/path/to/TicTacToe/packages/project/<here>`.
 
 #### Program compilation
 

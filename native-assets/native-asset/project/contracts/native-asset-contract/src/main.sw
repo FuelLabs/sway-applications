@@ -200,7 +200,7 @@ impl SRC3 for Contract {
     ///
     /// # Reverts
     ///
-    /// * When more than 100,000,000 coinss have been minted.
+    /// * When more than 100,000,000 coins have been minted.
     ///
     /// # Number of Storage Accesses
     ///

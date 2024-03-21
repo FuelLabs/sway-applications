@@ -197,7 +197,7 @@ impl SRC3 for Contract {
     ///
     /// # Additional Information
     ///
-    /// This conforms to the SRC-20 NFT portion of the standard for a maximium
+    /// This conforms to the SRC-20 NFT portion of the standard for a maximum
     /// mint amount of 1 token per asset.
     ///
     /// # Arguments

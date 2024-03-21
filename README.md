@@ -12,6 +12,9 @@
     <a href="./LICENSE" alt="forc">
         <img src="https://img.shields.io/github/license/FuelLabs/sway-applications" />
     </a>
+    <a href="https://swayapps.fuel.network/book/" alt="forc">
+        <img src="https://docs.rs/forc/badge.svg" />
+    </a>
     <a href="https://discord.gg/xfpK4Pe">
         <img src="https://img.shields.io/discord/732892373507375164?color=6A7EC2&logo=discord&logoColor=ffffff&labelColor=6A7EC2&label=Discord" />
     </a>
