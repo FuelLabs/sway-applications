@@ -50,28 +50,22 @@ The project consists of a predicate.
 
 ```sh
 OTC-swap-predicate
-├── project
-│   ├── predicates
-│   │   └── swap-predicate
-│   │       ├── src/main.sw
-│   │       └── tests/harness.rs
-│   ├── README.md
-│   └── SPECIFICATION.md
-├── ui
-│   ├── README.md
-│   └── SPECIFICATION.md
-└── README.md
+├── swap-predicate
+│   ├── src/main.sw
+│   └── tests/harness.rs
+├── README.md
+└── SPECIFICATION.md
 ```
 
 ## Running the project
 
 ### User interface
 
-TODO: The user interface does not currently exist therefore its [README.md](ui/README.md) and [SPECIFICATION.md](ui/SPECIFICATION.md) are empty.
+TODO: The user interface does not currently exist.
 
 ### Project
 
-In order to run the subsequent commands change into the following directory `/path/to/OTC-swap-predicate/project/<here>`.
+In order to run the subsequent commands change into the following directory `/path/to/OTC-swap-predicate/<here>`.
 
 #### Program compilation
 

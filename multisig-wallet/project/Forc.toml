@@ -1,5 +1,0 @@
-[workspace]
-members = [
-  "./contracts/multisig-contract",
-  "./contracts/test-artifacts/target-contract",
-]

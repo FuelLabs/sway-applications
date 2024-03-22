@@ -42,17 +42,17 @@ jobs:
           [
             "airdrop",
             "AMM",
-            "auctions/english-auction",
+            "english-auction",
             "counter-script",
             "DAO",
             "escrow",
             "fundraiser",
-            "games/TicTacToe",
+            "TicTacToe",
             "multisig-wallet",
             "name-registry",
-            "native-assets/NFT",
-            "native-assets/native-asset",
-            "native-assets/fractional-NFT",
+            "NFT",
+            "native-asset",
+            "fractional-NFT",
             "oracle",
             "OTC-swap-predicate",
             ".devops/.template",
@@ -80,37 +80,37 @@ jobs:
 
       - name: Check Sway formatting
         run: |
-          cd ${{ matrix.project }}/project
+          cd ${{ matrix.project }}
           forc fmt --check
 
       - name: Check Rust formatting
         run: |
-          cd ${{ matrix.project }}/project
+          cd ${{ matrix.project }}
           cargo fmt --verbose --check
 
       - name: Build Sway
         run: |
-          cd ${{ matrix.project }}/project
+          cd ${{ matrix.project }}
           forc build --locked
 
       - name: Build Rust files
         run: |
-          cd ${{ matrix.project }}/project
+          cd ${{ matrix.project }}
           cargo build --locked
 
       - name: Check Clippy Linter
         run: |
-          cd ${{ matrix.project }}/project
+          cd ${{ matrix.project }}
           cargo clippy --all-features --all-targets -- -D warnings
 
       - name: Run Rust tests
         run: |
-          cd ${{ matrix.project }}/project
+          cd ${{ matrix.project }}
           cargo test --locked
 
       - name: Run Sway tests
         run: |
-          cd ${{ matrix.project }}/project
+          cd ${{ matrix.project }}
           forc test
 
   contributing-book:

@@ -21,7 +21,7 @@
 
 TODO: A summary of the application should be written here.
 
-More information about the contract can be found [here](./project/SPECIFICATION.md) and for the user interface [here](./ui/SPECIFICATION.md).
+More information about the contract can be found [here](./SPECIFICATION.md).
 
 ## Project structure
 
@@ -31,31 +31,25 @@ The project consists of a smart contract.
 
 ```sh
 Template
-├── project
-│   ├── contracts
-│   │   └── template-contract
-│   │       ├── src/main.sw
-│   │       └── tests/harness.rs
-│   ├── libraries
-│   ├── predicates
-│   ├── scripts
-│   ├── README.md
-│   └── SPECIFICATION.md
-├── ui
-│   ├── README.md
-│   └── SPECIFICATION.md
-└── README.md
+├── template-contract
+│   ├── src/main.sw
+│   └── tests/harness.rs
+├── libraries
+├── predicates
+├── scripts
+├── README.md
+└── SPECIFICATION.md
 ```
 
 ## Running the project
 
 ### User interface
 
-TODO: The user interface does not currently exist therefore its [README.md](ui/README.md) and [SPECIFICATION.md](ui/SPECIFICATION.md) are empty.
+TODO: The user interface does not currently exist.
 
 ### Project
 
-In order to run the subsequent commands change into the following directory `/path/to/Template/project/<here>`.
+In order to run the subsequent commands change into the following directory `/path/to/Template/<here>`.
 
 #### Program compilation
 

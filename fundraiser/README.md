@@ -21,7 +21,7 @@
 
 A fundraiser, or crowdfund, is an application where any number of users are able to pledge towards a goal specified by the creator of the campaign. If the target amount is reached, or surpassed, then after the deadline of the campaign the creator is able to take those funds and spend it towards the proposed goal. On the other hand, if the target is not reached then all the users that have pledged are able to withdraw their pledge.
 
-In this case the pledged asset is a native asset on the Fuel network. More information can be found in the [specification](./project/SPECIFICATION.md).
+In this case the pledged asset is a native asset on the Fuel network. More information can be found in the [specification](./SPECIFICATION.md).
 
 ## Project structure
 
@@ -31,28 +31,21 @@ The project consists of a smart contract.
 
 ```sh
 fundraiser
-├── project
-│   ├── contracts
-│   │   └── fundraiser-contract
-│   │       ├── src/main.sw
-│   │       └── tests/harness.rs
-│   ├── README.md
-│   └── SPECIFICATION.md
-├── ui
-│   ├── README.md
-│   └── SPECIFICATION.md
-└── README.md
+├── fundraiser-contract
+│   ├── src/main.sw
+│   └── tests/harness.rs
+├── README.md
+└── SPECIFICATION.md
 ```
 
 ## Running the project
 
 ### User interface
 
-TODO: The user interface does not currently exist therefore its [README.md](ui/README.md) and [SPECIFICATION.md](ui/SPECIFICATION.md) are empty.
-
+TODO: The user interface does not currently exist.
 ### Project
 
-In order to run the subsequent commands change into the following directory `/path/to/fundraiser/project/<here>`.
+In order to run the subsequent commands change into the following directory `/path/to/fundraiser/<here>`.
 
 #### Program compilation
 

@@ -25,7 +25,7 @@ In order to verifiably prove that a user has a claim to an airdrop and avoiding 
 
 > **Note** This application implements the [Binary Merkle Proof Verification Library](https://github.com/FuelLabs/sway-libs/tree/master/libs/merkle_proof).
 
-More information can be found in the [specification](./project/SPECIFICATION.md) and [interface](./project/contracts/distributor-contract/src/interface.sw).
+More information can be found in the [specification](SPECIFICATION.md) and [interface](./airdrop-contract/src/interface.sw).
 
 ## Project structure
 
@@ -35,28 +35,22 @@ The project consists of two smart contracts.
 
 ```sh
 airdrop
-├── project
-│   ├── contracts
-│   │   └── distributor-contract
-│   │       ├── src/main.sw
-│   │       └── tests/harness.rs
-│   ├── README.md
-│   └── SPECIFICATION.md
-├── ui
-│   ├── README.md
-│   └── SPECIFICATION.md
-└── README.md
+├── airdrop-contract
+│   ├── src/main.sw
+│   └── tests/harness.rs
+├── README.md
+└── SPECIFICATION.md
 ```
 
 ## Running the project
 
 ### User interface
 
-TODO: The user interface does not currently exist therefore its [README.md](ui/README.md) and [SPECIFICATION.md](ui/SPECIFICATION.md) are empty.
+TODO: The user interface does not currently exist.
 
 ### Project
 
-In order to run the subsequent commands change into the following directory `/path/to/airdrop/project/<here>`.
+In order to run the subsequent commands change into the following directory `/path/to/airdrop/<here>`.
 
 #### Program compilation
 

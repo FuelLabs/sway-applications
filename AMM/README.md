@@ -42,24 +42,17 @@ The contracts are designed to
 
 ```sh
 AMM
-├── project
-│   ├── contracts
-│   │   ├── AMM-contract
-│   │   └── exchange-contract
-│   ├── libraries
-│   │   └── src/interface.sw
-│   ├── scripts
-│   │   ├── atomic-add-liquidity
-│   │   ├── swap-exact-input
-│   │   └── swap-exact-output
-|   ├── test-utils
-|   |   └── src/lib.rs
-|   ├── README.md
-│   └── SPECIFICATION.md
-├── ui
-│   ├── README.md
-│   └── SPECIFICATION.md
-└─── README.md
+├── AMM-contract
+├── exchange-contract
+├── libraries
+│   └── src/interface.sw
+├── atomic-add-liquidity
+├── swap-exact-input
+└── swap-exact-output
+├── test-utils
+    └── src/lib.rs
+├── README.md
+└── SPECIFICATION.md
 ```
 
 All contracts and scripts have the structure:

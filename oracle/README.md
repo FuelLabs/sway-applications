@@ -21,7 +21,7 @@
 
 Oracles provide blockchain applications access to off-chain information such as asset prices, and verifiable random numbers. Oracles allow blockchain applications to react to real-world events such as a price drop in collateral or the winner of a sporting event. Oracles typically rely on a trusted off-chain node to provide them with the correct data. This example oracle provides price data about a specific asset, and assumes a decimal precision of 1e9.
 
-More information can be found in the [specification](./project/SPECIFICATION.md).
+More information can be found in the [specification](./SPECIFICATION.md).
 
 ## Project structure
 
@@ -31,27 +31,21 @@ The project consists of an oracle smart contract and an oracle node which intera
 
 ```sh
 oracle
-├── project
-│   ├── contracts
-│   │   └── oracle-contract
-│   │       ├── src/main.sw
-│   │       └── tests/harness.rs
-│   ├── oracle-node
-│   │   ├── src/main.rs
-│   │   └── tests/harness.rs
-│   ├── README.md
-│   └── SPECIFICATION.md
-├── ui
-│   ├── README.md
-│   └── SPECIFICATION.md
-└── README.md
+├── oracle-contract
+│   ├── src/main.sw
+│   └── tests/harness.rs
+├── oracle-node
+│   ├── src/main.rs
+│   └── tests/harness.rs
+├── README.md
+└── SPECIFICATION.md
 ```
 
 ## Running the project
 
 ### User interface
 
-TODO: The user interface does not currently exist therefore its [README.md](ui/README.md) and [SPECIFICATION.md](ui/SPECIFICATION.md) are empty.
+TODO: The user interface does not currently exist.
 
 ### Oracle node and contract
 
@@ -77,7 +71,7 @@ The project can be started by executing the following steps:
    fuel-core run --chain project/oracle-node/.chainConfig.json
    ```
 
-   This spins up and configures the local `fuel-core` instance with the variables specified in [`.chainConfig.json`](./project/oracle-node/.chainConfig.json).
+   This spins up and configures the local `fuel-core` instance with the variables specified in [`.chainConfig.json`](./oracle-node/.chainConfig.json).
 
 5. Build the Oracle contract.
 
@@ -107,12 +101,12 @@ The project can be started by executing the following steps:
 | ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | API_URL            | The URL the node uses to fetch the latest price for the asset tracked by the oracle. This oracle node relies on an external 3rd-party service to get price information to provide to the oracle contract. We do not endorse this service neither are we affiliated with them in any way. We only use the service for demonstration purposes. If you wish to run the node you can sign-up for a free api key [here](https://www.cryptocompare.com/). If you wish to use another pricing api service feel free to replace `API_URL` entirely. |
 | ORACLE_CONTRACT_ID | Deterministic contract id of the oracle contract deployed in step 5.                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
-| WALLET_SECRET      | Private key of the first deterministic wallet provided by the [fuels-rs](https://github.com/FuelLabs/fuels-rs) sdk. This private key corresponds to the `owner` address specified in the oracle contract's [`Forc.toml`](./project/contracts/oracle-contract/Forc.toml). This address is also configured in step 4 to have the maximum amount of the [BASE_ASSET](https://github.com/FuelLabs/sway/blob/master/sway-lib-std/src/constants.sw).                                                                                             |
+| WALLET_SECRET      | Private key of the first deterministic wallet provided by the [fuels-rs](https://github.com/FuelLabs/fuels-rs) sdk. This private key corresponds to the `owner` address specified in the oracle contract's [`Forc.toml`](./oracle-contract/Forc.toml). This address is also configured in step 4 to have the maximum amount of the [BASE_ASSET](https://github.com/FuelLabs/sway/blob/master/sway-lib-std/src/constants.sw).                                                                                             |
 | FUEL_PROVIDER_URL  | Fuel-core network url normally set as http://localhost:4000/graphql for development.                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
 
 ### Project
 
-In order to run the subsequent commands change into the following directory `/path/to/oracle/project/<here>`.
+In order to run the subsequent commands change into the following directory `/path/to/oracle/<here>`.
 
 #### Program compilation
 

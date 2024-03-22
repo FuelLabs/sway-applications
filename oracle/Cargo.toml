@@ -1,0 +1,7 @@
+[workspace]
+resolver = "2"
+members = [
+    "./oracle-contract",
+    "./oracle-node",
+    "./utils",
+]

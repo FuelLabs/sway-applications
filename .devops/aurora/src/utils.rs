@@ -41,7 +41,7 @@ pub(crate) fn repo_root() -> String {
 
 pub(crate) fn project_path(app: String, root: String) -> anyhow::Result<PathBuf> {
     Ok(
-        std::fs::canonicalize(format!("{}/{}/project", root, app)).map_err(|error| {
+        std::fs::canonicalize(format!("{}/{}/", root, app)).map_err(|error| {
             anyhow!(
                 "Failed to canonicalize path to project for app '{}': {}",
                 app,
