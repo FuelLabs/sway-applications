@@ -33,4 +33,4 @@ This sub-section details what a user is able to do e.g. click a button and "x, y
 
 ## Sequence Diagram
 
-![Oracle Sequence Diagram](../.docs/oracle_diagram.png)
+![Oracle Sequence Diagram](.docs/oracle_diagram.png)

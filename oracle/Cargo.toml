@@ -1,7 +1,7 @@
 [workspace]
 resolver = "2"
 members = [
-    "./contracts/oracle-contract",
+    "./oracle-contract",
     "./oracle-node",
     "./utils",
 ]
