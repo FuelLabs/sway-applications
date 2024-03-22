@@ -1,5 +1,4 @@
-pub const AMM_CONTRACT_BINARY_PATH: &str =
-    "../AMM-contract/out/debug/AMM-contract.bin";
+pub const AMM_CONTRACT_BINARY_PATH: &str = "../AMM-contract/out/debug/AMM-contract.bin";
 pub const AMM_CONTRACT_STORAGE_PATH: &str =
     "../AMM-contract/out/debug/AMM-contract-storage_slots.json";
 pub const ATOMIC_ADD_LIQUIDITY_SCRIPT_BINARY_PATH: &str = "./out/debug/atomic-add-liquidity.bin";
