@@ -18,7 +18,7 @@ pub const LEAF: u8 = 0x00;
 
 abigen!(Contract(
     name = "AirdropDistributor",
-    abi = "./contracts/distributor-contract/out/debug/distributor-contract-abi.json"
+    abi = "./airdrop-contract/out/debug/airdrop-contract-abi.json"
 ),);
 
 pub(crate) struct Metadata {
@@ -53,9 +53,9 @@ impl Node {
     }
 }
 
-const DISTRIBUTOR_CONTRACT_BINARY_PATH: &str = "./out/debug/distributor-contract.bin";
+const DISTRIBUTOR_CONTRACT_BINARY_PATH: &str = "./out/debug/airdrop-contract.bin";
 const DISTRIBUTOR_CONTRACT_STORAGE_PATH: &str =
-    "./out/debug/distributor-contract-storage_slots.json";
+    "./out/debug/airdrop-contract-storage_slots.json";
 
 pub(crate) async fn build_tree(
     key: u64,

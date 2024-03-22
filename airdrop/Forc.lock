@@ -3,7 +3,7 @@ name = "core"
 source = "path+from-root-C3992B43B72ADB8C"
 
 [[package]]
-name = "distributor-contract"
+name = "airdrop-contract"
 source = "member"
 dependencies = [
     "merkle_proof",

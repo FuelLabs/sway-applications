@@ -60,4 +60,4 @@ If you are interested in a functional overview then this is the section for you.
 
 ## Sequence Diagram
 
-![Airdrop Sequence Diagram](../.docs/airdrop-sequence-diagram.png)
+![Airdrop Sequence Diagram](.docs/airdrop-sequence-diagram.png)
