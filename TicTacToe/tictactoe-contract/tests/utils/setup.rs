@@ -9,7 +9,7 @@ use fuels::{
 
 abigen!(Contract(
     name = "TicTacToe",
-    abi = "./contracts/tictactoe-contract/out/debug/tictactoe-contract-abi.json"
+    abi = "./tictactoe-contract/out/debug/tictactoe-contract-abi.json"
 ));
 
 const TICTACTOE_CONTRACT_BINARY_PATH: &str = "./out/debug/tictactoe-contract.bin";
