@@ -23,7 +23,7 @@ The purpose of a timelock is to restrict the execution of a transaction to some 
 
 The transaction arguments are hashed and stored in a queue awaiting a subsequent call for execution. A user may choose to execute the transaction during the window of time or cancel the transaction by removing it from the queue.
 
-More information can be found in the [specification](./project/SPECIFICATION.md).
+More information can be found in the [specification](./SPECIFICATION.md).
 
 ## Project structure
 
@@ -33,28 +33,22 @@ The project consists of a smart contract.
 
 ```sh
 timelock
-├── project
-│   ├── contracts
-│   │   └── timelock-contract
-│   │       ├── src/main.sw
-│   │       └── tests/harness.rs
-│   ├── README.md
-│   └── SPECIFICATION.md
-├── ui
-│   ├── README.md
-│   └── SPECIFICATION.md
-└── README.md
+├── timelock-contract
+│   ├── src/main.sw
+│   └── tests/harness.rs
+├── README.md
+└── SPECIFICATION.md
 ```
 
 ## Running the project
 
 ### User interface
 
-TODO: The user interface does not currently exist therefore its [README.md](ui/README.md) and [SPECIFICATION.md](ui/SPECIFICATION.md) are empty.
+TODO: The user interface does not currently exist.
 
 ### Project
 
-In order to run the subsequent commands change into the following directory `/path/to/timelock/project/<here>`.
+In order to run the subsequent commands change into the following directory `/path/to/timelock/<here>`.
 
 #### Program compilation
 

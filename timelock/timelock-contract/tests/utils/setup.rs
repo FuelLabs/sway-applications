@@ -11,7 +11,7 @@ use fuels::{
 // Load abi from json
 abigen!(Contract(
     name = "Timelock",
-    abi = "./contracts/timelock-contract/out/debug/timelock-contract-abi.json"
+    abi = "./timelock-contract/out/debug/timelock-contract-abi.json"
 ));
 const TIMELOCK_CONTRACT_BINARY_PATH: &str = "./out/debug/timelock-contract.bin";
 const TIMELOCK_CONTRACT_STORAGE_PATH: &str = "./out/debug/timelock-contract-storage_slots.json";
