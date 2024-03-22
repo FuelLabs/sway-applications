@@ -98,4 +98,4 @@ If you are interested in a functional overview then this is the section for you.
 
 ## Sequence Diagram
 
-![Multisig wallet Sequence Diagram](../.docs/multisig-wallet-sequence-diagram.png)
+![Multisig wallet Sequence Diagram](.docs/multisig-wallet-sequence-diagram.png)

@@ -17,11 +17,11 @@ use sha3::{Digest, Keccak256};
 abigen!(
     Contract(
         name = "MultiSig",
-        abi = "./contracts/multisig-contract/out/debug/multisig-contract-abi.json"
+        abi = "./multisig-contract/out/debug/multisig-contract-abi.json"
     ),
     Contract(
         name = "TargetContract",
-        abi = "./contracts/test-artifacts/target-contract/out/debug/target-contract-abi.json"
+        abi = "./test-artifacts/target-contract/out/debug/target-contract-abi.json"
     )
 );
 
