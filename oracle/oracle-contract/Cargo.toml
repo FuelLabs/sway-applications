@@ -8,7 +8,7 @@ license = "Apache-2.0"
 [dependencies]
 fuels = { version = "0.53.0", features = ["fuel-core-lib"] }
 tokio = { version = "1.12", features = ["full"] }
-utils = { path = "../../utils" }
+utils = { path = "../utils" }
 
 [[test]]
 harness = true
