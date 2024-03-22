@@ -14,11 +14,11 @@ use sha2::{Digest, Sha256};
 abigen!(
     Contract(
         name = "F_NFT",
-        abi = "./contracts/f-NFT-contract/out/debug/f-NFT-contract-abi.json"
+        abi = "./f-NFT-contract/out/debug/f-NFT-contract-abi.json"
     ),
     Contract(
         name = "NFT",
-        abi = "./contracts/test-artifacts/out/debug/NFT-contract-abi.json"
+        abi = "./test-artifacts/out/debug/NFT-contract-abi.json"
     ),
 );
 

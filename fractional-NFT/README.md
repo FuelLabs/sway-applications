@@ -72,25 +72,21 @@ The project consists of a smart contract.
 
 ```sh
 fractional-NFT
-├── project
-│   ├── contracts
-│   │   └── f-NFT-contract
-│   │       └──src/main.sw
-│   └── SPECIFICATION.md
-├── ui
-│   └── SPECIFICATION.md
-└── README.md
+├── f-NFT-contract
+│   └──src/main.sw
+├── README.md
+└── SPECIFICATION.md
 ```
 
 ## Running the project
 
 ### User interface
 
-TODO: The user interface does not currently exist therefore its [SPECIFICATION.md](ui/SPECIFICATION.md) is empty.
+TODO: The user interface does not currently exist.
 
 ### Project
 
-In order to run the subsequent commands change into the following directory `/path/to/fractional-NFT/project/<here>`.
+In order to run the subsequent commands change into the following directory `/path/to/fractional-NFT/<here>`.
 
 #### Program compilation
 
