@@ -22,7 +22,7 @@
 An on-chain TicTacToe game, where two players compete to align 3 markers in a row. The game consists of a 3x3 grid.
 The game has been won if three markers were aligned in a row. Otherwise, it's a draw.
 
-More information can be found in the [specification](./project/SPECIFICATION.md).
+More information can be found in the [specification](./SPECIFICATION.md).
 
 ## Project structure
 
@@ -30,25 +30,22 @@ The project consists of a smart contract.
 
 ```sh
 TicTacToe
-├── project
-│   ├────── contracts
-│   │   └────── tictactoe-contract
-│   │       ├────── src/main.sw
-│   │       └────── tests/harness.rs
-│   ├────── README.md
-│   └────── SPECIFICATION.md
-├── app
-│   ├────── package.json
-│   ├────── index.html
-│   └────── src/main.tsx
-└── README.md
+├── tictactoe-contract
+│   ├── src/main.sw
+│   └── tests/harness.rs
+├── src
+│   ├── package.json
+│   ├── index.html
+│   └── main.tsx
+├── README.md
+└── SPECIFICATION.md
 ```
 
 ## Running the project
 
 ### User interface
 
-In order to run the subsequent commands change into the following directory `/path/to/TicTacToe/packages/app/<here>`.
+In order to run the subsequent commands change into the following directory `/path/to/TicTacToe/app/<here>`.
 
 #### Run the frontend application
 
@@ -61,7 +58,7 @@ You will need to install the [Fuel wallet](https://wallet.fuel.network/docs/inst
 
 ### Project
 
-In order to run the subsequent commands change into the following directory `/path/to/TicTacToe/packages/project/<here>`.
+In order to run the subsequent commands change into the following directory `/path/to/TicTacToe//<here>`.
 
 #### Program compilation
 

@@ -61,4 +61,4 @@ View function to return the players of the current game.
 
 ### Sequence Diagram
 
-![TicTacToe Sequence Diagram](../.docs/tictactoe-sequence-diagram.png)
+![TicTacToe Sequence Diagram](.docs/tictactoe-sequence-diagram.png)
