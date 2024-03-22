@@ -23,7 +23,7 @@ An English Auction is where a seller auctions off an asset with an initial price
 
 The English Auction application implements this idea in a decentralized manner without the need for a 3rd party and with strong settlement assurances. The application has been designed to utilize native assets and NFTs enabling users to auction off native assets / NFTs and place bids using native assets / NFTs.
 
-More information can be found in the [specification](./project/SPECIFICATION.md).
+More information can be found in the [specification](./SPECIFICATION.md).
 
 ## Repository structure
 
@@ -31,28 +31,22 @@ The project consists of a smart contract.
 
 ```sh
 english-auction
-├── project
-│   ├── contracts
-│   │   └── auction-contract
-│   │       ├── src/main.sw
-│   │       └── tests/harness.rs
-│   ├── README.md
-│   └── SPECIFICATION.md
-├── ui
-│   ├── README.md
-│   └── SPECIFICATION.md
-└── README.md
+├── auction-contract
+│   ├── src/main.sw
+│   └── tests/harness.rs
+├── README.md
+└── SPECIFICATION.md
 ```
 
 ## Running the project
 
 ### User interface
 
-TODO: The user interface does not currently exist therefore its [README.md](ui/README.md) and [SPECIFICATION.md](ui/SPECIFICATION.md) are empty.
+TODO: The user interface does not currently exist.
 
 ### Project
 
-In order to run the subsequent commands change into the following directory `/path/to/english-auction/project/<here>`.
+In order to run the subsequent commands change into the following directory `/path/to/english-auction/<here>`.
 
 #### Program compilation
 

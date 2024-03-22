@@ -9,7 +9,7 @@ use fuels::{
 
 abigen!(Contract(
     name = "EnglishAuction",
-    abi = "./contracts/auction-contract/out/debug/auction-contract-abi.json"
+    abi = "./auction-contract/out/debug/auction-contract-abi.json"
 ),);
 
 const AUCTION_CONTRACT_BINARY_PATH: &str = "./out/debug/auction-contract.bin";

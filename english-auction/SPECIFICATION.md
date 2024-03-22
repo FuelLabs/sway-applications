@@ -71,4 +71,4 @@ If you are interested in a functional overview then this is the section for you.
 
 ## Sequence Diagram
 
-![English Auction Sequence Diagram](../.docs/english-auction-sequence-diagram.png)
+![English Auction Sequence Diagram](.docs/english-auction-sequence-diagram.png)
