@@ -1,10 +1,10 @@
 [workspace]
 resolver = "2"
 members = [
-    "./contracts/AMM-contract",
-    "./contracts/exchange-contract",
-    "./scripts/atomic-add-liquidity",
-    "./scripts/swap-exact-input",
-    "./scripts/swap-exact-output",
+    "./AMM-contract",
+    "./exchange-contract",
+    "./atomic-add-liquidity",
+    "./swap-exact-input",
+    "./swap-exact-output",
     "./test-utils",
 ]
