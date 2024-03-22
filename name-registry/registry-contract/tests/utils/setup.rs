@@ -12,7 +12,7 @@ use fuels::{
 
 abigen!(Contract(
     name = "NameRegistry",
-    abi = "./contracts/registry-contract/out/debug/registry-contract-abi.json"
+    abi = "./registry-contract/out/debug/registry-contract-abi.json"
 ));
 
 pub(crate) const REGISTER_DURATION: u64 = 10000;
