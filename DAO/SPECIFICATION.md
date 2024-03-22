@@ -108,4 +108,4 @@ If you are interested in a functional overview then this is the section for you.
 
 ## Sequence diagram
 
-![DAO Sequence Diagram](../.docs/dao-sequence-diagram.png)
+![DAO Sequence Diagram](.docs/dao-sequence-diagram.png)
