@@ -5,4 +5,4 @@ license = "Apache-2.0"
 name = "interaction_script"
 
 [dependencies]
-libraries = { path = "../../libraries" }
+libraries = { path = "../libraries" }

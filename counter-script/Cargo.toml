@@ -1,5 +1,5 @@
 [workspace]
 resolver = "2"
 members = [
-    "./scripts/interaction_script",
+    "./interaction_script",
 ]

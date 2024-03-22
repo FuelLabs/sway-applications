@@ -11,19 +11,19 @@ use fuels::{
 abigen!(
     Contract(
         name = "CounterContract",
-        abi = "./contracts/counter/out/debug/counter_contract-abi.json"
+        abi = "./counter/out/debug/counter_contract-abi.json"
     ),
     Script(
         name = "InteractionScript",
-        abi = "./scripts/interaction_script/out/debug/interaction_script-abi.json"
+        abi = "./interaction_script/out/debug/interaction_script-abi.json"
     )
 );
 
 // File path constants
 const STORAGE_CONFIGURATION_PATH: &str =
-    "../../contracts/counter/out/debug/counter_contract-storage_slots.json";
-const CONTRACT_BIN_PATH: &str = "../../contracts/counter/out/debug/counter_contract.bin";
-const SCRIPT_BIN_PATH: &str = "../../scripts/interaction_script/out/debug/interaction_script.bin";
+    "../counter/out/debug/counter_contract-storage_slots.json";
+const CONTRACT_BIN_PATH: &str = "../counter/out/debug/counter_contract.bin";
+const SCRIPT_BIN_PATH: &str = "../interaction_script/out/debug/interaction_script.bin";
 
 // This function will setup the test environment for you. It will return a tuple containing the contract instance and the script instance.
 pub async fn setup() -> (
