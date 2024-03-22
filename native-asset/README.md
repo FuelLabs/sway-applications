@@ -66,25 +66,21 @@ The project consists of a smart contract.
 
 ```sh
 native-asset
-├── project
-│   ├── contracts
-│   │   └── native-asset-contract
-│   │       └──src/main.sw
-│   └── SPECIFICATION.md
-├── ui
-│   └── SPECIFICATION.md
-└── README.md
+├── native-asset-contract
+│   └──src/main.sw
+├── README.md
+└── SPECIFICATION.md
 ```
 
 ## Running the project
 
 ### User interface
 
-TODO: The user interface does not currently exist therefore its [SPECIFICATION.md](ui/SPECIFICATION.md) is empty.
+TODO: The user interface does not currently exist.
 
 ### Project
 
-In order to run the subsequent commands change into the following directory `/path/to/native-asset/project/<here>`.
+In order to run the subsequent commands change into the following directory `/path/to/native-asset/<here>`.
 
 #### Program compilation
 

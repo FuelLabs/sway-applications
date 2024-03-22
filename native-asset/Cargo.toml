@@ -1,5 +1,5 @@
 [workspace]
 resolver = "2"
 members = [
-    "./contracts/native-asset-contract",
+    "./native-asset-contract",
 ]
