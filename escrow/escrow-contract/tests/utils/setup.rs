@@ -10,7 +10,7 @@ use fuels::{
 
 abigen!(Contract(
     name = "Escrow",
-    abi = "./contracts/escrow-contract/out/debug/escrow-contract-abi.json"
+    abi = "./escrow-contract/out/debug/escrow-contract-abi.json"
 ),);
 
 const ESCROW_CONTRACT_BINARY_PATH: &str = "./out/debug/escrow-contract.bin";

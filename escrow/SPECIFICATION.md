@@ -135,4 +135,4 @@ If you are interested in a functional overview then this is the section for you.
 
 ## Sequence diagram
 
-![Escrow Sequence Diagram](../.docs/escrow-sequence-diagram.png)
+![Escrow Sequence Diagram](.docs/escrow-sequence-diagram.png)
