@@ -1,5 +1,5 @@
 [workspace]
 resolver = "2"
 members = [
-    "./predicates/swap-predicate",
+    "./swap-predicate",
 ]

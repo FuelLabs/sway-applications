@@ -11,7 +11,7 @@ use fuels::{
 
 abigen!(Predicate(
     name = "SwapPredicate",
-    abi = "./predicates/swap-predicate/out/debug/swap-predicate-abi.json"
+    abi = "./swap-predicate/out/debug/swap-predicate-abi.json"
 ));
 
 // The fee-paying base asset
