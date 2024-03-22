@@ -3,7 +3,7 @@ import { createConfig } from 'fuels';
 const isProd = process.env.NODE_ENV === 'production';
 
 export default createConfig({
-  workspace: '../project',
+  workspace: './',
   output: isProd ? './production-contract' : './src/contract-types',
   useBuiltinForc: false,
   useBuiltinFuelCore: true,
