@@ -26,7 +26,7 @@ In this implementation the price is paid in the base asset on the Fuel network.
 
 Both the asset and the price per 100 seconds are configuration time constants so can be easily changed to different values.
 
-More information can be found in the [specification](./project/SPECIFICATION.md).
+More information can be found in the [specification](./SPECIFICATION.md).
 
 ## Project structure
 
@@ -36,16 +36,9 @@ The project consists of a smart contract.
 
 ```sh
 name-registry
-├── project
-│   ├── contracts
-│   │   └── registry-contract
-│   │       ├── src/main.sw
-│   │       └── tests/harness.rs
-│   ├── README.md
-│   └── SPECIFICATION.md
-├── ui
-│   ├── README.md
-│   └── SPECIFICATION.md
+├── registry-contract
+│   ├── src/main.sw
+│   └── tests/harness.rs
 └── README.md
 ```
 
@@ -53,11 +46,11 @@ name-registry
 
 ### User interface
 
-TODO: The user interface does not currently exist therefore its [README.md](ui/README.md) and [SPECIFICATION.md](ui/SPECIFICATION.md) are empty.
+TODO: The user interface does not currently exist.
 
 ### Project
 
-In order to run the subsequent commands change into the following directory `/path/to/name-registry/project/<here>`.
+In order to run the subsequent commands change into the following directory `/path/to/name-registry/<here>`.
 
 #### Program compilation
 

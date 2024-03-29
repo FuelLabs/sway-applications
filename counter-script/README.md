@@ -23,7 +23,7 @@ The script is an example which demonstrates how to call contracts in an arbitrar
 
 The script manipulates contract state through ABI calls.
 
-More information can be found in the [specification](./project/SPECIFICATION.md).
+More information can be found in the [specification](./SPECIFICATION.md).
 
 ## Project structure
 
@@ -33,27 +33,20 @@ The project consists of a smart contract.
 
 ```sh
 counter-script
-├── project
-│   ├── contracts
-│   │   └── counter
-│   │       └── src/main.sw
-│   ├── libraries
-│   │   └── src/interface.sw
-│   ├── scripts
-│   │   └── interaction_script
-│   │       └── src/main.sw
-│   ├── tests/src/harness.rs
-│   ├── README.md
-│   └── SPECIFICATION.md
-├── ui
-│   ├── README.md
-│   └── SPECIFICATION.md
-└── README.md
+├── counter
+│   └── src/main.sw
+├── libraries
+│   └── src/interface.sw
+├── interaction_script
+│   ├── src/main.sw
+│   └── tests/src/harness.rs
+├── README.md
+└── SPECIFICATION.md
 ```
 
 ## Running the project
 
-In order to run the subsequent commands change into the following directory `/path/to/counter-script/project/<here>`.
+In order to run the subsequent commands change into the following directory `/path/to/counter-script/<here>`.
 
 #### Program compilation
 
