@@ -22,7 +22,7 @@ In this barebones NFT example project, there are a maximum of 100,000 NFTs that 
 
 ## Standards Implementations
 
-The project implements and follows the [SRC-20; Native Asset](https://github.com/FuelLabs/sway-standards/tree/master/standards/src20-native-asset), [SRC-3; Mint and Burn](https://github.com/FuelLabs/sway-standards/tree/master/standards/src3-mint-burn), and [SRC-7; Metadata](https://github.com/FuelLabs/sway-standards/tree/master/standards/src7-metadata) standards. It also uses the [Native Asset Library](https://github.com/FuelLabs/sway-libs/tree/master/libs/native-asset) to implement the basic functionality behind the standards.  
+The project implements and follows the [SRC-20; Native Asset](https://github.com/FuelLabs/sway-standards/blob/master/SRCs/src-20.md), [SRC-3; Mint and Burn](https://github.com/FuelLabs/sway-standards/blob/master/SRCs/src-3.md), and [SRC-7; Metadata](https://github.com/FuelLabs/sway-standards/blob/master/SRCs/src-7.md) standards. It also uses the [Native Asset Library](https://github.com/FuelLabs/sway-libs/tree/master/libs/native-asset) to implement the basic functionality behind the standards.  
 
 ### SRC-20
 
