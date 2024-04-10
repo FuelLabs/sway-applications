@@ -1,0 +1,12 @@
+mod burn;
+mod constructor;
+mod decimals;
+mod mint;
+mod name;
+mod owner;
+mod set_decimals;
+mod set_name;
+mod set_symbol;
+mod symbol;
+mod total_assets;
+mod total_supply;
