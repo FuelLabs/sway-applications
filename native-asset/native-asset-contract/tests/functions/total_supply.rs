@@ -73,7 +73,6 @@ mod success {
     }
 
     #[tokio::test]
-    #[ignore]
     async fn decrements_on_burn() {
         let (owner_wallet, other_wallet, id, instance_1, instance_2) = setup().await;
         let (asset_id_1, _asset_id_2, sub_id_1, _sub_id_2, _supply, owner_identity, other_identity) =
