@@ -4,11 +4,7 @@ mod errors;
 mod interface;
 
 use errors::{AmountError, MintError, SetError};
-use standards::{
-    src20::SRC20,
-    src3::SRC3,
-    src5::{SRC5, State},
-};
+use standards::{src20::SRC20, src3::SRC3, src5::{SRC5, State},};
 use sway_libs::{
     asset::{
         base::{
@@ -28,13 +24,19 @@ use sway_libs::{
         },
     },
     ownership::{
-        initialize_ownership, 
-        only_owner, 
-        _owner
+        _owner,
+        initialize_ownership,
+        only_owner,
     },
 };
 use interface::Constructor;
-use std::{call_frames::contract_id, context::msg_amount, hash::Hash, storage::storage_string::*, string::String};
+use std::{
+    call_frames::contract_id,
+    context::msg_amount,
+    hash::Hash,
+    storage::storage_string::*,
+    string::String,
+};
 
 storage {
     /// The total number of unique assets minted by this contract.
@@ -418,7 +420,7 @@ impl SetAssetAttributes for Contract {
     #[storage(write)]
     fn set_symbol(asset: AssetId, symbol: String) {
         only_owner();
-        
+
         require(
             storage
                 .symbol
