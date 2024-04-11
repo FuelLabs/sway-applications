@@ -94,36 +94,6 @@ mod success {
         assert_eq!(total_supply(&instance_1, asset_id_1).await, Some(0));
         assert_eq!(total_assets(&instance_1).await, 1);
     }
-
-    #[tokio::test]
-    async fn can_send_more_than_burn() {
-        let (owner_wallet, other_wallet, id, instance_1, instance_2) = setup().await;
-        let (asset_id_1, _asset_id_2, sub_id_1, _sub_id_2, _supply, owner_identity, other_identity) =
-            defaults(id, owner_wallet, other_wallet.clone());
-
-        constructor(&instance_1, owner_identity.clone()).await;
-
-        mint(&instance_1, other_identity, sub_id_1, 100).await;
-
-        assert_eq!(get_wallet_balance(&other_wallet, &asset_id_1).await, 100);
-        assert_eq!(total_supply(&instance_1, asset_id_1).await, Some(100));
-        assert_eq!(total_assets(&instance_1).await, 1);
-
-        let call_params = CallParameters::new(50, asset_id_1, 1_000_000);
-        instance_2
-            .methods()
-            .burn(sub_id_1, 10)
-            .with_tx_policies(TxPolicies::default().with_script_gas_limit(2_000_000))
-            .call_params(call_params)
-            .unwrap()
-            .call()
-            .await
-            .unwrap();
-
-        assert_eq!(get_wallet_balance(&other_wallet, &asset_id_1).await, 50);
-        assert_eq!(total_supply(&instance_1, asset_id_1).await, Some(90));
-        assert_eq!(total_assets(&instance_1).await, 1);
-    }
 }
 
 mod revert {
@@ -131,8 +101,8 @@ mod revert {
     use super::*;
 
     #[tokio::test]
-    #[should_panic(expected = "NotEnoughCoins")]
-    async fn when_not_enough_coins() {
+    #[should_panic(expected = "AmountMismatch")]
+    async fn when_amounts_do_not_match() {
         let (owner_wallet, other_wallet, id, instance_1, instance_2) = setup().await;
         let (asset_id_1, _asset_id_2, sub_id_1, _sub_id_2, _supply, owner_identity, other_identity) =
             defaults(id, owner_wallet, other_wallet.clone());
@@ -141,10 +111,10 @@ mod revert {
 
         mint(&instance_1, other_identity, sub_id_1, 100).await;
 
-        let call_params = CallParameters::new(100, asset_id_1, 1_000_000);
+        let call_params = CallParameters::new(50, asset_id_1, 1_000_000);
         instance_2
             .methods()
-            .burn(sub_id_1, 101)
+            .burn(sub_id_1, 51)
             .with_tx_policies(TxPolicies::default().with_script_gas_limit(2_000_000))
             .call_params(call_params)
             .unwrap()

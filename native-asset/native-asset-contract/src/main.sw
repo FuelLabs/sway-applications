@@ -3,7 +3,7 @@ contract;
 mod errors;
 mod interface;
 
-use errors::{MintError, SetError};
+use errors::{AmountError, MintError, SetError};
 use standards::{
     src20::SRC20,
     src3::SRC3,
@@ -34,7 +34,7 @@ use sway_libs::{
     },
 };
 use interface::Constructor;
-use std::{call_frames::contract_id, hash::Hash, storage::storage_string::*, string::String};
+use std::{call_frames::contract_id, context::msg_amount, hash::Hash, storage::storage_string::*, string::String};
 
 storage {
     /// The total number of unique assets minted by this contract.
@@ -271,6 +271,10 @@ impl SRC3 for Contract {
     /// * `sub_id`: [SubId] - The sub-identifier of the asset to burn.
     /// * `amount`: [u64] - The quantity of coins to burn.
     ///
+    /// # Reverts
+    ///
+    /// * When the `amount` provided and transaction amount do not match.
+    ///
     /// # Number of Storage Accesses
     ///
     /// * Reads: `1`
@@ -295,6 +299,7 @@ impl SRC3 for Contract {
     #[payable]
     #[storage(read, write)]
     fn burn(sub_id: SubId, amount: u64) {
+        require(msg_amount() == amount, AmountError::AmountMismatch);
         _burn(storage.total_supply, sub_id, amount);
     }
 }
