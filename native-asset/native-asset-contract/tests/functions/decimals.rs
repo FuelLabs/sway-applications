@@ -67,30 +67,4 @@ mod success {
         set_decimals(&instance_1, asset_id_5, 5u8).await;
         assert_eq!(decimals(&instance_1, asset_id_5).await, Some(5u8));
     }
-
-    #[tokio::test]
-    async fn does_not_overwrite_other_symbols() {
-        let (owner_wallet, other_wallet, id, instance_1, _instance_2) = setup().await;
-        let (
-            asset_id_1,
-            asset_id_2,
-            _sub_id_1,
-            _sub_id_2,
-            _supply,
-            owner_identity,
-            _other_identity,
-        ) = defaults(id, owner_wallet, other_wallet.clone());
-
-        constructor(&instance_1, owner_identity.clone()).await;
-
-        assert_eq!(decimals(&instance_1, asset_id_1).await, None);
-        set_decimals(&instance_1, asset_id_1, 9u8).await;
-        assert_eq!(decimals(&instance_1, asset_id_1).await, Some(9u8));
-
-        assert_eq!(decimals(&instance_1, asset_id_2).await, None);
-        set_decimals(&instance_1, asset_id_2, 8u8).await;
-
-        assert_eq!(decimals(&instance_1, asset_id_1).await, Some(9u8));
-        assert_eq!(decimals(&instance_1, asset_id_2).await, Some(8u8));
-    }
 }

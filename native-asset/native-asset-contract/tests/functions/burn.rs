@@ -2,7 +2,6 @@ use crate::utils::{
     interface::{burn, constructor, mint, total_assets, total_supply},
     setup::{defaults, get_wallet_balance, setup},
 };
-use fuels::prelude::{CallParameters, TxPolicies};
 
 mod success {
 
@@ -99,6 +98,7 @@ mod success {
 mod revert {
 
     use super::*;
+    use fuels::prelude::{CallParameters, TxPolicies, BASE_ASSET_ID};
 
     #[tokio::test]
     #[should_panic(expected = "AmountMismatch")]
@@ -115,6 +115,59 @@ mod revert {
         instance_2
             .methods()
             .burn(sub_id_1, 51)
+            .with_tx_policies(TxPolicies::default().with_script_gas_limit(2_000_000))
+            .call_params(call_params)
+            .unwrap()
+            .call()
+            .await
+            .unwrap();
+    }
+
+    #[tokio::test]
+    #[should_panic(expected = "NotEnoughCoins")]
+    async fn when_valid_sub_id() {
+        let (owner_wallet, other_wallet, id, instance_1, instance_2) = setup().await;
+        let (asset_id_1, _asset_id_2, sub_id_1, sub_id_2, _supply, owner_identity, other_identity) =
+            defaults(id, owner_wallet, other_wallet.clone());
+
+        constructor(&instance_1, owner_identity.clone()).await;
+
+        mint(&instance_1, other_identity, sub_id_1, 100).await;
+
+        let call_params = CallParameters::new(50, asset_id_1, 1_000_000);
+        instance_2
+            .methods()
+            .burn(sub_id_2, 50)
+            .with_tx_policies(TxPolicies::default().with_script_gas_limit(2_000_000))
+            .call_params(call_params)
+            .unwrap()
+            .call()
+            .await
+            .unwrap();
+    }
+
+    #[tokio::test]
+    #[should_panic(expected = "NotEnoughCoins")]
+    async fn when_valid_asset() {
+        let (owner_wallet, other_wallet, id, instance_1, instance_2) = setup().await;
+        let (
+            _asset_id_1,
+            _asset_id_2,
+            sub_id_1,
+            _sub_id_2,
+            _supply,
+            owner_identity,
+            other_identity,
+        ) = defaults(id, owner_wallet, other_wallet.clone());
+
+        constructor(&instance_1, owner_identity.clone()).await;
+
+        mint(&instance_1, other_identity, sub_id_1, 100).await;
+
+        let call_params = CallParameters::new(50, BASE_ASSET_ID, 1_000_000);
+        instance_2
+            .methods()
+            .burn(sub_id_1, 50)
             .with_tx_policies(TxPolicies::default().with_script_gas_limit(2_000_000))
             .call_params(call_params)
             .unwrap()
