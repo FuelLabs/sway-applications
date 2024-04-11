@@ -1,26 +1,45 @@
 contract;
 
 mod errors;
+mod interface;
 
 use errors::{MintError, SetError};
-use src20::SRC20;
-use src3::SRC3;
-use src7::{Metadata, SRC7};
-use asset::{
-    base::{
-        _name,
-        _set_name,
-        _set_symbol,
-        _symbol,
-        _total_assets,
-        _total_supply,
-        SetAssetAttributes,
+use interface::Constructor;
+use standards::{
+    src20::SRC20,
+    src3::SRC3,
+    src7::{Metadata, SRC7},
+    src5::{SRC5, State},
+};
+use sway_libs::{
+    asset::{
+        base::{
+            _name,
+            _set_name,
+            _set_symbol,
+            _symbol,
+            _total_assets,
+            _total_supply,
+            SetAssetAttributes,
+        },
+        metadata::*,
+        mint::{
+            _burn,
+            _mint,
+        },
     },
-    metadata::*,
-    mint::{
-        _burn,
-        _mint,
+    ownership::{
+        initialize_ownership, 
+        only_owner, 
+        _owner
     },
+    pausable::{
+        Pausable,
+        _pause,
+        _is_paused,
+        _unpause,
+        require_not_paused,
+    }
 };
 use std::{call_frames::contract_id, hash::Hash, storage::storage_string::*, string::String};
 
@@ -49,6 +68,12 @@ storage {
     /// is added by users and stored into storage.
     metadata: StorageMetadata = StorageMetadata {},
 }
+
+configurable {
+    /// The maximum number of NFTs that may be minted.
+    MAX_SUPPLY: u64 = 3,
+}
+
 
 impl SRC20 for Contract {
     /// Returns the total number of individual NFTs for this contract.
@@ -197,7 +222,7 @@ impl SRC20 for Contract {
     /// }
     /// ```
     #[storage(read)]
-    fn decimals(asset: AssetId) -> Option<u8> {
+    fn decimals(_asset: AssetId) -> Option<u8> {
         Some(0u8)
     }
 }
@@ -218,9 +243,10 @@ impl SRC3 for Contract {
     ///
     /// # Reverts
     ///
+    /// * When minting is paused.
     /// * When amount is greater than one.
     /// * When the asset has already been minted.
-    /// * When more than 100,000 NFTs have been minted.
+    /// * When more than the MAX_SUPPLY NFTs have been minted.
     ///
     /// # Number of Storage Accesses
     ///
@@ -239,6 +265,9 @@ impl SRC3 for Contract {
     /// ```
     #[storage(read, write)]
     fn mint(recipient: Identity, sub_id: SubId, amount: u64) {
+        require_not_paused();
+
+        // Checks to ensure this is a valid mint.
         let asset = AssetId::new(contract_id(), sub_id);
         require(amount == 1, MintError::CannotMintMoreThanOneNFTWithSubId);
         require(
@@ -253,9 +282,11 @@ impl SRC3 for Contract {
             storage
                 .total_assets
                 .try_read()
-                .unwrap_or(0) + amount <= 100_000,
+                .unwrap_or(0) + amount <= MAX_SUPPLY,
             MintError::MaxNFTsMinted,
         );
+
+        // Mint the NFT
         let _ = _mint(
             storage
                 .total_assets,
@@ -266,6 +297,7 @@ impl SRC3 for Contract {
             amount,
         );
     }
+
     /// Burns assets sent with the given `sub_id`.
     ///
     /// # Additional Information
@@ -297,6 +329,7 @@ impl SRC3 for Contract {
     ///     } (ZERO_B256, 1);
     /// }
     /// ```
+    #[payable]
     #[storage(read, write)]
     fn burn(sub_id: SubId, amount: u64) {
         _burn(storage.total_supply, sub_id, amount);
@@ -338,6 +371,38 @@ impl SRC7 for Contract {
     }
 }
 
+impl SRC5 for Contract {
+    /// Returns the owner.
+    ///
+    /// # Return Values
+    ///
+    /// * [State] - Represents the state of ownership for this contract.
+    ///
+    /// # Number of Storage Accesses
+    ///
+    /// * Reads: `1`
+    ///
+    /// # Examples
+    ///
+    /// ```sway
+    /// use standards::src5::SRC5;
+    ///
+    /// fn foo(contract_id: ContractId) {
+    ///     let ownership_abi = abi(contract_id, SRC_5);
+    ///
+    ///     match ownership_abi.owner() {
+    ///         State::Uninitalized => log("The ownership is uninitalized"),
+    ///         State::Initialized(owner) => log("The ownership is initalized"),
+    ///         State::Revoked => log("The ownership is revoked"),
+    ///     }
+    /// }
+    /// ```
+    #[storage(read)]
+    fn owner() -> State {
+        _owner()
+    }
+}
+
 impl SetAssetAttributes for Contract {
     /// Sets the name of an asset.
     ///
@@ -348,6 +413,7 @@ impl SetAssetAttributes for Contract {
     ///
     /// # Reverts
     ///
+    /// * When the caller is not the owner of the contract.
     /// * When the name has already been set for an asset.
     ///
     /// # Number of Storage Accesses
@@ -372,6 +438,7 @@ impl SetAssetAttributes for Contract {
     /// ```
     #[storage(write)]
     fn set_name(asset: AssetId, name: String) {
+        only_owner();
         require(
             storage
                 .name
@@ -382,6 +449,7 @@ impl SetAssetAttributes for Contract {
         );
         _set_name(storage.name, asset, name);
     }
+
     /// Sets the symbol of an asset.
     ///
     /// # Arguments
@@ -391,6 +459,7 @@ impl SetAssetAttributes for Contract {
     ///
     /// # Reverts
     ///
+    /// * When the caller is not the owner of the contract.
     /// * When the symbol has already been set for an asset.
     ///
     /// # Number of Storage Accesses
@@ -415,6 +484,7 @@ impl SetAssetAttributes for Contract {
     /// ```
     #[storage(write)]
     fn set_symbol(asset: AssetId, symbol: String) {
+        only_owner();
         require(
             storage
                 .symbol
@@ -425,6 +495,7 @@ impl SetAssetAttributes for Contract {
         );
         _set_symbol(storage.symbol, asset, symbol);
     }
+
     /// This function should never be called.
     ///
     /// # Additional Information
@@ -437,7 +508,7 @@ impl SetAssetAttributes for Contract {
     ///
     /// * When the function is called.
     #[storage(write)]
-    fn set_decimals(asset: AssetId, decimals: u8) {
+    fn set_decimals(_asset: AssetId, _decimals: u8) {
         require(false, SetError::ValueAlreadySet);
     }
 }
@@ -485,6 +556,125 @@ impl SetAssetMetadata for Contract {
         _set_metadata(storage.metadata, asset, key, metadata);
     }
 }
+
+impl Pausable for Contract {
+    /// Pauses the contract.
+    ///
+    /// # Reverts
+    ///
+    /// * When the caller is not the contract owner.
+    ///
+    /// # Number of Storage Accesses
+    ///
+    /// * Writes: `1`
+    ///
+    /// # Examples
+    ///
+    /// ```sway
+    /// use sway_libs::pausable::Pausable;
+    ///
+    /// fn foo(contract_id: ContractId) {
+    ///     let pausable_abi = abi(Pausable, contract_id);
+    ///     pausable_abi.pause();
+    ///     assert(pausable_abi.is_paused());
+    /// }
+    /// ```
+    #[storage(write)]
+    fn pause() {
+        only_owner();
+        _pause();
+    }
+
+    /// Returns whether the contract is paused.
+    ///
+    /// # Returns
+    ///
+    /// * [bool] - The pause state for the contract.
+    ///
+    /// # Number of Storage Accesses
+    ///
+    /// * Reads: `1`
+    ///
+    /// # Examples
+    ///
+    /// ```sway
+    /// use sway_libs::pausable::Pausable;
+    ///
+    /// fn foo(contract_id: ContractId) {
+    ///     let pausable_abi = abi(Pausable, contract_id);
+    ///     assert(!pausable_abi.is_paused());
+    /// }
+    /// ```
+    #[storage(read)]
+    fn is_paused() -> bool {
+        _is_paused()
+    }
+
+    /// Unpauses the contract.
+    ///
+    /// # Reverts
+    ///
+    /// * When the caller is not the contract owner.
+    ///
+    /// # Number of Storage Accesses
+    ///
+    /// * Writes: `1`
+    ///
+    /// # Examples
+    ///
+    /// ```sway
+    /// use sway_libs::pausable::Pausable;
+    ///
+    /// fn foo(contract_id: ContractId) {
+    ///     let pausable_abi = abi(Pausable, contract_id);
+    ///     pausable_abi.unpause();
+    ///     assert(!pausable_abi.is_paused());
+    /// }
+    /// ```
+    #[storage(write)]
+    fn unpause() {
+        only_owner();
+        _unpause();
+    }
+}
+
+impl Constructor for Contract {
+    /// Sets the defaults for the contract.
+    ///
+    /// # Arguments
+    ///
+    /// * `owner`: [Identity] - The `Identity` that will be the first owner.
+    ///
+    /// # Reverts
+    ///
+    /// * When ownership has been set before.
+    ///
+    /// # Number of Storage Acesses
+    ///
+    /// * Reads: `1`
+    /// * Write: `1`
+    ///
+    /// # Examples
+    ///
+    /// ```sway
+    /// use standards::src5::SRC5;
+    /// use nft::Constructor;
+    ///
+    /// fn foo(contract: ContractId, owner: Identity) {
+    ///     let src_5_abi = abi(SRC5, contract.bits());
+    ///     assert(src_5_abi.owner() == State::Uninitialized);
+    ///
+    ///     let constructor_abi = abi(Constructor, contract.bits());
+    ///     constructor_abi.constructor(owner);
+    ///     assert(src_5_abi.owner() == State::Initialized(owner));
+    /// }
+    /// ```
+    #[storage(read, write)]
+    fn constructor(owner: Identity) {
+        initialize_ownership(owner);
+    }
+}
+
 
 // Tests
 

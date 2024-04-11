@@ -2,41 +2,29 @@
 name = "NFT-contract"
 source = "member"
 dependencies = [
-    "asset",
-    "src20",
-    "src3",
-    "src7",
+    "standards",
     "std",
-]
-
-[[package]]
-name = "asset"
-source = "git+https://github.com/FuelLabs/sway-libs?tag=v0.18.0#8d196e9379463d4596ac582a20a84ed52ff58c69"
-dependencies = [
-    "src7",
-    "std",
+    "sway_libs",
 ]
 
 [[package]]
 name = "core"
-source = "path+from-root-C3992B43B72ADB8C"
+source = "path+from-root-052C5FCD3614F738"
 
 [[package]]
-name = "src20"
-source = "git+https://github.com/FuelLabs/sway-standards?tag=v0.3.3#4198b4b07449ad16104cc8a0501f3013670fdcfd"
-dependencies = ["std"]
-
-[[package]]
-name = "src3"
-source = "git+https://github.com/FuelLabs/sway-standards?tag=v0.3.3#4198b4b07449ad16104cc8a0501f3013670fdcfd"
-dependencies = ["std"]
-
-[[package]]
-name = "src7"
-source = "git+https://github.com/FuelLabs/sway-standards?tag=v0.3.3#4198b4b07449ad16104cc8a0501f3013670fdcfd"
+name = "standards"
+source = "git+https://github.com/FuelLabs/sway-standards?branch=bitzoic-bump-v0.52.1#434c11e793c2c2bdb5d45961bde4b17681af1b57"
 dependencies = ["std"]
 
 [[package]]
 name = "std"
-source = "git+https://github.com/fuellabs/sway?tag=v0.49.1#2ac7030570f22510b0ac2a7b5ddf7baa20bdc0e1"
+source = "git+https://github.com/fuellabs/sway?tag=v0.52.0#98d8f4cadbac34f232926b9a44b1170ec9da425d"
 dependencies = ["core"]
+
+[[package]]
+name = "sway_libs"
+source = "git+https://github.com/FuelLabs/sway-libs?branch=bitzoic-bump-v0.52#8aed8c56cb2cbb3140ae2a6b8e6811470364294b"
+dependencies = [
+    "standards",
+    "std",
+]
