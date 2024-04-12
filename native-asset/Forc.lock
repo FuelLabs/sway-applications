@@ -6,7 +6,7 @@ source = "path+from-root-052C5FCD3614F738"
 name = "native-asset-contract"
 source = "member"
 dependencies = [
-    "standards",
+    "standards git+https://github.com/FuelLabs/sway-standards?branch=bitzoic-bump-v0.52.1#434c11e793c2c2bdb5d45961bde4b17681af1b57",
     "std",
     "sway_libs",
 ]
@@ -17,14 +17,19 @@ source = "git+https://github.com/FuelLabs/sway-standards?branch=bitzoic-bump-v0.
 dependencies = ["std"]
 
 [[package]]
+name = "standards"
+source = "git+https://github.com/FuelLabs/sway-standards?branch=bitzoic-bump-v0.53.0#c376885a0ba11a1670c435fe82a07c348c74c88f"
+dependencies = ["std"]
+
+[[package]]
 name = "std"
 source = "git+https://github.com/fuellabs/sway?tag=v0.52.0#98d8f4cadbac34f232926b9a44b1170ec9da425d"
 dependencies = ["core"]
 
 [[package]]
 name = "sway_libs"
-source = "git+https://github.com/FuelLabs/sway-libs?branch=bitzoic-bump-v0.52#8aed8c56cb2cbb3140ae2a6b8e6811470364294b"
+source = "git+https://github.com/FuelLabs/sway-libs?branch=bitzoic-bump-v0.52#cb6ccae2834f01cecc8b691b1bfa30bd84e6a220"
 dependencies = [
-    "standards",
+    "standards git+https://github.com/FuelLabs/sway-standards?branch=bitzoic-bump-v0.53.0#c376885a0ba11a1670c435fe82a07c348c74c88f",
     "std",
 ]

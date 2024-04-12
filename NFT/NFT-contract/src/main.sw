@@ -18,7 +18,7 @@ use sway_libs::{
             SetAssetAttributes,
         },
         metadata::*,
-        mint::{
+        supply::{
             _burn,
             _mint,
         },
