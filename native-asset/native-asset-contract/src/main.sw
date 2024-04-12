@@ -41,7 +41,7 @@ use std::{
 storage {
     /// The total number of unique assets minted by this contract.
     total_assets: u64 = 0,
-    /// The total number of coins minted for a particular asset.
+    /// The current total number of coins minted for a particular asset.
     total_supply: StorageMap<AssetId, u64> = StorageMap {},
     /// The name associated with a particular asset.
     name: StorageMap<AssetId, StorageString> = StorageMap {},
@@ -49,6 +49,8 @@ storage {
     symbol: StorageMap<AssetId, StorageString> = StorageMap {},
     /// The decimals associated with a particular asset.
     decimals: StorageMap<AssetId, u8> = StorageMap {},
+    /// The total number of coins ever minted for an asset.
+    cumulative_supply: StorageMap<AssetId, u64> = StorageMap {},
 }
 
 configurable {
@@ -211,6 +213,11 @@ impl SRC20 for Contract {
 impl SRC3 for Contract {
     /// Mints new assets using the `sub_id` sub-identifier.
     ///
+    /// # Additional Information
+    ///
+    ///
+    /// NOTE: This function will only ever let MAX_SUPPLY coins be minted, even if other coins are burned reducing the total supply.
+    ///
     /// # Arguments
     ///
     /// * `recipient`: [Identity] - The user to which the newly minted assets are transferred to.
@@ -243,14 +250,14 @@ impl SRC3 for Contract {
         only_owner();
 
         let asset = AssetId::new(contract_id(), sub_id);
+        let cumulative_supply = storage.cumulative_supply.get(asset).try_read().unwrap_or(0);
         require(
-            storage
-                .total_supply
-                .get(asset)
-                .try_read()
-                .unwrap_or(0) + amount < MAX_SUPPLY,
+            cumulative_supply + amount <= MAX_SUPPLY,
             MintError::MaxMinted,
         );
+        storage
+            .cumulative_supply
+            .insert(asset, cumulative_supply + amount);
         let _ = _mint(
             storage
                 .total_assets,
@@ -265,8 +272,8 @@ impl SRC3 for Contract {
     ///
     /// # Additional Information
     ///
-    /// NOTE: The sha-256 hash of `(ContractId, SubId)` must match the `AssetId` where `ContractId` is the id of
-    /// the implementing contract and `SubId` is the given `sub_id` argument.
+    /// NOTE: The sha-256 hash of `(ContractId, SubId)` must match the `AssetId` where `ContractId` is the id of the implementing contract and `SubId` is the given `sub_id` argument.
+    /// NOTE: This function reduces the total supply.
     ///
     /// # Arguments
     ///

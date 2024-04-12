@@ -1,5 +1,5 @@
 use crate::utils::{
-    interface::{constructor, mint, total_assets, total_supply},
+    interface::{burn, constructor, mint, total_assets, total_supply},
     setup::{defaults, get_wallet_balance, setup},
 };
 
@@ -48,6 +48,25 @@ mod success {
         assert_eq!(total_supply(&instance_1, asset_id_1).await, Some(100));
         assert_eq!(total_supply(&instance_1, asset_id_2).await, Some(200));
         assert_eq!(total_assets(&instance_1).await, 2);
+    }
+
+    #[tokio::test]
+    async fn can_mint_max_supply() {
+        let (owner_wallet, other_wallet, id, instance_1, _instance_2) = setup().await;
+        let (asset_id_1, _asset_id_2, sub_id_1, _sub_id_2, supply, owner_identity, other_identity) =
+            defaults(id, owner_wallet, other_wallet.clone());
+
+        constructor(&instance_1, owner_identity.clone()).await;
+
+        assert_eq!(get_wallet_balance(&other_wallet, &asset_id_1).await, 0);
+        assert_eq!(total_supply(&instance_1, asset_id_1).await, None);
+        assert_eq!(total_assets(&instance_1).await, 0);
+
+        mint(&instance_1, other_identity, sub_id_1, supply).await;
+
+        assert_eq!(get_wallet_balance(&other_wallet, &asset_id_1).await, supply);
+        assert_eq!(total_supply(&instance_1, asset_id_1).await, Some(supply));
+        assert_eq!(total_assets(&instance_1).await, 1);
     }
 }
 
@@ -101,5 +120,20 @@ mod revert {
         constructor(&instance_1, owner_identity.clone()).await;
 
         mint(&instance_1, other_identity, sub_id_1, supply + 1).await;
+    }
+
+    #[tokio::test]
+    #[should_panic(expected = "MaxMinted")]
+    async fn when_minting_max_supply_after_burn() {
+        let (owner_wallet, other_wallet, id, instance_1, instance_2) = setup().await;
+        let (asset_id_1, _asset_id_2, sub_id_1, _sub_id_2, supply, owner_identity, other_identity) =
+            defaults(id, owner_wallet, other_wallet.clone());
+
+        constructor(&instance_1, owner_identity.clone()).await;
+        mint(&instance_1, other_identity.clone(), sub_id_1, supply).await;
+
+        burn(&instance_2, asset_id_1, sub_id_1, 1).await;
+
+        mint(&instance_1, other_identity, sub_id_1, 1).await;
     }
 }
