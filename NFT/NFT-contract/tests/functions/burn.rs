@@ -1,5 +1,5 @@
 use crate::utils::{
-    interface::{burn, constructor, mint, total_assets, total_supply},
+    interface::{burn, constructor, mint, pause, total_assets, total_supply},
     setup::{defaults, get_wallet_balance, setup},
 };
 use fuels::prelude::{CallParameters, TxPolicies, BASE_ASSET_ID};
@@ -191,5 +191,28 @@ mod revert {
             .call()
             .await
             .unwrap();
+    }
+
+    #[tokio::test]
+    #[should_panic(expected = "Paused")]
+    async fn when_contract_is_paused() {
+        let (owner_wallet, other_wallet, id, instance_1, instance_2) = setup().await;
+        let (
+            asset_id_1,
+            _asset_id_2,
+            _asset_id_3,
+            sub_id_1,
+            _sub_id_2,
+            _sub_id_3,
+            owner_identity,
+            other_identity,
+        ) = defaults(id, owner_wallet, other_wallet.clone());
+
+        constructor(&instance_1, owner_identity.clone()).await;
+
+        mint(&instance_1, other_identity, sub_id_1, 1).await;
+        pause(&instance_1).await;
+
+        burn(&instance_2, asset_id_1, sub_id_1, 1).await;
     }
 }

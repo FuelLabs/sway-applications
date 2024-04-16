@@ -237,7 +237,7 @@ impl SRC3 for Contract {
     ///
     /// # Reverts
     ///
-    /// * When minting is paused.
+    /// * When the contract is paused.
     /// * When amount is greater than one.
     /// * When the asset has already been minted.
     /// * When more than the MAX_SUPPLY NFTs have been minted.
@@ -304,6 +304,10 @@ impl SRC3 for Contract {
     /// * `sub_id`: [SubId] - The sub-identifier of the asset to burn.
     /// * `amount`: [u64] - The quantity of coins to burn.
     ///
+    /// # Reverts
+    ///
+    /// * When the contract is paused.
+    ///
     /// # Number of Storage Accesses
     ///
     /// * Reads: `1`
@@ -326,6 +330,7 @@ impl SRC3 for Contract {
     #[payable]
     #[storage(read, write)]
     fn burn(sub_id: SubId, amount: u64) {
+        require_not_paused();
         _burn(storage.total_supply, sub_id, amount);
     }
 }
