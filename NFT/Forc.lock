@@ -13,7 +13,7 @@ source = "path+from-root-052C5FCD3614F738"
 
 [[package]]
 name = "standards"
-source = "git+https://github.com/FuelLabs/sway-standards?branch=bitzoic-bump-v0.53.0#c376885a0ba11a1670c435fe82a07c348c74c88f"
+source = "git+https://github.com/FuelLabs/sway-standards?tag=v0.4.0#f197f894cca18190c6e4f8eef3143e0f958658ed"
 dependencies = ["std"]
 
 [[package]]
@@ -23,7 +23,7 @@ dependencies = ["core"]
 
 [[package]]
 name = "sway_libs"
-source = "git+https://github.com/FuelLabs/sway-libs?branch=bitzoic-bump-v0.52#cb6ccae2834f01cecc8b691b1bfa30bd84e6a220"
+source = "git+https://github.com/FuelLabs/sway-libs?tag=v0.20.0#57dbed52791db84f973338c15e6171c8e310e052"
 dependencies = [
     "standards",
     "std",

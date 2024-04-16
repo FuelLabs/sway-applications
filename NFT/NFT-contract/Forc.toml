@@ -5,5 +5,5 @@ license = "Apache-2.0"
 name = "NFT-contract"
 
 [dependencies]
-standards = { git = "https://github.com/FuelLabs/sway-standards", branch = "bitzoic-bump-v0.53.0" }
-sway_libs = { git = "https://github.com/FuelLabs/sway-libs", branch = "bitzoic-bump-v0.52" }
+standards = { git = "https://github.com/FuelLabs/sway-standards", tag = "v0.4.0" }
+sway_libs = { git = "https://github.com/FuelLabs/sway-libs", tag = "v0.20.0" }
