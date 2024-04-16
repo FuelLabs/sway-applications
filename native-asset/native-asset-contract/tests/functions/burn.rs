@@ -125,7 +125,7 @@ mod revert {
 
     #[tokio::test]
     #[should_panic(expected = "NotEnoughCoins")]
-    async fn when_valid_sub_id() {
+    async fn when_invalid_sub_id() {
         let (owner_wallet, other_wallet, id, instance_1, instance_2) = setup().await;
         let (asset_id_1, _asset_id_2, sub_id_1, sub_id_2, _supply, owner_identity, other_identity) =
             defaults(id, owner_wallet, other_wallet.clone());
@@ -148,7 +148,7 @@ mod revert {
 
     #[tokio::test]
     #[should_panic(expected = "NotEnoughCoins")]
-    async fn when_valid_asset() {
+    async fn when_invalid_asset() {
         let (owner_wallet, other_wallet, id, instance_1, instance_2) = setup().await;
         let (
             _asset_id_1,
