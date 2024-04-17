@@ -1,5 +1,5 @@
 [toolchain]
-channel = "nightly-2024-04-09"
+channel = "nightly-2024-04-12"
 
 [components]
 forc = "0.53.0"
