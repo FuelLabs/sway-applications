@@ -103,7 +103,7 @@ mod success {
         assert_eq!(metadata(&instance_1, asset_id_1, key.clone()).await, None);
         set_metadata(&instance_1, asset_id_1, key.clone(), metadata1.clone()).await;
         assert_eq!(
-            metadata(&instance_1, asset_id_1.clone(), key.clone()).await,
+            metadata(&instance_1, asset_id_1, key.clone()).await,
             Some(metadata1.clone())
         );
 
