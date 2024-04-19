@@ -16,7 +16,7 @@
 
 ## Overview
 
-A fractional non-fungible token (F-NFT) is a unique asset that represents a share or portion of ownership over a non-fungible token (NFT). On the Fuel Network, all NFTs and F-NFTs are [Native Assets](https://docs.fuel.network/docs/sway/blockchain-development/native_assets). F-NFTs are often created to sell partial ownership of an NFT on a secondary market, espeically in royalty NFTs to split a profit.
+A fractional non-fungible token (F-NFT) is a unique asset that represents a share or portion of ownership over a non-fungible token (NFT). On the Fuel Network, all NFTs and F-NFTs are [Native Assets](https://docs.fuel.network/docs/sway/blockchain-development/native_assets). F-NFTs are often created to sell partial ownership of an NFT on a secondary market, especially in royalty NFTs to split a profit.
 
 In this barebones F-NFT example project, where locking a NFT into the vault will issue 100,000,000 shares. When all shares are sent to the vault in the same transaction, the NFT is unlocked and can be withdrawn.
 

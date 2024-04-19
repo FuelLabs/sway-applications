@@ -20,7 +20,7 @@ async fn main() {
     handle.await.unwrap();
 }
 
-/// Iniitialize and return objects for use in main
+/// Initialize and return objects for use in main
 fn setup() -> (Oracle<WalletUnlocked>, reqwest::Client, Url) {
     let root_env_path = env::current_dir().unwrap();
     let env_path = root_env_path.join("project").join("oracle-node");
