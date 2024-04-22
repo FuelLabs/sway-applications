@@ -67,7 +67,7 @@ abi EnglishAuction {
     /// * When the native asset amount sent and the `sell_asset` enum do not match.
     /// * When the native asset type sent and the `sell_asset` enum do not match.
     /// * When the `initial_price` for NFTs is not one.
-    /// * When transfering of the NFT asset to the contract failed.
+    /// * When transferring of the NFT asset to the contract failed.
     #[payable]
     #[storage(read, write)]
     fn create(

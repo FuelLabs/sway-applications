@@ -86,7 +86,7 @@ abi DaoVoting {
     ///
     /// # Arguments
     ///
-    /// * `proposal_id`: [u64] - Identifier used to specifiy a proposal (0 <= proposal_id < proposal_count).
+    /// * `proposal_id`: [u64] - Identifier used to specify a proposal (0 <= proposal_id < proposal_count).
     ///
     /// # Reverts
     ///
@@ -143,7 +143,7 @@ abi Info {
     ///
     /// # Arguments
     ///
-    /// * `proposal_id`: [u64] - Identifier used to specifiy a proposal (0 <= proposal_id < proposal_count).
+    /// * `proposal_id`: [u64] - Identifier used to specify a proposal (0 <= proposal_id < proposal_count).
     /// * `user`: [Identity] - Identity to look up votes spent on a specified proposal.
     ///
     /// # Returns
