@@ -17,19 +17,19 @@ enum SwapError {
 }
 
 // TODO: Remove this when its automatically implemented
-impl AbiEncode for SwapError {
-    fn abi_encode(self, ref mut buffer: Buffer) {
-        match self {
-            SwapError::ExcessiveSlippage(amount) => {
-                buffer.push(amount);
-            }
-            SwapError::PairExchangeNotRegistered(asset_pair) => {
-                buffer.push(asset_pair.0);
-                buffer.push(asset_pair.1);
-            }
-        }
-    }
-}
+// impl AbiEncode for SwapError {
+//     fn abi_encode(self, ref mut buffer: Buffer) {
+//         match self {
+//             SwapError::ExcessiveSlippage(amount) => {
+//                 buffer.push(amount);
+//             }
+//             SwapError::PairExchangeNotRegistered(asset_pair) => {
+//                 buffer.push(asset_pair.0);
+//                 buffer.push(asset_pair.1);
+//             }
+//         }
+//     }
+// }
 
 configurable {
     /// The ContractId of the AMM contract.

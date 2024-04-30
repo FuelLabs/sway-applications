@@ -11,7 +11,7 @@ impl ConnectFour for Contract {
         Game::new(player_one, player_two)
     }
 
-    fn move(column: u64, game: Game) -> Game {
+    fn move(_column: u64, game: Game) -> Game {
         game
     }
 }

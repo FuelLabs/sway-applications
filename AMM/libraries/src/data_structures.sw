@@ -3,9 +3,9 @@ library;
 /// Information for a particular asset.
 pub struct Asset {
     /// Identifier of asset.
-    id: AssetId,
+    pub id: AssetId,
     /// Amount of asset that can represent reserve amount, deposit amount, withdraw amount and more depending on the context.
-    amount: u64,
+    pub amount: u64,
 }
 
 impl Asset {
@@ -27,9 +27,9 @@ impl Asset {
 /// Information for a particular pair of assets.
 pub struct AssetPair {
     /// One of the assets in the pair.
-    a: Asset,
+    pub a: Asset,
     /// One of the assets in the pair.
-    b: Asset,
+    pub b: Asset,
 }
 
 impl AssetPair {
@@ -145,11 +145,11 @@ impl core::ops::Subtract for AssetPair {
 /// Information about the liquidity for a specific asset pair.
 pub struct LiquidityParameters {
     /// The asset pair of the deposits.
-    deposits: AssetPair,
+    pub deposits: AssetPair,
     /// The amount of liquidity.
-    liquidity: u64,
+    pub liquidity: u64,
     /// The limit on block height for operation.
-    deadline: u64,
+    pub deadline: u64,
 }
 
 /// Information about a specific pool.
@@ -163,23 +163,23 @@ pub struct PoolInfo {
 /// Information regarding previewing the adding of liquidity.
 pub struct PreviewAddLiquidityInfo {
     /// The asset to be added to keep the ratio of the assets that make up the pool. If the ratio is not yet known, i.e. there is no liquidity, then the amount is 0 for preview purposes.
-    other_asset_to_add: Asset,
+    pub other_asset_to_add: Asset,
     /// The liquidity pool asset to be minted and transferred to the sender. If the ratio is not yet known, i.e. there is no liquidity, then the ratio is assumed to be 1 for preview purposes.
-    liquidity_asset_to_receive: Asset,
+    pub liquidity_asset_to_receive: Asset,
 }
 
 /// Information regarding previewing a swap.
 pub struct PreviewSwapInfo {
     /// Other asset to either input or output for a given swap.
-    other_asset: Asset,
+    pub other_asset: Asset,
     /// Whether the output reserve is sufficient for swap.
-    sufficient_reserve: bool,
+    pub sufficient_reserve: bool,
 }
 
 /// Information regarding removing liquidity.
 pub struct RemoveLiquidityInfo {
     /// Pool assets that are removed from the reserves and transferred to the sender.
-    removed_amounts: AssetPair,
+    pub removed_amounts: AssetPair,
     /// The amount of liquidity that is burned.
-    burned_liquidity: Asset,
+    pub burned_liquidity: Asset,
 }

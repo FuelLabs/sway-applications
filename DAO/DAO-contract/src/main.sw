@@ -11,6 +11,7 @@ use std::{
     auth::msg_sender,
     block::height,
     call_frames::msg_asset_id,
+    constants::ZERO_B256,
     context::{
         msg_amount,
         this_balance,
@@ -44,7 +45,7 @@ storage {
     /// The initialization state of the contract.
     state: State = State::NotInitialized,
     /// Contract Id of the governance asset
-    asset: AssetId = AssetId::base_asset_id(),
+    asset: AssetId = AssetId::from(ZERO_B256),
     /// The amount of votes a user has used on a proposal
     votes: StorageMap<(Identity, u64), Votes> = StorageMap {},
 }

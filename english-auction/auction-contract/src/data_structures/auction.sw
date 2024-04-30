@@ -4,25 +4,25 @@ use ::data_structures::state::State;
 
 pub struct Auction {
     /// The asset which will be accepted in return for the selling asset.
-    bid_asset: AssetId,
+    pub bid_asset: AssetId,
     /// The block at which the auction's bidding period should end.
-    end_block: u32,
+    pub end_block: u32,
     /// The current highest bid.
-    highest_bid: u64,
+    pub highest_bid: u64,
     /// The current highest bidder of the auction.
-    highest_bidder: Option<Identity>,
+    pub highest_bidder: Option<Identity>,
     /// The starting price for the auction.
-    initial_price: u64,
+    pub initial_price: u64,
     /// The price at which the selling asset may be bought outright.
-    reserve_price: Option<u64>,
+    pub reserve_price: Option<u64>,
     /// The asset that is being auctioned off.
-    sell_asset: AssetId,
+    pub sell_asset: AssetId,
     /// The amount of the asset that is being auctioned off.
-    sell_asset_amount: u64,
+    pub sell_asset_amount: u64,
     /// The seller of the auction.
-    seller: Identity,
+    pub seller: Identity,
     /// The state of the auction describing if it is open or closed.
-    state: State,
+    pub state: State,
 }
 
 impl Auction {
