@@ -124,7 +124,7 @@ mod revert {
 
     use super::*;
     use fuels::{
-        prelude::{CallParameters, TxPolicies, BASE_ASSET_ID},
+        prelude::{AssetId, CallParameters, TxPolicies},
         programs::call_utils::TxDependencyExtension,
         types::Bits256,
     };
@@ -137,7 +137,7 @@ mod revert {
         let (vault_sub_id, vault_admin, _share_asset1, _share_asset2, _share_supply) =
             defaults(&admin.wallet, nft_1, nft_2, f_nft_id);
 
-        let call_params = CallParameters::new(2, BASE_ASSET_ID, 1_000_000);
+        let call_params = CallParameters::new(2, AssetId::zeroed(), 1_000_000);
         let _ = admin
             .f_nft
             .methods()

@@ -3,18 +3,14 @@ contract;
 mod errors;
 
 use errors::{DepositError, SubIdError, WithdrawError};
-use src6::{Deposit, SRC6, Withdraw};
-use src20::SRC20;
+use standards::{src6::{Deposit, SRC6, Withdraw}, src20::SRC20};
 use std::{
     asset::{
         burn,
         mint_to,
         transfer,
     },
-    call_frames::{
-        contract_id,
-        msg_asset_id,
-    },
+    call_frames::msg_asset_id,
     constants::ZERO_B256,
     context::{
         msg_amount,
@@ -98,7 +94,7 @@ impl SRC6 for Contract {
 
         let nft = msg_asset_id();
         let f_nft_asset_sub_id = sha256((nft, vault_sub_id));
-        let f_nft_asset = AssetId::new(contract_id(), f_nft_asset_sub_id);
+        let f_nft_asset = AssetId::new(ContractId::this(), f_nft_asset_sub_id);
 
         storage.total_assets.write(storage.total_assets.read() + 1);
         storage.vault_asset.insert(f_nft_asset, true);
@@ -166,7 +162,7 @@ impl SRC6 for Contract {
         require(sent_amount == SHARES, WithdrawError::AllSharesNotReturned);
 
         let f_nft_asset_sub_id = sha256((underlying_asset, vault_sub_id));
-        let f_nft_asset = AssetId::new(contract_id(), f_nft_asset_sub_id);
+        let f_nft_asset = AssetId::new(ContractId::this(), f_nft_asset_sub_id);
         require(msg_asset_id() == f_nft_asset, WithdrawError::InvalidAsset);
 
         burn(f_nft_asset_sub_id, SHARES);

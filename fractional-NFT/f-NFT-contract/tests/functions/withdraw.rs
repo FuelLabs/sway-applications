@@ -132,7 +132,7 @@ mod revert {
 
     use super::*;
     use fuels::{
-        prelude::{CallParameters, TxPolicies, BASE_ASSET_ID},
+        prelude::{AssetId, CallParameters, TxPolicies},
         programs::call_utils::TxDependencyExtension,
         types::Bits256,
     };
@@ -147,7 +147,7 @@ mod revert {
 
         deposit(&admin.f_nft, nft_1, vault_admin.clone(), vault_sub_id).await;
 
-        let call_params = CallParameters::new(share_supply, BASE_ASSET_ID, 1_000_000);
+        let call_params = CallParameters::new(share_supply, AssetId::zeroed(), 1_000_000);
         let _ = admin
             .f_nft
             .methods()

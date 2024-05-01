@@ -2,8 +2,7 @@ use crate::utils::setup::F_NFT;
 use fuels::{
     prelude::{AssetId, CallParameters, TxPolicies, WalletUnlocked},
     programs::{call_response::FuelCallResponse, call_utils::TxDependencyExtension},
-    tx::Bytes32,
-    types::{Bits256, Identity},
+    types::{Bits256, Bytes32, Identity},
 };
 
 pub(crate) async fn deposit(

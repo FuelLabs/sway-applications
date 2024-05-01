@@ -2,7 +2,7 @@ use crate::utils::{
     interface::{deposit, max_withdrawable, withdraw},
     setup::{defaults, deploy, setup_nft},
 };
-use fuels::tx::Bytes32;
+use fuels::types::Bytes32;
 
 mod success {
 

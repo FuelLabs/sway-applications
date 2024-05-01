@@ -19,7 +19,7 @@ use asset::{
         _mint,
     },
 };
-use std::{call_frames::contract_id, hash::Hash, storage::storage_string::*, string::String};
+use std::{hash::Hash, storage::storage_string::*, string::String};
 
 storage {
     /// The total number of unique assets minted by this contract.
@@ -229,7 +229,7 @@ impl SRC3 for Contract {
     /// ```
     #[storage(read, write)]
     fn mint(recipient: Identity, sub_id: SubId, amount: u64) {
-        let asset = AssetId::new(contract_id(), sub_id);
+        let asset = AssetId::new(ContractId::this(), sub_id);
         require(amount == 1, MintError::CannotMintMoreThanOneNFTWithSubId);
         require(
             storage
