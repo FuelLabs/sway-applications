@@ -9,7 +9,7 @@ use ::data_structures::ClaimState;
 use ::errors::{AccessError, InitError, StateError, VerificationError};
 use ::events::{ClaimEvent, ClawbackEvent, CreateAirdropEvent};
 use ::interface::{AirdropDistributor, Info};
-use merkle_proof::binary_merkle_proof::{leaf_digest, verify_proof};
+use sway_libs::merkle::binary_proof::{leaf_digest, verify_proof};
 use std::{
     asset::transfer,
     auth::msg_sender,

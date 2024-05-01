@@ -5,4 +5,4 @@ license = "Apache-2.0"
 name = "airdrop-contract"
 
 [dependencies]
-merkle_proof = { git = "https://github.com/FuelLabs/sway-libs", tag = "v0.17.2" }
+sway_libs = { git = "https://github.com/FuelLabs/sway-libs", tag = "v0.21.0" }
