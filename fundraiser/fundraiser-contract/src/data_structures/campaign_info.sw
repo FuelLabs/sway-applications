@@ -5,19 +5,19 @@ use ::data_structures::campaign_state::CampaignState;
 /// General data structure containing information about a campaign.
 pub struct CampaignInfo {
     /// The user who has created the campaign.
-    author: Identity,
+    pub author: Identity,
     /// The asset that this campaign accepts as a deposit.
-    asset: AssetId,
+    pub asset: AssetId,
     /// The user to whom the funds will be sent to upon a successful campaign.
-    beneficiary: Identity,
-    // Whether the campaign is currently: Funding, Claimed, Cancelled.
-    state: CampaignState,
+    pub beneficiary: Identity,
+    /// Whether the campaign is currently: Funding, Claimed, Cancelled.
+    pub state: CampaignState,
     /// The end time for the campaign after which it becomes locked.
-    deadline: u64,
+    pub deadline: u64,
     /// The amount needed to deem the campaign a success.
-    target_amount: u64,
+    pub target_amount: u64,
     /// The current amount pledged used to measure against the target_amount.
-    total_pledge: u64,
+    pub total_pledge: u64,
 }
 
 impl CampaignInfo {
