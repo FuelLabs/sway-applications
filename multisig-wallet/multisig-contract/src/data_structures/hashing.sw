@@ -41,15 +41,15 @@ pub trait IntoBytes {
 /// Parameters for calling a contract.
 pub struct ContractCallParams {
     /// The calldata for the call.
-    calldata: Bytes,
+    pub calldata: Bytes,
     /// The amount of gas to forward.
-    forwarded_gas: u64,
+    pub forwarded_gas: u64,
     /// The function selector for the call.
-    function_selector: Bytes,
+    pub function_selector: Bytes,
     /// Whether the function being called takes a single value-type argument.
-    single_value_type_arg: bool,
+    pub single_value_type_arg: bool,
     /// Parameters for a transfer.
-    transfer_params: TransferParams,
+    pub transfer_params: TransferParams,
 }
 
 impl IntoBytes for ContractCallParams {
@@ -68,11 +68,11 @@ impl IntoBytes for ContractCallParams {
 pub struct Threshold {
     /// Unique identifier for the contract which prevents this transaction from being submitted to another
     /// instance of the multisig.
-    contract_identifier: ContractId,
+    pub contract_identifier: ContractId,
     /// The nonce of the multisig wallet, used to prevent double spending.
-    nonce: u64,
+    pub nonce: u64,
     /// The number of approvals required to enable a transaction to be sent.
-    threshold: u64,
+    pub threshold: u64,
 }
 
 impl Threshold {
@@ -111,13 +111,13 @@ impl IntoBytes for TransactionParameters {
 pub struct Transaction {
     /// Unique identifier for the contract which prevents this transaction from being submitted to another
     /// instance of the multisig.
-    contract_identifier: ContractId,
+    pub contract_identifier: ContractId,
     /// The nonce of the multisig wallet, used to prevent double spending.
-    nonce: u64,
+    pub nonce: u64,
     /// The target of the transaction.
-    target: Identity,
+    pub target: Identity,
     /// Parameters of the transaction.
-    transaction_parameters: TransactionParameters,
+    pub transaction_parameters: TransactionParameters,
 }
 
 impl Transaction {
@@ -152,9 +152,9 @@ impl IntoBytes for Transaction {
 /// Parameters for a transfer.
 pub struct TransferParams {
     /// The asset to transfer.
-    asset_id: AssetId,
+    pub asset_id: AssetId,
     /// The amount to transfer.
-    value: Option<u64>,
+    pub value: Option<u64>,
 }
 
 /// Determines the type to be hashed.
@@ -200,11 +200,11 @@ impl Hash for Weight {
 pub struct Weight {
     /// Unique identifier for the contract which prevents this transaction from being submitted to another
     /// instance of the multisig.
-    contract_identifier: ContractId,
+    pub contract_identifier: ContractId,
     /// The nonce of the multisig wallet, used to prevent double spending.
-    nonce: u64,
+    pub nonce: u64,
     /// The user of the multisig, who can sign transactions to add their approval.
-    user: User,
+    pub user: User,
 }
 
 impl Weight {
