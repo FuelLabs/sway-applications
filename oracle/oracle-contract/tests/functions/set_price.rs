@@ -39,7 +39,6 @@ mod revert {
         let (user, wallets) = setup().await;
         user.oracle
             .with_account(wallets[1].clone())
-            .unwrap()
             .methods()
             .set_price(1000)
             .call()

@@ -3,5 +3,5 @@ library;
 /// Event for when the price of an asset is updated.
 pub struct PriceUpdateEvent {
     /// Updated price.
-    price: u64,
+    pub price: u64,
 }
