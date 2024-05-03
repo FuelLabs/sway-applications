@@ -2,7 +2,7 @@ use crate::utils::{
     interface::{burn, constructor, mint, pause, total_assets, total_supply},
     setup::{defaults, get_wallet_balance, setup},
 };
-use fuels::prelude::{CallParameters, TxPolicies, BASE_ASSET_ID};
+use fuels::prelude::{CallParameters, TxPolicies, AssetId};
 
 mod success {
 
@@ -150,7 +150,7 @@ mod revert {
 
         mint(&instance_1, other_identity, sub_id_1, 1).await;
 
-        let call_params = CallParameters::new(1, BASE_ASSET_ID, 1_000_000);
+        let call_params = CallParameters::new(1, AssetId::zeroed(), 1_000_000);
         instance_2
             .methods()
             .burn(sub_id_1, 1)
