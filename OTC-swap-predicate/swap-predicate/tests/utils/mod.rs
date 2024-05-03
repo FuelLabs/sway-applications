@@ -89,7 +89,7 @@ pub async fn test_predicate_spend_with_parameters(
     let predicate_coin = &provider
         .get_spendable_resources(ResourceFilter {
             from: predicate.address().clone(),
-            asset_id: OFFERED_ASSET,
+            asset_id: Some(OFFERED_ASSET),
             amount: 1,
             ..Default::default()
         })
@@ -100,7 +100,7 @@ pub async fn test_predicate_spend_with_parameters(
     let swap_coin = &provider
         .get_spendable_resources(ResourceFilter {
             from: taker_wallet.address().clone(),
-            asset_id: asked_asset,
+            asset_id: Some(asked_asset),
             amount: 1,
             ..Default::default()
         })
@@ -149,7 +149,7 @@ pub async fn test_predicate_spend_with_parameters(
 
     let script_call = ScriptCallHandler::<WalletUnlocked, ()>::new(
         vec![],
-        UnresolvedBytes::default(),
+        Ok(UnresolvedBytes::default()),
         taker_wallet.clone(),
         provider.clone(),
         Default::default(),
@@ -222,7 +222,7 @@ pub async fn recover_predicate_as_owner(correct_owner: bool) {
     let predicate_coin = &provider
         .get_spendable_resources(ResourceFilter {
             from: predicate.address().clone(),
-            asset_id: OFFERED_ASSET,
+            asset_id: Some(OFFERED_ASSET),
             amount: 1,
             ..Default::default()
         })
@@ -245,11 +245,10 @@ pub async fn recover_predicate_as_owner(correct_owner: bool) {
     };
 
     let tx_policies = TxPolicies::default()
-        .with_gas_price(1)
         .with_script_gas_limit(10_000_000);
     let script_call = ScriptCallHandler::<WalletUnlocked, ()>::new(
         vec![],
-        UnresolvedBytes::default(),
+        Ok(UnresolvedBytes::default()),
         wallet.clone(),
         provider.clone(),
         Default::default(),
