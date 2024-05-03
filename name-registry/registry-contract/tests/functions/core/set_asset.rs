@@ -35,7 +35,7 @@ mod revert {
         let (instance, _account, wallet2) = setup().await;
         let rate = Some(5);
         set_asset(
-            &instance.with_account(wallet2).unwrap(),
+            &instance.clone().with_account(wallet2),
             AssetId::new(*instance.contract_id().hash()),
             rate,
         )

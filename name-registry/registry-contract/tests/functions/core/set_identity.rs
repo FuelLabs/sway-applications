@@ -76,7 +76,7 @@ mod revert {
         .await;
 
         set_identity(
-            &instance.with_account(wallet2).unwrap(),
+            &instance.with_account(wallet2),
             acc1.name.clone(),
             wallet_identity2.clone(),
         )
