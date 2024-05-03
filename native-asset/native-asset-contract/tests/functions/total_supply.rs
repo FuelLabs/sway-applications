@@ -2,7 +2,7 @@ use crate::utils::{
     interface::{burn, constructor, mint, total_supply},
     setup::{defaults, get_asset_id, setup},
 };
-use fuels::{tx::Bytes32, types::Bits256};
+use fuels::types::{Bits256, Bytes32};
 
 mod success {
 

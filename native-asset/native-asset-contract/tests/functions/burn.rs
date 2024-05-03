@@ -98,7 +98,7 @@ mod success {
 mod revert {
 
     use super::*;
-    use fuels::prelude::{CallParameters, TxPolicies, BASE_ASSET_ID};
+    use fuels::prelude::{CallParameters, TxPolicies, AssetId};
 
     #[tokio::test]
     #[should_panic(expected = "AmountMismatch")]
@@ -164,7 +164,7 @@ mod revert {
 
         mint(&instance_1, other_identity, sub_id_1, 100).await;
 
-        let call_params = CallParameters::new(50, BASE_ASSET_ID, 1_000_000);
+        let call_params = CallParameters::new(50, AssetId::zeroed(), 1_000_000);
         instance_2
             .methods()
             .burn(sub_id_1, 50)
