@@ -23,19 +23,3 @@ pub enum TransactionError {
     /// The order of the values is (start_timestamp, end_timestamp, your_timestamp).
     TimestampNotInRange: (u64, u64, u64),
 }
-
-impl AbiEncode for TransactionError {
-    fn abi_encode(self, ref mut buffer: Buffer) {
-        match self {
-            Self::DuplicateTransaction(value) => {
-                buffer.push(value);
-            },
-            Self::InvalidTransaction(value) => {
-                buffer.push(value);
-            },
-            Self::TimestampNotInRange(value) => {
-                buffer.push(value);
-            }
-        }
-    }
-}
