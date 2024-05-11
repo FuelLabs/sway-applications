@@ -204,7 +204,9 @@ pub async fn recover_predicate_as_owner(correct_owner: bool) {
 
     let initial_wallet_balance = get_balance(provider, wallet.address(), OFFERED_ASSET).await;
 
-    let predicate = Predicate::load_from(PREDICATE_BINARY).unwrap();
+    let predicate = Predicate::load_from(PREDICATE_BINARY)
+        .unwrap()
+        .with_configurables(SwapPredicateConfigurables::default().with_RECEIVER(wallets[0].address().into()).unwrap());
 
     // Transfer some coins to the predicate root
     let offered_amount = 1000;
