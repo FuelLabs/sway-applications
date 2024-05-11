@@ -6,7 +6,7 @@ use fuels::{
     },
     programs::script_calls::ScriptCallHandler,
     test_helpers::WalletsConfig,
-    types::{coin_type::CoinType, input::Input, output::Output, unresolved_bytes::UnresolvedBytes},
+    types::{coin_type::CoinType, input::Input, output::Output},
 };
 
 abigen!(Predicate(
@@ -114,8 +114,8 @@ pub async fn test_predicate_spend_with_parameters(
     let input_predicate = match predicate_coin {
         CoinType::Coin(_) => Input::resource_predicate(
             predicate_coin.clone(),
-            predicate.code().clone(),
-            UnresolvedBytes::default(),
+            predicate.code().to_vec(),
+            Vec::default(),
         ),
         _ => panic!("Predicate coin resource type does not match"),
     };
@@ -149,7 +149,7 @@ pub async fn test_predicate_spend_with_parameters(
 
     let script_call = ScriptCallHandler::<WalletUnlocked, ()>::new(
         vec![],
-        Ok(UnresolvedBytes::default()),
+        Ok(Vec::default()),
         taker_wallet.clone(),
         provider.clone(),
         Default::default(),
@@ -233,8 +233,8 @@ pub async fn recover_predicate_as_owner(correct_owner: bool) {
     let input_predicate = match predicate_coin {
         CoinType::Coin(_) => Input::resource_predicate(
             predicate_coin.clone(),
-            predicate.code().clone(),
-            UnresolvedBytes::default(),
+            predicate.code().to_vec(),
+            Vec::default(),
         ),
         _ => panic!("Predicate coin resource type does not match"),
     };
@@ -250,7 +250,7 @@ pub async fn recover_predicate_as_owner(correct_owner: bool) {
         .with_script_gas_limit(10_000_000);
     let script_call = ScriptCallHandler::<WalletUnlocked, ()>::new(
         vec![],
-        Ok(UnresolvedBytes::default()),
+        Ok(Vec::default()),
         wallet.clone(),
         provider.clone(),
         Default::default(),
