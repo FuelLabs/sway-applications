@@ -3,7 +3,7 @@ library;
 use ::data_structures::State;
 
 abi Game {
-    /// Starts a new game.
+    /// Starts a new game and returns the game id.
     ///
     /// # Arguments
     ///
@@ -19,7 +19,7 @@ abi Game {
     /// * Reads - `1`
     /// * Writes - `6`
     #[storage(read, write)]
-    fn new_game(player_one: Identity, player_two: Identity);
+    fn new_game(player_one: Identity, player_two: Identity) -> u64;
 
     /// Allows a player to make a move at a `position`.
     ///
@@ -43,7 +43,7 @@ abi Game {
     /// * Reads - `8`
     /// * Writes - `3`
     #[storage(read, write)]
-    fn make_move(position: u64);
+    fn make_move(position: u64, game_id: u64);
 
     /// Returns the player positions of the current game as a vector.
     ///
@@ -55,7 +55,7 @@ abi Game {
     ///
     /// * Reads - `1`
     #[storage(read)]
-    fn get_board() -> Vec<Option<bool>>;
+    fn get_board(game_id: u64) -> Vec<Option<bool>>;
 
     /// Returns the current state of the game.
     ///
@@ -67,7 +67,7 @@ abi Game {
     ///
     /// * Reads - `1`
     #[storage(read)]
-    fn get_game_state() -> State;
+    fn get_game_state(game_id: u64) -> State;
 
     /// Returns the player who's turn it is to make a move.
     ///
@@ -79,7 +79,7 @@ abi Game {
     ///
     /// * Reads - `2`
     #[storage(read)]
-    fn get_current_player() -> Option<Identity>;
+    fn get_current_player(game_id: u64) -> Option<Identity>;
 
     /// Returns the players of the current game.
     ///
@@ -91,7 +91,7 @@ abi Game {
     ///
     /// * Reads - `3`
     #[storage(read)]
-    fn get_players() -> Option<(Identity, Identity)>;
+    fn get_players(game_id: u64) -> Option<(Identity, Identity)>;
 
     /// Returns the number of moves made in the current game.
     ///
@@ -103,5 +103,5 @@ abi Game {
     ///
     /// * Reads - `1`
     #[storage(read)]
-    fn get_move_counter() -> u64;
+    fn get_move_counter(game_id: u64) -> u64;
 }
