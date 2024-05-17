@@ -1,35 +1,17 @@
 library;
 
 use ::data_structures::user::User;
-use std::{bytes::Bytes, constants::ZERO_B256, hash::{Hash, Hasher}};
+use std::{alloc::alloc, bytes::Bytes, constants::ZERO_B256, hash::{Hash, Hasher}};
 
 impl Bytes {
     /// Converts a generic copy type into [Bytes].
-    pub fn from_copy_type<T>(value: T) -> Self {
-        // Artificially create bytes with capacity and len
-        let mut bytes = Bytes::with_capacity(8);
-        bytes.len = 8;
+    pub fn from_type<T>(value: T) -> Self {
+        let ptr = alloc::<T>(1);
+        ptr.write(value);
 
-        asm(buffer, ptr: value, dst: bytes.buf.ptr, len: 8) {
-            move buffer sp;
-            cfei i8;
-            sw buffer ptr i0;
-            mcp dst buffer len;
-            cfsi i8;
-        }
+        let slice = raw_slice::from_parts::<T>(ptr, 1);
 
-        bytes
-    }
-
-    /// Converts a generic reference type into [Bytes].
-    pub fn from_reference_type<T>(t: T) -> Self {
-        // Artificially create bytes with capacity and len
-        let size = __size_of::<T>();
-        let mut bytes = Bytes::with_capacity(size);
-        bytes.len = size;
-        // Copy bytes of `t` into the buffer of the target bytes
-        __addr_of(t).copy_bytes_to(bytes.buf.ptr, size);
-        bytes
+        Bytes::from(slice)
     }
 }
 
@@ -56,10 +38,10 @@ impl IntoBytes for ContractCallParams {
     fn into_bytes(self) -> Bytes {
         let mut bytes = Bytes::new();
         bytes.append(self.calldata);
-        bytes.append(Bytes::from_copy_type(self.forwarded_gas));
+        bytes.append(Bytes::from_type(self.forwarded_gas));
         bytes.append(self.function_selector);
-        bytes.append(Bytes::from_copy_type(self.single_value_type_arg));
-        bytes.append(Bytes::from_reference_type(self.transfer_params));
+        bytes.append(Bytes::from_type(self.single_value_type_arg));
+        bytes.append(Bytes::from_type(self.transfer_params));
         bytes
     }
 }
@@ -96,12 +78,12 @@ impl IntoBytes for TransactionParameters {
         match self {
             TransactionParameters::Call(contract_call_params) => {
                 // As [ContractCallParams] contains fields of type [Bytes], manual serialisation is necessary.
-                let mut bytes = Bytes::from_copy_type(0u64);
+                let mut bytes = Bytes::from_type(0u64);
                 bytes.append(contract_call_params.into_bytes());
                 bytes
             },
             TransactionParameters::Transfer => {
-                Bytes::from_reference_type(self)
+                Bytes::from_type(self)
             },
         }
     }
@@ -141,9 +123,9 @@ impl IntoBytes for Transaction {
     // as such the whole struct must be serialised to [Bytes].
     fn into_bytes(self) -> Bytes {
         let mut bytes = Bytes::new();
-        bytes.append(Bytes::from_reference_type(self.contract_identifier));
-        bytes.append(Bytes::from_copy_type(self.nonce));
-        bytes.append(Bytes::from_reference_type(self.target));
+        bytes.append(Bytes::from_type(self.contract_identifier));
+        bytes.append(Bytes::from_type(self.nonce));
+        bytes.append(Bytes::from_type(self.target));
         bytes.append(self.transaction_parameters.into_bytes());
         bytes
     }

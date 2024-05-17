@@ -3679,6 +3679,7 @@ dependencies = [
 name = "multisig-contract"
 version = "0.0.0"
 dependencies = [
+ "fuel-crypto",
  "fuels",
  "rand",
  "sha3",
