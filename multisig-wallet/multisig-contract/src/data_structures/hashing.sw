@@ -4,7 +4,7 @@ use ::data_structures::user::User;
 use std::{alloc::alloc, bytes::Bytes, constants::ZERO_B256, hash::{Hash, Hasher}};
 
 impl Bytes {
-    /// Converts a generic copy type into [Bytes].
+    /// Converts a generic type into [Bytes].
     pub fn from_type<T>(value: T) -> Self {
         let ptr = alloc::<T>(1);
         ptr.write(value);
@@ -197,4 +197,46 @@ impl Weight {
             user,
         }
     }
+}
+
+#[test]
+fn test_convert_u64_to_bytes() {
+    use std::bytes_conversions::u64::*;
+    use std::bytes::*;
+    let u64_1 = 1u64;
+    let result_bytes = Bytes::from_type(u64_1);
+
+    let expected_bytes = Bytes::from(u64_1.to_be_bytes());
+    assert_eq(result_bytes, expected_bytes);
+}
+
+#[test]
+fn test_convert_bool_to_bytes() {
+    let bool_1 = true;
+
+    let result_bytes = Bytes::from_type(bool_1);
+
+    let mut expected_bytes = Bytes::new();
+    expected_bytes.push(1_u8);
+
+    assert_eq(result_bytes, expected_bytes);
+}
+
+#[test]
+fn test_convert_transfer_params_to_bytes() {
+    use std::bytes_conversions::u64::*;
+    use std::bytes::*;
+    let transfer_params = TransferParams {
+        asset_id: AssetId::from(0x0000000000000000000000000000000000000000000000000000000000000001),
+        value: Some(100),
+    };
+
+    let result_bytes = Bytes::from_type(transfer_params);
+
+    let mut expected_bytes = Bytes::new();
+    expected_bytes.append(Bytes::from(transfer_params.asset_id.bits()));
+    expected_bytes.append(Bytes::from(1_u64.to_be_bytes()));
+    expected_bytes.append(Bytes::from(100_u64.to_be_bytes()));
+
+    assert_eq(result_bytes, expected_bytes);
 }
