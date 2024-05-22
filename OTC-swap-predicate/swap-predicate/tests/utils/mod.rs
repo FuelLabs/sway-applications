@@ -2,11 +2,17 @@ use fuels::{
     accounts::{predicate::Predicate, Account},
     prelude::{
         abigen, launch_custom_provider_and_get_wallets, Address, AssetConfig, AssetId,
-        Bech32Address, Provider, ResourceFilter, TxPolicies, WalletUnlocked,
+        Bech32Address, Provider, ResourceFilter, TxPolicies,
     },
-    programs::script_calls::ScriptCallHandler,
     test_helpers::WalletsConfig,
-    types::{coin_type::CoinType, input::Input, output::Output},
+    types::{
+        coin_type::CoinType,
+        input::Input,
+        output::Output,
+        transaction_builders::{
+            BuildableTransaction, ScriptTransactionBuilder, TransactionBuilder,
+        },
+    },
 };
 
 abigen!(Predicate(
@@ -147,21 +153,18 @@ pub async fn test_predicate_spend_with_parameters(
         asset_id: asked_asset,
     };
 
-    let script_call = ScriptCallHandler::<WalletUnlocked, ()>::new(
-        vec![],
-        Ok(Vec::default()),
-        taker_wallet.clone(),
-        provider.clone(),
-        Default::default(),
-    )
-    .with_inputs(vec![input_predicate, input_from_taker])
-    .with_outputs(vec![
-        output_to_receiver,
-        output_to_taker,
-        output_asked_change,
-    ]);
+    let mut tb = ScriptTransactionBuilder::prepare_transfer(
+        vec![input_predicate, input_from_taker],
+        vec![output_to_receiver, output_to_taker, output_asked_change],
+        TxPolicies::default(),
+    );
+    tb.add_signer(taker_wallet.clone()).unwrap();
+    let tx = tb.build(provider).await.unwrap();
 
-    let _response = script_call.call().await.unwrap();
+    let _tx_status = provider
+        .send_transaction_and_await_commit(tx)
+        .await
+        .unwrap();
 
     let predicate_balance = get_balance(provider, predicate.address(), OFFERED_ASSET).await;
     let taker_asked_asset_balance =
@@ -250,19 +253,19 @@ pub async fn recover_predicate_as_owner(correct_owner: bool) {
         asset_id: OFFERED_ASSET,
     };
 
-    let tx_policies = TxPolicies::default().with_script_gas_limit(10_000_000);
-    let script_call = ScriptCallHandler::<WalletUnlocked, ()>::new(
-        vec![],
-        Ok(Vec::default()),
-        wallet.clone(),
-        provider.clone(),
-        Default::default(),
+    let tx = ScriptTransactionBuilder::prepare_transfer(
+        vec![input_predicate],
+        vec![output_offered_change],
+        TxPolicies::default(),
     )
-    .with_inputs(vec![input_predicate])
-    .with_outputs(vec![output_offered_change])
-    .with_tx_policies(tx_policies);
+    .build(provider)
+    .await
+    .unwrap();
 
-    let _response = script_call.call().await.unwrap();
+    let _tx_status = provider
+        .send_transaction_and_await_commit(tx)
+        .await
+        .unwrap();
 
     // The predicate root's coin has been spent
     let predicate_balance = get_balance(provider, predicate.address(), OFFERED_ASSET).await;
