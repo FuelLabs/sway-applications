@@ -34,9 +34,6 @@ configurable {
 ///
 /// * [bool] - `true` if the spender is the receiver or if the terms of the order are met, `false` otherwise.
 fn main() -> bool {
-    if RECEIVER == RECEIVER {
-        return true;
-    }
     // The spending transaction must have an output that sends `ask_amount` of `ask_asset` to `receiver`
 
     // Check if the transaction contains a single input coin from the receiver, to cancel their own order (in addition to this predicate)

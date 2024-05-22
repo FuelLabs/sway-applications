@@ -2,12 +2,10 @@ use fuels::{
     accounts::{predicate::Predicate, Account},
     prelude::{
         abigen, launch_custom_provider_and_get_wallets, Address, AssetConfig, AssetId,
-        Bech32Address, Provider, ResourceFilter, TxPolicies,
+        Bech32Address, Provider, TxPolicies,
     },
     test_helpers::WalletsConfig,
     types::{
-        coin_type::CoinType,
-        input::Input,
         output::Output,
         transaction_builders::{
             BuildableTransaction, ScriptTransactionBuilder, TransactionBuilder,
@@ -71,7 +69,9 @@ pub async fn test_predicate_spend_with_parameters(
         get_balance(provider, taker_wallet.address(), asked_asset).await;
     let initial_receiver_balance = get_balance(provider, &receiver_address, asked_asset).await;
 
-    let predicate = Predicate::load_from(PREDICATE_BINARY).unwrap();
+    let predicate = Predicate::load_from(PREDICATE_BINARY)
+        .unwrap()
+        .with_provider(provider.clone());
 
     // Transfer some coins to the predicate root
     let offered_amount = 1000;
@@ -91,46 +91,22 @@ pub async fn test_predicate_spend_with_parameters(
         offered_amount
     );
 
-    // Get predicate coin to unlock
-    let predicate_coin = &provider
-        .get_spendable_resources(ResourceFilter {
-            from: predicate.address().clone(),
-            asset_id: Some(OFFERED_ASSET),
-            amount: 1,
-            ..Default::default()
-        })
-        .await
-        .unwrap()[0];
-
-    // Get other coin to spend
-    let swap_coin = &provider
-        .get_spendable_resources(ResourceFilter {
-            from: taker_wallet.address().clone(),
-            asset_id: Some(asked_asset),
-            amount: 1,
-            ..Default::default()
-        })
-        .await
-        .unwrap()[0];
-
     // Configure inputs and outputs to send coins from the predicate root to another address
     // The predicate allows to spend its assets if `ask_amount` is sent to the receiver.
 
-    // Offered asset coin belonging to the predicate root
-    let input_predicate = match predicate_coin {
-        CoinType::Coin(_) => Input::resource_predicate(
-            predicate_coin.clone(),
-            predicate.code().to_vec(),
-            Vec::default(),
-        ),
-        _ => panic!("Predicate coin resource type does not match"),
-    };
+    // Get predicate input
+    let input_predicate = predicate
+        .get_asset_inputs_for_amount(OFFERED_ASSET, 1)
+        .await
+        .unwrap()[0]
+        .clone();
 
-    // Asked asset coin belonging to the wallet taking the order
-    let input_from_taker = match swap_coin {
-        CoinType::Coin(_) => Input::resource_signed(swap_coin.clone()),
-        _ => panic!("Swap coin resource type does not match"),
-    };
+    // Get input from taker
+    let input_from_taker = taker_wallet
+        .get_asset_inputs_for_amount(asked_asset, 1)
+        .await
+        .unwrap()[0]
+        .clone();
 
     // Output for the asked coin transferred from the taker to the receiver
     let output_to_receiver = Output::Coin {
@@ -213,7 +189,8 @@ pub async fn recover_predicate_as_owner(correct_owner: bool) {
             SwapPredicateConfigurables::default()
                 .with_RECEIVER(wallets[0].address().into())
                 .unwrap(),
-        );
+        )
+        .with_provider(provider.clone());
 
     // Transfer some coins to the predicate root
     let offered_amount = 1000;
@@ -227,24 +204,19 @@ pub async fn recover_predicate_as_owner(correct_owner: bool) {
         .await
         .unwrap();
 
-    // Get predicate coin to unlock
-    let predicate_coin = &provider
-        .get_spendable_resources(ResourceFilter {
-            from: predicate.address().clone(),
-            asset_id: Some(OFFERED_ASSET),
-            amount: 1,
-            ..Default::default()
-        })
+    // Get predicate input
+    let input_predicate = predicate
+        .get_asset_inputs_for_amount(OFFERED_ASSET, 1)
         .await
-        .unwrap()[0];
-    let input_predicate = match predicate_coin {
-        CoinType::Coin(_) => Input::resource_predicate(
-            predicate_coin.clone(),
-            predicate.code().to_vec(),
-            Vec::default(),
-        ),
-        _ => panic!("Predicate coin resource type does not match"),
-    };
+        .unwrap()[0]
+        .clone();
+
+    // Get input from wallet
+    let input_from_taker = wallet
+        .get_asset_inputs_for_amount(BASE_ASSET, 1)
+        .await
+        .unwrap()[0]
+        .clone();
 
     // Use a change output to send the unlocked coins back to the wallet
     let output_offered_change = Output::Change {
@@ -253,14 +225,14 @@ pub async fn recover_predicate_as_owner(correct_owner: bool) {
         asset_id: OFFERED_ASSET,
     };
 
-    let tx = ScriptTransactionBuilder::prepare_transfer(
-        vec![input_predicate],
+    let mut tb = ScriptTransactionBuilder::prepare_transfer(
+        vec![input_predicate, input_from_taker],
         vec![output_offered_change],
         TxPolicies::default(),
-    )
-    .build(provider)
-    .await
-    .unwrap();
+    );
+    tb.add_signer(wallet.clone()).unwrap();
+
+    let tx = tb.build(provider).await.unwrap();
 
     let _tx_status = provider
         .send_transaction_and_await_commit(tx)
