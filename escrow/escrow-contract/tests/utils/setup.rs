@@ -1,8 +1,12 @@
 use fuels::{
-    accounts::ViewOnlyAccount, prelude::{
+    accounts::ViewOnlyAccount,
+    prelude::{
         abigen, launch_custom_provider_and_get_wallets, Address, AssetConfig, AssetId, Contract,
         LoadConfiguration, StorageConfiguration, TxPolicies, WalletUnlocked, WalletsConfig,
-    }, test_helpers::ChainConfig, tx::{ConsensusParameters, ContractParameters, TxParameters}, types::Identity
+    },
+    test_helpers::ChainConfig,
+    tx::{ConsensusParameters, ContractParameters, TxParameters},
+    types::Identity,
 };
 
 abigen!(Contract(
@@ -115,9 +119,10 @@ pub(crate) async fn setup() -> (User, User, User, Defaults) {
         ..ChainConfig::local_testnet()
     };
 
-    let mut wallets = launch_custom_provider_and_get_wallets(wallet_config, None, Some(chain_config))
-        .await
-        .unwrap();
+    let mut wallets =
+        launch_custom_provider_and_get_wallets(wallet_config, None, Some(chain_config))
+            .await
+            .unwrap();
 
     let deployer_wallet = wallets.pop().unwrap();
     let arbiter_wallet = wallets.pop().unwrap();

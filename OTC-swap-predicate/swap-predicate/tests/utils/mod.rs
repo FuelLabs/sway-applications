@@ -206,7 +206,11 @@ pub async fn recover_predicate_as_owner(correct_owner: bool) {
 
     let predicate = Predicate::load_from(PREDICATE_BINARY)
         .unwrap()
-        .with_configurables(SwapPredicateConfigurables::default().with_RECEIVER(wallets[0].address().into()).unwrap());
+        .with_configurables(
+            SwapPredicateConfigurables::default()
+                .with_RECEIVER(wallets[0].address().into())
+                .unwrap(),
+        );
 
     // Transfer some coins to the predicate root
     let offered_amount = 1000;
@@ -246,8 +250,7 @@ pub async fn recover_predicate_as_owner(correct_owner: bool) {
         asset_id: OFFERED_ASSET,
     };
 
-    let tx_policies = TxPolicies::default()
-        .with_script_gas_limit(10_000_000);
+    let tx_policies = TxPolicies::default().with_script_gas_limit(10_000_000);
     let script_call = ScriptCallHandler::<WalletUnlocked, ()>::new(
         vec![],
         Ok(Vec::default()),

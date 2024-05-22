@@ -30,12 +30,7 @@ use sway_libs::{
     },
 };
 use interface::Constructor;
-use std::{
-    context::msg_amount,
-    hash::Hash,
-    storage::storage_string::*,
-    string::String,
-};
+use std::{context::msg_amount, hash::Hash, storage::storage_string::*, string::String,};
 
 storage {
     /// The total number of unique assets minted by this contract.

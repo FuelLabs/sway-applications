@@ -2,7 +2,7 @@ use crate::utils::{
     interface::{burn, constructor, mint, pause, total_assets, total_supply},
     setup::{defaults, get_wallet_balance, setup},
 };
-use fuels::prelude::{CallParameters, TxPolicies, AssetId};
+use fuels::prelude::{AssetId, CallParameters, TxPolicies};
 
 mod success {
 

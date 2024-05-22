@@ -3,7 +3,7 @@ contract;
 mod errors;
 
 use errors::{DepositError, SubIdError, WithdrawError};
-use standards::{src6::{Deposit, SRC6, Withdraw}, src20::SRC20};
+use standards::{src20::SRC20, src6::{Deposit, SRC6, Withdraw}};
 use std::{
     asset::{
         burn,

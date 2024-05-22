@@ -98,7 +98,7 @@ mod success {
 mod revert {
 
     use super::*;
-    use fuels::prelude::{CallParameters, TxPolicies, AssetId};
+    use fuels::prelude::{AssetId, CallParameters, TxPolicies};
 
     #[tokio::test]
     #[should_panic(expected = "AmountMismatch")]

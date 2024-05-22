@@ -31,6 +31,7 @@ enum SwapError {
 //     }
 // }
 
+
 configurable {
     /// The ContractId of the AMM contract.
     AMM_ID: b256 = 0x8aea4274cd6fcc79094c55fb3c065046b6c759c2169786bc350536660eaba670,
