@@ -1,6 +1,6 @@
 script;
 
-use libraries::{AMM, data_structures::Asset, Exchange};
+use libraries::{AMM, data_structures::Asset, Exchange, data_structures::PreviewSwapInfo};
 
 /// Determines the type of input error.
 enum InputError {
