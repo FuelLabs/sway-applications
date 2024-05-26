@@ -177,9 +177,7 @@ impl MultiSignatureWallet for Contract {
             },
         }
 
-        log(ExecuteTransactionEvent { nonce, target
-        // transaction_parameters,// TODO: Uncomment when SDK supports logs with nested Bytes https://github.com/FuelLabs/fuels-rs/issues/1046
- });
+        log(ExecuteTransactionEvent { nonce, target, transaction_parameters });
     }
 
     #[storage(read, write)]

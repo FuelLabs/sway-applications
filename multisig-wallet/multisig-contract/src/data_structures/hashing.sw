@@ -82,8 +82,8 @@ impl IntoBytes for TransactionParameters {
                 bytes.append(contract_call_params.into_bytes());
                 bytes
             },
-            TransactionParameters::Transfer => {
-                Bytes::from_type(self)
+            TransactionParameters::Transfer(transfer_params) => {
+                Bytes::from_type(transfer_params)
             },
         }
     }

@@ -80,6 +80,7 @@ mod success {
                 ExecuteTransactionEvent {
                     nonce: transaction.nonce,
                     target: transaction.target,
+                    transaction_parameters: transaction.transaction_parameters.clone(),
                 }
             );
 
@@ -159,6 +160,7 @@ mod success {
                 ExecuteTransactionEvent {
                     nonce: transaction.nonce,
                     target: transaction.target,
+                    transaction_parameters: transaction.transaction_parameters.clone(),
                 }
             );
 
@@ -245,6 +247,7 @@ mod success {
                 ExecuteTransactionEvent {
                     nonce: transaction.nonce,
                     target: transaction.target,
+                    transaction_parameters: transaction.transaction_parameters.clone(),
                 }
             );
 

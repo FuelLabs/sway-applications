@@ -9,7 +9,7 @@ pub struct ExecuteTransactionEvent {
     pub nonce: u64,
     /// The parameters of the transaction.
     /// The target of the transaction.
-    // transaction_parameters: TransactionParameters, // TODO: Uncomment and reorder fields when SDK supports logs with nested Bytes https://github.com/FuelLabs/fuels-rs/issues/1046
+    pub transaction_parameters: TransactionParameters,
     pub target: Identity,
 }
 

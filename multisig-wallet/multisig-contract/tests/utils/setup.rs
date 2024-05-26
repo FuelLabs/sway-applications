@@ -1,12 +1,10 @@
+use std::io::Chain;
+
 use fuels::{
-    accounts::wallet::WalletUnlocked,
-    core::codec::{calldata, encode_fn_selector},
-    crypto::{Message, SecretKey, Signature},
-    prelude::{
+    accounts::wallet::WalletUnlocked, core::codec::{calldata, encode_fn_selector}, crypto::{Message, SecretKey, Signature}, prelude::{
         abigen, setup_single_asset_coins, setup_test_provider, Address, Contract, Error,
         LoadConfiguration, StorageConfiguration, TxPolicies,
-    },
-    types::{AssetId, Bits256, Bytes, Bytes32, Identity, B512},
+    }, test_helpers::{ChainConfig, NodeConfig}, types::{AssetId, Bits256, Bytes, Bytes32, Identity, B512}
 };
 
 use sha3::{Digest, Keccak256};
