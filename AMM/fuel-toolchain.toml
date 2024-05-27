@@ -2,5 +2,5 @@
 channel = "nightly-2024-05-25"
 
 [components]
-forc = "0.60.0"
+forc = "0.60.0+nightly.20240525.d93bb91ab5"
 fuel-core = "0.26.0"
