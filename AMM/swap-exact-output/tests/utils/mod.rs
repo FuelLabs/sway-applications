@@ -1,6 +1,5 @@
 use fuels::{
-    prelude::{AssetId, WalletUnlocked},
-    types::Bits256,
+    core::codec::EncoderConfig, prelude::{AssetId, WalletUnlocked}, types::Bits256
 };
 use test_utils::{
     data_structures::{
@@ -93,8 +92,8 @@ pub async fn setup() -> (
 
     let deadline = provider.latest_block_height().await.unwrap() + 10;
 
-    let script_configurables = SwapExactOutputScriptConfigurables::new()
-        .with_AMM_ID(Bits256::from_hex_str(&amm.id.to_string()).unwrap());
+    let script_configurables = SwapExactOutputScriptConfigurables::new(EncoderConfig::default())
+        .with_AMM_ID(Bits256::from_hex_str(&amm.id.to_string()).unwrap()).unwrap();
 
     let script_instance = SwapExactOutputScript::new(wallet, SWAP_EXACT_OUTPUT_SCRIPT_BINARY_PATH)
         .with_configurables(script_configurables);

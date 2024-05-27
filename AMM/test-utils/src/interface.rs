@@ -92,7 +92,7 @@ pub mod exchange {
 
         if override_gas_limit {
             let estimated_gas = call_handler
-                .estimate_transaction_cost(Some(GAS_TOLERANCE))
+                .estimate_transaction_cost(Some(GAS_TOLERANCE), None)
                 .await
                 .unwrap()
                 .gas_used;
@@ -149,7 +149,7 @@ pub mod exchange {
 
         if override_gas_limit {
             let estimated_gas = call_handler
-                .estimate_transaction_cost(Some(GAS_TOLERANCE))
+                .estimate_transaction_cost(Some(GAS_TOLERANCE), None)
                 .await
                 .unwrap()
                 .gas_used;
@@ -178,7 +178,7 @@ pub mod exchange {
 
         if override_gas_limit {
             let estimated_gas = call_handler
-                .estimate_transaction_cost(Some(GAS_TOLERANCE))
+                .estimate_transaction_cost(Some(GAS_TOLERANCE), None)
                 .await
                 .unwrap()
                 .gas_used;
@@ -207,7 +207,7 @@ pub mod exchange {
 
         if override_gas_limit {
             let estimated_gas = call_handler
-                .estimate_transaction_cost(Some(GAS_TOLERANCE))
+                .estimate_transaction_cost(Some(GAS_TOLERANCE), None)
                 .await
                 .unwrap()
                 .gas_used;
@@ -259,7 +259,7 @@ pub mod exchange {
 
         if override_gas_limit {
             let estimated_gas = call_handler
-                .estimate_transaction_cost(Some(GAS_TOLERANCE))
+                .estimate_transaction_cost(Some(GAS_TOLERANCE), None)
                 .await
                 .unwrap()
                 .gas_used;
@@ -284,7 +284,7 @@ pub mod exchange {
 
         if override_gas_limit {
             let estimated_gas = call_handler
-                .estimate_transaction_cost(Some(GAS_TOLERANCE))
+                .estimate_transaction_cost(Some(GAS_TOLERANCE), None)
                 .await
                 .unwrap()
                 .gas_used;
@@ -309,7 +309,7 @@ pub mod exchange {
 
         if override_gas_limit {
             let estimated_gas = call_handler
-                .estimate_transaction_cost(Some(GAS_TOLERANCE))
+                .estimate_transaction_cost(Some(GAS_TOLERANCE), None)
                 .await
                 .unwrap()
                 .gas_used;

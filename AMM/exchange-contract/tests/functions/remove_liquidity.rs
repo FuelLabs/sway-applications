@@ -5,8 +5,8 @@ mod success {
     use super::*;
     use crate::utils::wallet_balances;
     use fuels::{
-        tx::{Bytes32, ContractIdExt},
-        types::AssetId,
+        tx::ContractIdExt,
+        types::{AssetId, Bytes32},
     };
     use test_utils::interface::{Asset, AssetPair, RemoveLiquidityEvent};
 

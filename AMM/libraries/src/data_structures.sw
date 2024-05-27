@@ -155,9 +155,9 @@ pub struct LiquidityParameters {
 /// Information about a specific pool.
 pub struct PoolInfo {
     /// The unique identifiers and reserve amounts of the assets that make up the liquidity pool of the exchange contract.
-    reserves: AssetPair,
+    pub reserves: AssetPair,
     /// The amount of liquidity pool asset supply in the exchange contract.
-    liquidity: u64,
+    pub liquidity: u64,
 }
 
 /// Information regarding previewing the adding of liquidity.

@@ -9,7 +9,8 @@ mod success {
     use crate::utils::{contract_balances, wallet_balances};
     use fuels::{
         prelude::ContractId,
-        tx::{Bytes32, ContractIdExt},
+        types::Bytes32,
+        tx::ContractIdExt,
     };
     use test_utils::{
         interface::{

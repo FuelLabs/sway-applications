@@ -264,7 +264,7 @@ pub mod scripts {
         let coins = &provider
             .get_spendable_resources(ResourceFilter {
                 from: from.clone(),
-                asset_id,
+                asset_id: Some(asset_id),
                 amount,
                 ..Default::default()
             })
