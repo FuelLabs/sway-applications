@@ -61,7 +61,10 @@ impl Exchange for Contract {
     #[storage(read)]
     fn pool_info() -> PoolInfo {
         PoolInfo {
-            reserves: storage.pair.read().unwrap_or(AssetPair::new(Asset::new(AssetId::base(), 0), Asset::new(AssetId::base(), 0))),
+            reserves: storage.pair.read().unwrap_or(AssetPair::new(
+                Asset::new(AssetId::base(), 0),
+                Asset::new(AssetId::base(), 0),
+            )),
             liquidity: 0,
         }
     }

@@ -5,7 +5,7 @@ mod events;
 
 use ::errors::InitError;
 use ::events::{RegisterPoolEvent, SetExchangeBytecodeRootEvent};
-use libraries::{AMM, Exchange, data_structures::PoolInfo};
+use libraries::{AMM, data_structures::PoolInfo, Exchange};
 use std::{external::bytecode_root, hash::Hash};
 
 storage {
