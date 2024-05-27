@@ -177,7 +177,11 @@ impl MultiSignatureWallet for Contract {
             },
         }
 
-        log(ExecuteTransactionEvent { nonce, target, transaction_parameters });
+        log(ExecuteTransactionEvent {
+            nonce,
+            target,
+            transaction_parameters,
+        });
     }
 
     #[storage(read, write)]

@@ -240,3 +240,31 @@ fn test_convert_transfer_params_to_bytes() {
 
     assert_eq(result_bytes, expected_bytes);
 }
+
+#[test]
+fn test_convert_transaction_to_bytes() {
+    use std::bytes_conversions::u64::*;
+    use std::bytes::*;
+    let transaction = Transaction {
+        contract_identifier: ContractId::from(0x0000000000000000000000000000000000000000000000000000000000000001),
+        nonce: 1,
+        target: Identity::Address(Address::from(0x0000000000000000000000000000000000000000000000000000000000000001)),
+        transaction_parameters: TransactionParameters::Transfer(TransferParams {
+            asset_id: AssetId::from(0x0000000000000000000000000000000000000000000000000000000000000001),
+            value: Some(100),
+        }),
+    };
+
+    let result_bytes = Bytes::from_type(transaction);
+
+    let mut expected_bytes = Bytes::new();
+    expected_bytes.append(Bytes::from(transaction.contract_identifier.bits()));
+    expected_bytes.append(Bytes::from(1_u64.to_be_bytes()));
+    expected_bytes.append(Bytes::from(transaction.target.bits()));
+    expected_bytes.append(Bytes::from(1_u64.to_be_bytes())); // TransactionParameters::Transfer is encoded as 1
+    expected_bytes.append(Bytes::from(0x0000000000000000000000000000000000000000000000000000000000000001)); // transaction.transaction_parameters.asset_id
+    expected_bytes.append(Bytes::from(1_u64.to_be_bytes())); // Option::Some is encoded as 1
+    expected_bytes.append(Bytes::from(100_u64.to_be_bytes()));
+
+    assert_eq(result_bytes, expected_bytes);
+}
