@@ -22,6 +22,7 @@ use ::data_structures::{
 };
 use std::{
     asset::transfer,
+    call_frames::contract_id,
     context::this_balance,
     error_signals::FAILED_REQUIRE_SIGNAL,
     hash::{
@@ -124,7 +125,7 @@ impl MultiSignatureWallet for Contract {
                     );
                 }
 
-                let transaction_hash = compute_hash(TypeToHash::Transaction(Transaction::new(ContractId::this(), nonce, target, transaction_parameters)));
+                let transaction_hash = compute_hash(TypeToHash::Transaction(Transaction::new(contract_id(), nonce, target, transaction_parameters)));
                 let approval_count = count_approvals(signatures, transaction_hash);
                 require(
                     storage
@@ -146,6 +147,8 @@ impl MultiSignatureWallet for Contract {
                         .function_selector,
                     contract_call_params
                         .calldata,
+                    contract_call_params
+                        .single_value_type_arg,
                     call_params,
                 );
             },
@@ -162,7 +165,7 @@ impl MultiSignatureWallet for Contract {
                     ExecutionError::InsufficientAssetAmount,
                 );
 
-                let transaction_hash = compute_hash(TypeToHash::Transaction(Transaction::new(ContractId::this(), nonce, target, transaction_parameters)));
+                let transaction_hash = compute_hash(TypeToHash::Transaction(Transaction::new(contract_id(), nonce, target, transaction_parameters)));
                 let approval_count = count_approvals(signatures, transaction_hash);
                 require(
                     storage
@@ -177,11 +180,9 @@ impl MultiSignatureWallet for Contract {
             },
         }
 
-        log(ExecuteTransactionEvent {
-            nonce,
-            target,
-            transaction_parameters,
-        });
+        log(ExecuteTransactionEvent { nonce, target
+        // transaction_parameters,// TODO: Uncomment when SDK supports logs with nested Bytes https://github.com/FuelLabs/fuels-rs/issues/1046
+ });
     }
 
     #[storage(read, write)]
@@ -196,7 +197,7 @@ impl MultiSignatureWallet for Contract {
             InitError::TotalWeightCannotBeLessThanThreshold,
         );
 
-        let transaction_hash = compute_hash(TypeToHash::Threshold(Threshold::new(ContractId::this(), nonce, threshold)));
+        let transaction_hash = compute_hash(TypeToHash::Threshold(Threshold::new(contract_id(), nonce, threshold)));
         let approval_count = count_approvals(signatures, transaction_hash);
 
         let previous_threshold = storage.threshold.read();
@@ -219,7 +220,7 @@ impl MultiSignatureWallet for Contract {
         let nonce = storage.nonce.read();
         require(nonce != 0, InitError::NotInitialized);
 
-        let transaction_hash = compute_hash(TypeToHash::Weight(Weight::new(ContractId::this(), nonce, user)));
+        let transaction_hash = compute_hash(TypeToHash::Weight(Weight::new(contract_id(), nonce, user)));
         let approval_count = count_approvals(signatures, transaction_hash);
 
         let threshold = storage.threshold.read();

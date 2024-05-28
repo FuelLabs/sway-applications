@@ -8,15 +8,16 @@ use crate::utils::{
         transfer_signatures, TypeToHash, DEFAULT_TRANSFER_AMOUNT, VALID_SIGNER_PK,
     },
 };
-use fuels::{accounts::Account, crypto::Message, prelude::TxPolicies};
+use fuels::{
+    accounts::{fuel_crypto::Message, Account},
+    prelude::{TxPolicies, BASE_ASSET_ID},
+};
 
 mod success {
     use super::*;
     use crate::utils::{interface::info::balance, setup::ExecuteTransactionEvent};
 
     mod transfer {
-
-        use fuels::types::AssetId;
 
         use super::*;
 
@@ -36,20 +37,19 @@ mod success {
                 .force_transfer_to_contract(
                     deployer.contract.contract_id(),
                     DEFAULT_TRANSFER_AMOUNT,
-                    AssetId::zeroed(),
+                    BASE_ASSET_ID,
                     TxPolicies::default(),
                 )
                 .await
                 .unwrap();
 
             // Check balances pre-transfer
-            let initial_contract_balance =
-                balance(&deployer.contract, AssetId::zeroed()).await.value;
+            let initial_contract_balance = balance(&deployer.contract, BASE_ASSET_ID).await.value;
             let initial_receiver_balance = deployer
                 .wallet
                 .provider()
                 .unwrap()
-                .get_asset_balance(receiver_wallet.address(), AssetId::zeroed())
+                .get_asset_balance(receiver_wallet.address(), BASE_ASSET_ID)
                 .await
                 .unwrap();
 
@@ -80,17 +80,16 @@ mod success {
                 ExecuteTransactionEvent {
                     nonce: transaction.nonce,
                     target: transaction.target,
-                    transaction_parameters: transaction.transaction_parameters.clone(),
                 }
             );
 
             // check balances post-transfer
-            let final_contract_balance = balance(&deployer.contract, AssetId::zeroed()).await.value;
+            let final_contract_balance = balance(&deployer.contract, BASE_ASSET_ID).await.value;
             let final_receiver_balance = deployer
                 .wallet
                 .provider()
                 .unwrap()
-                .get_asset_balance(receiver_wallet.address(), AssetId::zeroed())
+                .get_asset_balance(receiver_wallet.address(), BASE_ASSET_ID)
                 .await
                 .unwrap();
 
@@ -105,8 +104,6 @@ mod success {
         }
     }
     mod call {
-
-        use fuels::types::AssetId;
 
         use super::*;
         use crate::utils::{
@@ -160,7 +157,6 @@ mod success {
                 ExecuteTransactionEvent {
                     nonce: transaction.nonce,
                     target: transaction.target,
-                    transaction_parameters: transaction.transaction_parameters.clone(),
                 }
             );
 
@@ -187,7 +183,7 @@ mod success {
                 .force_transfer_to_contract(
                     deployer.contract.contract_id(),
                     DEFAULT_TRANSFER_AMOUNT,
-                    AssetId::zeroed(),
+                    BASE_ASSET_ID,
                     TxPolicies::default(),
                 )
                 .await
@@ -210,13 +206,12 @@ mod success {
                 .value;
 
             // Check balances pre-call
-            let initial_multisig_balance =
-                balance(&deployer.contract, AssetId::zeroed()).await.value;
+            let initial_multisig_balance = balance(&deployer.contract, BASE_ASSET_ID).await.value;
             let initial_target_contract_balance = deployer
                 .wallet
                 .provider()
                 .unwrap()
-                .get_contract_asset_balance(target_contract.contract_id(), AssetId::zeroed())
+                .get_contract_asset_balance(target_contract.contract_id(), BASE_ASSET_ID)
                 .await
                 .unwrap();
 
@@ -247,7 +242,6 @@ mod success {
                 ExecuteTransactionEvent {
                     nonce: transaction.nonce,
                     target: transaction.target,
-                    transaction_parameters: transaction.transaction_parameters.clone(),
                 }
             );
 
@@ -262,12 +256,20 @@ mod success {
                 .value;
 
             // Check balances post-call
-            let final_multisig_balance = balance(&deployer.contract, AssetId::zeroed()).await.value;
+            // Uncomment when https://github.com/FuelLabs/fuel-core/issues/1535 is resolved
+            // let final_multisig_balance = balance(&deployer.contract, BASE_ASSET_ID).await.value;
+            let final_multisig_balance = deployer
+                .wallet
+                .provider()
+                .unwrap()
+                .get_contract_asset_balance(deployer.contract.contract_id(), BASE_ASSET_ID)
+                .await
+                .unwrap();
             let final_target_contract_balance = deployer
                 .wallet
                 .provider()
                 .unwrap()
-                .get_contract_asset_balance(target_contract.contract_id(), AssetId::zeroed())
+                .get_contract_asset_balance(target_contract.contract_id(), BASE_ASSET_ID)
                 .await
                 .unwrap();
 
@@ -326,8 +328,6 @@ mod revert {
 
     mod transfer {
 
-        use fuels::types::AssetId;
-
         use super::*;
 
         #[tokio::test]
@@ -343,7 +343,7 @@ mod revert {
                 transfer_parameters(&deployer, initial_nonce);
 
             transaction.transaction_parameters = TransactionParameters::Transfer(TransferParams {
-                asset_id: AssetId::zeroed(),
+                asset_id: BASE_ASSET_ID,
                 value: None,
             });
 
@@ -414,7 +414,7 @@ mod revert {
                 .force_transfer_to_contract(
                     deployer.contract.contract_id(),
                     DEFAULT_TRANSFER_AMOUNT,
-                    AssetId::zeroed(),
+                    BASE_ASSET_ID,
                     TxPolicies::default(),
                 )
                 .await
@@ -458,7 +458,7 @@ mod revert {
                 .force_transfer_to_contract(
                     deployer.contract.contract_id(),
                     DEFAULT_TRANSFER_AMOUNT,
-                    AssetId::zeroed(),
+                    BASE_ASSET_ID,
                     TxPolicies::default(),
                 )
                 .await

@@ -8,7 +8,7 @@ use crate::utils::{
         VALID_SIGNER_PK,
     },
 };
-use fuels::crypto::Message;
+use fuels::accounts::fuel_crypto::Message;
 
 mod success {
 

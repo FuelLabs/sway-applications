@@ -1,6 +1,6 @@
 [[package]]
 name = "core"
-source = "path+from-root-E19CE48B3E858B72"
+source = "path+from-root-C3992B43B72ADB8C"
 
 [[package]]
 name = "multisig-contract"
@@ -9,7 +9,7 @@ dependencies = ["std"]
 
 [[package]]
 name = "std"
-source = "git+https://github.com/fuellabs/sway?tag=v0.60.0#2f0392ee35a1e4dd80bd8034962d5b4083dfb8b6"
+source = "git+https://github.com/fuellabs/sway?tag=v0.49.1#2ac7030570f22510b0ac2a7b5ddf7baa20bdc0e1"
 dependencies = ["core"]
 
 [[package]]

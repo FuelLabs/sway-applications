@@ -1,17 +1,35 @@
 library;
 
 use ::data_structures::user::User;
-use std::{alloc::alloc, bytes::Bytes, constants::ZERO_B256, hash::{Hash, Hasher}};
+use std::{bytes::Bytes, constants::ZERO_B256, hash::{Hash, Hasher}};
 
 impl Bytes {
-    /// Converts a generic type into [Bytes].
-    pub fn from_type<T>(value: T) -> Self {
-        let ptr = alloc::<T>(1);
-        ptr.write(value);
+    /// Converts a generic copy type into [Bytes].
+    pub fn from_copy_type<T>(value: T) -> Self {
+        // Artificially create bytes with capacity and len
+        let mut bytes = Bytes::with_capacity(8);
+        bytes.len = 8;
 
-        let slice = raw_slice::from_parts::<T>(ptr, 1);
+        asm(buffer, ptr: value, dst: bytes.buf.ptr, len: 8) {
+            move buffer sp;
+            cfei i8;
+            sw buffer ptr i0;
+            mcp dst buffer len;
+            cfsi i8;
+        }
 
-        Bytes::from(slice)
+        bytes
+    }
+
+    /// Converts a generic reference type into [Bytes].
+    pub fn from_reference_type<T>(t: T) -> Self {
+        // Artificially create bytes with capacity and len
+        let size = __size_of::<T>();
+        let mut bytes = Bytes::with_capacity(size);
+        bytes.len = size;
+        // Copy bytes of `t` into the buffer of the target bytes
+        __addr_of(t).copy_bytes_to(bytes.buf.ptr, size);
+        bytes
     }
 }
 
@@ -23,25 +41,25 @@ pub trait IntoBytes {
 /// Parameters for calling a contract.
 pub struct ContractCallParams {
     /// The calldata for the call.
-    pub calldata: Bytes,
+    calldata: Bytes,
     /// The amount of gas to forward.
-    pub forwarded_gas: u64,
+    forwarded_gas: u64,
     /// The function selector for the call.
-    pub function_selector: Bytes,
+    function_selector: Bytes,
     /// Whether the function being called takes a single value-type argument.
-    pub single_value_type_arg: bool,
+    single_value_type_arg: bool,
     /// Parameters for a transfer.
-    pub transfer_params: TransferParams,
+    transfer_params: TransferParams,
 }
 
 impl IntoBytes for ContractCallParams {
     fn into_bytes(self) -> Bytes {
         let mut bytes = Bytes::new();
         bytes.append(self.calldata);
-        bytes.append(Bytes::from_type(self.forwarded_gas));
+        bytes.append(Bytes::from_copy_type(self.forwarded_gas));
         bytes.append(self.function_selector);
-        bytes.append(Bytes::from_type(self.single_value_type_arg));
-        bytes.append(Bytes::from_type(self.transfer_params));
+        bytes.append(Bytes::from_copy_type(self.single_value_type_arg));
+        bytes.append(Bytes::from_reference_type(self.transfer_params));
         bytes
     }
 }
@@ -50,11 +68,11 @@ impl IntoBytes for ContractCallParams {
 pub struct Threshold {
     /// Unique identifier for the contract which prevents this transaction from being submitted to another
     /// instance of the multisig.
-    pub contract_identifier: ContractId,
+    contract_identifier: ContractId,
     /// The nonce of the multisig wallet, used to prevent double spending.
-    pub nonce: u64,
+    nonce: u64,
     /// The number of approvals required to enable a transaction to be sent.
-    pub threshold: u64,
+    threshold: u64,
 }
 
 impl Threshold {
@@ -78,12 +96,12 @@ impl IntoBytes for TransactionParameters {
         match self {
             TransactionParameters::Call(contract_call_params) => {
                 // As [ContractCallParams] contains fields of type [Bytes], manual serialisation is necessary.
-                let mut bytes = Bytes::from_type(0u64);
+                let mut bytes = Bytes::from_copy_type(0u64);
                 bytes.append(contract_call_params.into_bytes());
                 bytes
             },
-            TransactionParameters::Transfer(transfer_params) => {
-                Bytes::from_type(transfer_params)
+            TransactionParameters::Transfer => {
+                Bytes::from_reference_type(self)
             },
         }
     }
@@ -93,13 +111,13 @@ impl IntoBytes for TransactionParameters {
 pub struct Transaction {
     /// Unique identifier for the contract which prevents this transaction from being submitted to another
     /// instance of the multisig.
-    pub contract_identifier: ContractId,
+    contract_identifier: ContractId,
     /// The nonce of the multisig wallet, used to prevent double spending.
-    pub nonce: u64,
+    nonce: u64,
     /// The target of the transaction.
-    pub target: Identity,
+    target: Identity,
     /// Parameters of the transaction.
-    pub transaction_parameters: TransactionParameters,
+    transaction_parameters: TransactionParameters,
 }
 
 impl Transaction {
@@ -123,9 +141,9 @@ impl IntoBytes for Transaction {
     // as such the whole struct must be serialised to [Bytes].
     fn into_bytes(self) -> Bytes {
         let mut bytes = Bytes::new();
-        bytes.append(Bytes::from_type(self.contract_identifier));
-        bytes.append(Bytes::from_type(self.nonce));
-        bytes.append(Bytes::from_type(self.target));
+        bytes.append(Bytes::from_reference_type(self.contract_identifier));
+        bytes.append(Bytes::from_copy_type(self.nonce));
+        bytes.append(Bytes::from_reference_type(self.target));
         bytes.append(self.transaction_parameters.into_bytes());
         bytes
     }
@@ -134,9 +152,9 @@ impl IntoBytes for Transaction {
 /// Parameters for a transfer.
 pub struct TransferParams {
     /// The asset to transfer.
-    pub asset_id: AssetId,
+    asset_id: AssetId,
     /// The amount to transfer.
-    pub value: Option<u64>,
+    value: Option<u64>,
 }
 
 /// Determines the type to be hashed.
@@ -182,11 +200,11 @@ impl Hash for Weight {
 pub struct Weight {
     /// Unique identifier for the contract which prevents this transaction from being submitted to another
     /// instance of the multisig.
-    pub contract_identifier: ContractId,
+    contract_identifier: ContractId,
     /// The nonce of the multisig wallet, used to prevent double spending.
-    pub nonce: u64,
+    nonce: u64,
     /// The user of the multisig, who can sign transactions to add their approval.
-    pub user: User,
+    user: User,
 }
 
 impl Weight {
@@ -197,74 +215,4 @@ impl Weight {
             user,
         }
     }
-}
-
-#[test]
-fn test_convert_u64_to_bytes() {
-    use std::bytes_conversions::u64::*;
-    use std::bytes::*;
-    let u64_1 = 1u64;
-    let result_bytes = Bytes::from_type(u64_1);
-
-    let expected_bytes = Bytes::from(u64_1.to_be_bytes());
-    assert_eq(result_bytes, expected_bytes);
-}
-
-#[test]
-fn test_convert_bool_to_bytes() {
-    let bool_1 = true;
-
-    let result_bytes = Bytes::from_type(bool_1);
-
-    let mut expected_bytes = Bytes::new();
-    expected_bytes.push(1_u8);
-
-    assert_eq(result_bytes, expected_bytes);
-}
-
-#[test]
-fn test_convert_transfer_params_to_bytes() {
-    use std::bytes_conversions::u64::*;
-    use std::bytes::*;
-    let transfer_params = TransferParams {
-        asset_id: AssetId::from(0x0000000000000000000000000000000000000000000000000000000000000001),
-        value: Some(100),
-    };
-
-    let result_bytes = Bytes::from_type(transfer_params);
-
-    let mut expected_bytes = Bytes::new();
-    expected_bytes.append(Bytes::from(transfer_params.asset_id.bits()));
-    expected_bytes.append(Bytes::from(1_u64.to_be_bytes()));
-    expected_bytes.append(Bytes::from(100_u64.to_be_bytes()));
-
-    assert_eq(result_bytes, expected_bytes);
-}
-
-#[test]
-fn test_convert_transaction_to_bytes() {
-    use std::bytes_conversions::u64::*;
-    use std::bytes::*;
-    let transaction = Transaction {
-        contract_identifier: ContractId::from(0x0000000000000000000000000000000000000000000000000000000000000001),
-        nonce: 1,
-        target: Identity::Address(Address::from(0x0000000000000000000000000000000000000000000000000000000000000001)),
-        transaction_parameters: TransactionParameters::Transfer(TransferParams {
-            asset_id: AssetId::from(0x0000000000000000000000000000000000000000000000000000000000000001),
-            value: Some(100),
-        }),
-    };
-
-    let result_bytes = Bytes::from_type(transaction);
-
-    let mut expected_bytes = Bytes::new();
-    expected_bytes.append(Bytes::from(transaction.contract_identifier.bits()));
-    expected_bytes.append(Bytes::from(1_u64.to_be_bytes()));
-    expected_bytes.append(Bytes::from(transaction.target.bits()));
-    expected_bytes.append(Bytes::from(1_u64.to_be_bytes())); // TransactionParameters::Transfer is encoded as 1
-    expected_bytes.append(Bytes::from(0x0000000000000000000000000000000000000000000000000000000000000001)); // transaction.transaction_parameters.asset_id
-    expected_bytes.append(Bytes::from(1_u64.to_be_bytes())); // Option::Some is encoded as 1
-    expected_bytes.append(Bytes::from(100_u64.to_be_bytes()));
-
-    assert_eq(result_bytes, expected_bytes);
 }
