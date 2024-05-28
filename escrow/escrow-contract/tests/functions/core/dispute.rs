@@ -33,7 +33,7 @@ mod success {
         assert!(escrows(&seller, 0).await.unwrap().disputed);
 
         let log = response.decode_logs_with_type::<DisputeEvent>().unwrap();
-        let event = log.get(0).unwrap();
+        let event = log.first().unwrap();
 
         assert_eq!(*event, DisputeEvent { identifier: 0 });
     }
@@ -78,8 +78,8 @@ mod success {
 
         let log1 = response1.decode_logs_with_type::<DisputeEvent>().unwrap();
         let log2 = response2.decode_logs_with_type::<DisputeEvent>().unwrap();
-        let event1 = log1.get(0).unwrap();
-        let event2 = log2.get(0).unwrap();
+        let event1 = log1.first().unwrap();
+        let event2 = log2.first().unwrap();
 
         assert_eq!(*event1, DisputeEvent { identifier: 0 });
         assert_eq!(*event2, DisputeEvent { identifier: 1 });

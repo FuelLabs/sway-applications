@@ -22,7 +22,7 @@ mod success {
         let threshold = threshold(&deployer.contract).await.value;
 
         let threshold_instance = Threshold {
-            contract_identifier: deployer.contract.contract_id().try_into().unwrap(),
+            contract_identifier: deployer.contract.contract_id().into(),
             nonce,
             threshold,
         };
@@ -53,14 +53,14 @@ mod success {
         let (_private_key, deployer, _non_owner) = setup_env(VALID_SIGNER_PK).await.unwrap();
 
         let nonce = nonce(&deployer.contract).await.value;
-        let target = Identity::Address(deployer.wallet.address().try_into().unwrap());
+        let target = Identity::Address(deployer.wallet.address().into());
         let transaction_parameters = TransactionParameters::Transfer(TransferParams {
             asset_id: BASE_ASSET_ID,
             value: Some(DEFAULT_TRANSFER_AMOUNT),
         });
 
         let transaction_instance = Transaction {
-            contract_identifier: deployer.contract.contract_id().try_into().unwrap(),
+            contract_identifier: deployer.contract.contract_id().into(),
             nonce,
             target,
             transaction_parameters,
@@ -99,7 +99,7 @@ mod success {
         let (_private_key, deployer, _non_owner) = setup_env(VALID_SIGNER_PK).await.unwrap();
 
         let nonce = nonce(&deployer.contract).await.value;
-        let target = Identity::Address(deployer.wallet.address().try_into().unwrap());
+        let target = Identity::Address(deployer.wallet.address().into());
         let transaction_parameters = TransactionParameters::Call(ContractCallParams {
             calldata: Bytes([1u8; 32].to_vec()),
             forwarded_gas: 100,
@@ -112,7 +112,7 @@ mod success {
         });
 
         let transaction_instance = Transaction {
-            contract_identifier: deployer.contract.contract_id().try_into().unwrap(),
+            contract_identifier: deployer.contract.contract_id().into(),
             nonce,
             target,
             transaction_parameters,
@@ -151,7 +151,7 @@ mod success {
         let user = default_users().pop().unwrap();
 
         let weight_instance = Weight {
-            contract_identifier: deployer.contract.contract_id().try_into().unwrap(),
+            contract_identifier: deployer.contract.contract_id().into(),
             nonce,
             user: user.clone(),
         };

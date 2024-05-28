@@ -26,7 +26,7 @@ mod success {
             duration,
             initial_price,
             Some(reserve_price),
-            seller_identity.clone(),
+            seller_identity,
             sell_asset,
             sell_amount,
         )
@@ -37,7 +37,7 @@ mod success {
         let _result = provider.produce_blocks(duration + 1, Option::None).await;
 
         assert_eq!(
-            deposit_balance(auction_id, &seller.auction, buyer1_identity.clone())
+            deposit_balance(auction_id, &seller.auction, buyer1_identity)
                 .await
                 .unwrap(),
             initial_price
@@ -46,7 +46,7 @@ mod success {
         withdraw(auction_id, &buyer1.auction).await;
 
         assert_eq!(
-            deposit_balance(auction_id, &seller.auction, buyer1_identity.clone()).await,
+            deposit_balance(auction_id, &seller.auction, buyer1_identity).await,
             None
         );
         assert_eq!(
@@ -70,7 +70,7 @@ mod success {
             duration,
             initial_price,
             Some(reserve_price),
-            seller_identity.clone(),
+            seller_identity,
             sell_asset,
             sell_amount,
         )
@@ -79,7 +79,7 @@ mod success {
         bid(auction_id, buy_asset, reserve_price, &buyer1.auction).await;
 
         assert_eq!(
-            deposit_balance(auction_id, &seller.auction, buyer1_identity.clone())
+            deposit_balance(auction_id, &seller.auction, buyer1_identity)
                 .await
                 .unwrap(),
             reserve_price
@@ -88,7 +88,7 @@ mod success {
         withdraw(auction_id, &buyer1.auction).await;
 
         assert_eq!(
-            deposit_balance(auction_id, &seller.auction, buyer1_identity.clone()).await,
+            deposit_balance(auction_id, &seller.auction, buyer1_identity).await,
             None
         );
         assert_eq!(
@@ -112,7 +112,7 @@ mod success {
             duration,
             initial_price,
             Some(reserve_price),
-            seller_identity.clone(),
+            seller_identity,
             sell_asset,
             sell_amount,
         )
@@ -122,7 +122,7 @@ mod success {
         bid(auction_id, buy_asset, reserve_price, &buyer2.auction).await;
 
         assert_eq!(
-            deposit_balance(auction_id, &buyer1.auction, buyer1_identity.clone())
+            deposit_balance(auction_id, &buyer1.auction, buyer1_identity)
                 .await
                 .unwrap(),
             initial_price
@@ -131,7 +131,7 @@ mod success {
         withdraw(auction_id, &buyer1.auction).await;
 
         assert_eq!(
-            deposit_balance(auction_id, &seller.auction, buyer1_identity.clone()).await,
+            deposit_balance(auction_id, &seller.auction, buyer1_identity).await,
             None
         );
         assert_eq!(
@@ -155,7 +155,7 @@ mod success {
             duration,
             initial_price,
             Some(reserve_price),
-            seller_identity.clone(),
+            seller_identity,
             sell_asset,
             sell_amount,
         )
@@ -164,7 +164,7 @@ mod success {
         let _result = provider.produce_blocks(duration + 1, Option::None).await;
 
         assert_eq!(
-            deposit_balance(auction_id, &seller.auction, seller_identity.clone())
+            deposit_balance(auction_id, &seller.auction, seller_identity)
                 .await
                 .unwrap(),
             sell_amount
@@ -173,7 +173,7 @@ mod success {
         withdraw(auction_id, &seller.auction).await;
 
         assert_eq!(
-            deposit_balance(auction_id, &seller.auction, seller_identity.clone()).await,
+            deposit_balance(auction_id, &seller.auction, seller_identity).await,
             None
         );
         assert_eq!(
@@ -196,7 +196,7 @@ mod success {
             duration,
             initial_price,
             Some(reserve_price),
-            seller_identity.clone(),
+            seller_identity,
             sell_asset,
             sell_amount,
         )
@@ -205,7 +205,7 @@ mod success {
         bid(auction_id, buy_asset, reserve_price, &buyer1.auction).await;
 
         assert_eq!(
-            deposit_balance(auction_id, &seller.auction, seller_identity.clone())
+            deposit_balance(auction_id, &seller.auction, seller_identity)
                 .await
                 .unwrap(),
             sell_amount
@@ -214,7 +214,7 @@ mod success {
         withdraw(auction_id, &seller.auction).await;
 
         assert_eq!(
-            deposit_balance(auction_id, &seller.auction, seller_identity.clone()).await,
+            deposit_balance(auction_id, &seller.auction, seller_identity).await,
             None
         );
         assert_eq!(
@@ -238,7 +238,7 @@ mod success {
             duration,
             initial_price,
             Some(reserve_price),
-            seller_identity.clone(),
+            seller_identity,
             sell_asset,
             sell_amount,
         )
@@ -250,7 +250,7 @@ mod success {
             duration,
             initial_price,
             Some(reserve_price),
-            seller_identity.clone(),
+            seller_identity,
             sell_asset,
             sell_amount,
         )
@@ -260,13 +260,13 @@ mod success {
         bid(auction_id2, buy_asset, reserve_price, &buyer1.auction).await;
 
         assert_eq!(
-            deposit_balance(auction_id1, &seller.auction, buyer1_identity.clone())
+            deposit_balance(auction_id1, &seller.auction, buyer1_identity)
                 .await
                 .unwrap(),
             reserve_price
         );
         assert_eq!(
-            deposit_balance(auction_id2, &seller.auction, buyer1_identity.clone())
+            deposit_balance(auction_id2, &seller.auction, buyer1_identity)
                 .await
                 .unwrap(),
             reserve_price
@@ -275,11 +275,11 @@ mod success {
         withdraw(auction_id1, &buyer1.auction).await;
 
         assert_eq!(
-            deposit_balance(auction_id1, &seller.auction, buyer1_identity.clone()).await,
+            deposit_balance(auction_id1, &seller.auction, buyer1_identity).await,
             None
         );
         assert_eq!(
-            deposit_balance(auction_id2, &seller.auction, buyer1_identity.clone())
+            deposit_balance(auction_id2, &seller.auction, buyer1_identity)
                 .await
                 .unwrap(),
             reserve_price
@@ -292,11 +292,11 @@ mod success {
         withdraw(auction_id2, &buyer1.auction).await;
 
         assert_eq!(
-            deposit_balance(auction_id1, &seller.auction, buyer1_identity.clone()).await,
+            deposit_balance(auction_id1, &seller.auction, buyer1_identity).await,
             None
         );
         assert_eq!(
-            deposit_balance(auction_id2, &seller.auction, buyer1_identity.clone()).await,
+            deposit_balance(auction_id2, &seller.auction, buyer1_identity).await,
             None
         );
         assert_eq!(
@@ -334,7 +334,7 @@ mod revert {
             duration,
             initial_price,
             Some(reserve_price),
-            seller_identity.clone(),
+            seller_identity,
             sell_asset,
             sell_amount,
         )
@@ -360,7 +360,7 @@ mod revert {
             duration,
             initial_price,
             Some(reserve_price),
-            seller_identity.clone(),
+            seller_identity,
             sell_asset,
             sell_amount,
         )
@@ -387,7 +387,7 @@ mod revert {
             duration,
             initial_price,
             Some(reserve_price),
-            seller_identity.clone(),
+            seller_identity,
             sell_asset,
             sell_amount,
         )

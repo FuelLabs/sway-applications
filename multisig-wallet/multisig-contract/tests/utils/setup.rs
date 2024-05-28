@@ -201,10 +201,10 @@ pub(crate) fn transfer_parameters(
     nonce: u64,
 ) -> (WalletUnlocked, Identity, Transaction) {
     let receiver_wallet = WalletUnlocked::new_random(None);
-    let receiver = Identity::Address(receiver_wallet.address().try_into().unwrap());
+    let receiver = Identity::Address(receiver_wallet.address().into());
 
     let transaction = Transaction {
-        contract_identifier: deployer.contract.contract_id().try_into().unwrap(),
+        contract_identifier: deployer.contract.contract_id().into(),
         nonce,
         target: receiver.clone(),
         transaction_parameters: TransactionParameters::Transfer(TransferParams {
@@ -240,7 +240,7 @@ pub(crate) fn call_parameters(
     };
 
     let mut transaction = Transaction {
-        contract_identifier: deployer.contract.contract_id().try_into().unwrap(),
+        contract_identifier: deployer.contract.contract_id().into(),
         nonce,
         target: Identity::ContractId(target_contract.contract_id().into()),
         transaction_parameters: TransactionParameters::Call(contract_call_params.clone()),

@@ -11,7 +11,7 @@ mod success {
         let response = constructor(&deployer.dao_voting, gov_asset_id).await;
 
         let log = response.decode_logs_with_type::<InitializeEvent>().unwrap();
-        let event = log.get(0).unwrap();
+        let event = log.first().unwrap();
 
         assert_eq!(
             *event,

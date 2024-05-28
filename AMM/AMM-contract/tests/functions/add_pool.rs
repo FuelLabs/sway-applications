@@ -24,7 +24,7 @@ mod success {
         let log = response
             .decode_logs_with_type::<RegisterPoolEvent>()
             .unwrap();
-        let event = log.get(0).unwrap();
+        let event = log.first().unwrap();
 
         let exchange_contract_id_in_storage = pool(&amm_instance, pair).await;
 
@@ -55,7 +55,7 @@ mod success {
         let log = response
             .decode_logs_with_type::<RegisterPoolEvent>()
             .unwrap();
-        let event = log.get(0).unwrap();
+        let event = log.first().unwrap();
 
         let exchange_contract_id_in_storage = pool(&amm_instance, pair).await;
 
@@ -91,13 +91,13 @@ mod success {
         let log = response
             .decode_logs_with_type::<RegisterPoolEvent>()
             .unwrap();
-        let event_1 = log.get(0).unwrap();
+        let event_1 = log.first().unwrap();
 
         let response = add_pool(&amm_instance, pair_2, exchange_2.id).await;
         let log = response
             .decode_logs_with_type::<RegisterPoolEvent>()
             .unwrap();
-        let event_2 = log.get(0).unwrap();
+        let event_2 = log.first().unwrap();
 
         let exchange_contract_id_in_storage_of_pair_1 = pool(&amm_instance, pair_1).await;
         let exchange_contract_id_in_storage_of_pair_2 = pool(&amm_instance, pair_2).await;

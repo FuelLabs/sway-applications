@@ -15,7 +15,7 @@ mod success {
         let (vault_sub_id, vault_admin, share_asset1, _share_asset2, share_supply) =
             defaults(&admin.wallet, nft_1, nft_2, f_nft_id);
 
-        deposit(&admin.f_nft, nft_1, vault_admin.clone(), vault_sub_id).await;
+        deposit(&admin.f_nft, nft_1, vault_admin, vault_sub_id).await;
 
         assert_eq!(
             get_wallet_balance(&admin.wallet, &share_asset1).await,
@@ -27,7 +27,7 @@ mod success {
             &admin.f_nft,
             share_asset1,
             share_supply,
-            vault_admin.clone(),
+            vault_admin,
             nft_1,
             vault_sub_id,
         )
@@ -41,7 +41,7 @@ mod success {
         assert_eq!(
             *event,
             Withdraw {
-                caller: vault_admin.clone(),
+                caller: vault_admin,
                 receiver: vault_admin,
                 underlying_asset: nft_1,
                 vault_sub_id: Bits256(*vault_sub_id),
@@ -58,9 +58,9 @@ mod success {
         let (vault_sub_id, vault_admin, share_asset1, share_asset2, share_supply) =
             defaults(&admin.wallet, nft_1, nft_2, f_nft_id);
 
-        deposit(&admin.f_nft, nft_1, vault_admin.clone(), vault_sub_id).await;
+        deposit(&admin.f_nft, nft_1, vault_admin, vault_sub_id).await;
 
-        deposit(&admin.f_nft, nft_2, vault_admin.clone(), vault_sub_id).await;
+        deposit(&admin.f_nft, nft_2, vault_admin, vault_sub_id).await;
 
         assert_eq!(
             get_wallet_balance(&admin.wallet, &share_asset1).await,
@@ -72,7 +72,7 @@ mod success {
             &admin.f_nft,
             share_asset1,
             share_supply,
-            vault_admin.clone(),
+            vault_admin,
             nft_1,
             vault_sub_id,
         )
@@ -85,8 +85,8 @@ mod success {
         assert_eq!(
             *event,
             Withdraw {
-                caller: vault_admin.clone(),
-                receiver: vault_admin.clone(),
+                caller: vault_admin,
+                receiver: vault_admin,
                 underlying_asset: nft_1,
                 vault_sub_id: Bits256(*vault_sub_id),
                 withdrawn_amount: 100_000_000,
@@ -104,7 +104,7 @@ mod success {
             &admin.f_nft,
             share_asset2,
             share_supply,
-            vault_admin.clone(),
+            vault_admin,
             nft_2,
             vault_sub_id,
         )
@@ -117,7 +117,7 @@ mod success {
         assert_eq!(
             *event,
             Withdraw {
-                caller: vault_admin.clone(),
+                caller: vault_admin,
                 receiver: vault_admin,
                 underlying_asset: nft_2,
                 vault_sub_id: Bits256(*vault_sub_id),
@@ -145,7 +145,7 @@ mod revert {
         let (vault_sub_id, vault_admin, _share_asset1, _share_asset2, share_supply) =
             defaults(&admin.wallet, nft_1, nft_2, f_nft_id);
 
-        deposit(&admin.f_nft, nft_1, vault_admin.clone(), vault_sub_id).await;
+        deposit(&admin.f_nft, nft_1, vault_admin, vault_sub_id).await;
 
         let call_params = CallParameters::new(share_supply, AssetId::zeroed(), 1_000_000);
         let _ = admin
@@ -170,7 +170,7 @@ mod revert {
         let (vault_sub_id, vault_admin, share_asset1, _share_asset2, share_supply) =
             defaults(&admin.wallet, nft_1, nft_2, f_nft_id);
 
-        deposit(&admin.f_nft, nft_1, vault_admin.clone(), vault_sub_id).await;
+        deposit(&admin.f_nft, nft_1, vault_admin, vault_sub_id).await;
 
         withdraw(
             &admin.f_nft,

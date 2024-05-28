@@ -24,7 +24,7 @@ mod success {
         let response = make_move(&player_one.contract, 6).await;
 
         let log = response.decode_logs_with_type::<GameWonEvent>().unwrap();
-        let event = log.get(0).unwrap();
+        let event = log.first().unwrap();
 
         assert_eq!(
             *event,
@@ -51,7 +51,7 @@ mod success {
         let response = make_move(&player_two.contract, 7).await;
 
         let log = response.decode_logs_with_type::<GameWonEvent>().unwrap();
-        let event = log.get(0).unwrap();
+        let event = log.first().unwrap();
 
         assert_eq!(
             *event,
@@ -78,7 +78,7 @@ mod success {
         let response = make_move(&player_one.contract, 6).await;
 
         let log = response.decode_logs_with_type::<GameWonEvent>().unwrap();
-        let event = log.get(0).unwrap();
+        let event = log.first().unwrap();
 
         assert_eq!(
             *event,
@@ -106,7 +106,7 @@ mod success {
         let response = make_move(&player_two.contract, 7).await;
 
         let log = response.decode_logs_with_type::<GameWonEvent>().unwrap();
-        let event = log.get(0).unwrap();
+        let event = log.first().unwrap();
 
         assert_eq!(
             *event,
@@ -136,7 +136,7 @@ mod success {
         let response = make_move(&player_one.contract, 8).await;
 
         let log = response.decode_logs_with_type::<GameDrawnEvent>().unwrap();
-        let event = log.get(0).unwrap();
+        let event = log.first().unwrap();
 
         assert_eq!(
             *event,
@@ -167,12 +167,12 @@ mod success {
         let response = make_move(&player_one.contract, 8).await;
 
         let log = response.decode_logs_with_type::<GameDrawnEvent>().unwrap();
-        let event = log.get(0).unwrap();
+        let event = log.first().unwrap();
 
         assert_eq!(
             *event,
             GameDrawnEvent {
-                player_one: player_one.identity.clone(),
+                player_one: player_one.identity,
                 player_two: player_one.identity,
             }
         );

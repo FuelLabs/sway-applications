@@ -21,7 +21,7 @@ mod success {
             other_identity,
         ) = defaults(id, owner_wallet, other_wallet.clone());
 
-        constructor(&instance_1, owner_identity.clone()).await;
+        constructor(&instance_1, owner_identity).await;
 
         assert_eq!(total_supply(&instance_1, asset_id_1).await, None);
         mint(&instance_1, other_identity, sub_id_1, 1).await;
@@ -42,18 +42,18 @@ mod success {
             other_identity,
         ) = defaults(id, owner_wallet, other_wallet.clone());
 
-        constructor(&instance_1, owner_identity.clone()).await;
+        constructor(&instance_1, owner_identity).await;
 
         assert_eq!(total_supply(&instance_1, asset_id_1).await, None);
-        mint(&instance_1, other_identity.clone(), sub_id_1, 1).await;
+        mint(&instance_1, other_identity, sub_id_1, 1).await;
         assert_eq!(total_supply(&instance_1, asset_id_1).await, Some(1));
 
         assert_eq!(total_supply(&instance_1, asset_id_2).await, None);
-        mint(&instance_1, other_identity.clone(), sub_id_2, 1).await;
+        mint(&instance_1, other_identity, sub_id_2, 1).await;
         assert_eq!(total_supply(&instance_1, asset_id_2).await, Some(1));
 
         assert_eq!(total_supply(&instance_1, asset_id_3).await, None);
-        mint(&instance_1, other_identity.clone(), sub_id_3, 1).await;
+        mint(&instance_1, other_identity, sub_id_3, 1).await;
         assert_eq!(total_supply(&instance_1, asset_id_3).await, Some(1));
     }
 
@@ -71,16 +71,16 @@ mod success {
             other_identity,
         ) = defaults(id, owner_wallet, other_wallet.clone());
 
-        constructor(&instance_1, owner_identity.clone()).await;
+        constructor(&instance_1, owner_identity).await;
 
         assert_eq!(total_supply(&instance_1, asset_id_1).await, None);
-        mint(&instance_1, other_identity.clone(), sub_id_1, 1).await;
+        mint(&instance_1, other_identity, sub_id_1, 1).await;
         assert_eq!(total_supply(&instance_1, asset_id_1).await, Some(1));
 
-        mint(&instance_1, other_identity.clone(), sub_id_2, 1).await;
+        mint(&instance_1, other_identity, sub_id_2, 1).await;
         assert_eq!(total_supply(&instance_1, asset_id_1).await, Some(1));
 
-        mint(&instance_1, other_identity.clone(), sub_id_3, 1).await;
+        mint(&instance_1, other_identity, sub_id_3, 1).await;
         assert_eq!(total_supply(&instance_1, asset_id_1).await, Some(1));
     }
 
@@ -98,9 +98,9 @@ mod success {
             other_identity,
         ) = defaults(id, owner_wallet, other_wallet.clone());
 
-        constructor(&instance_1, owner_identity.clone()).await;
+        constructor(&instance_1, owner_identity).await;
 
-        mint(&instance_1, other_identity.clone(), sub_id_1, 1).await;
+        mint(&instance_1, other_identity, sub_id_1, 1).await;
 
         assert_eq!(total_supply(&instance_1, asset_id_1).await, Some(1));
         burn(&instance_2, asset_id_1, sub_id_1, 1).await;

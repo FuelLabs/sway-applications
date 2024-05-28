@@ -29,7 +29,7 @@ mod success {
 
         let previous_identity = identity(&instance, acc1.name.clone()).await;
 
-        set_identity(&instance, acc1.name.clone(), wallet_identity2.clone()).await;
+        set_identity(&instance, acc1.name.clone(), wallet_identity2).await;
 
         let new_identity = identity(&instance, acc1.name.clone()).await;
 

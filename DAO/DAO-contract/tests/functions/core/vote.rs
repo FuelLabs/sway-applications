@@ -28,8 +28,8 @@ mod success {
 
         let log1 = response1.decode_logs_with_type::<VoteEvent>().unwrap();
         let log2 = response2.decode_logs_with_type::<VoteEvent>().unwrap();
-        let event1 = log1.get(0).unwrap();
-        let event2 = log2.get(0).unwrap();
+        let event1 = log1.first().unwrap();
+        let event2 = log2.first().unwrap();
 
         assert_eq!(
             *event1,
@@ -91,8 +91,8 @@ mod success {
 
         let log1 = response1.decode_logs_with_type::<VoteEvent>().unwrap();
         let log2 = response2.decode_logs_with_type::<VoteEvent>().unwrap();
-        let event1 = log1.get(0).unwrap();
-        let event2 = log2.get(0).unwrap();
+        let event1 = log1.first().unwrap();
+        let event2 = log2.first().unwrap();
 
         assert_eq!(
             *event1,
@@ -129,7 +129,7 @@ mod success {
         let response3 = vote(&user.dao_voting, true, 1, asset_amount / 4).await;
 
         let log3 = response3.decode_logs_with_type::<VoteEvent>().unwrap();
-        let event3 = log3.get(0).unwrap();
+        let event3 = log3.first().unwrap();
 
         assert_eq!(
             *event3,

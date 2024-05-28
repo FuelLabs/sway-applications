@@ -25,7 +25,7 @@ mod success {
         let metadata1 = Metadata::String(String::from("Fuel NFT Metadata"));
         let key = String::from("key1");
 
-        constructor(&instance_1, owner_identity.clone()).await;
+        constructor(&instance_1, owner_identity).await;
 
         assert_eq!(metadata(&instance_1, asset_id_1, key.clone()).await, None);
 
@@ -55,7 +55,7 @@ mod success {
         let metadata3 = Metadata::String(String::from("Fuel NFT Metadata 3"));
         let key = String::from("key1");
 
-        constructor(&instance_1, owner_identity.clone()).await;
+        constructor(&instance_1, owner_identity).await;
 
         assert_eq!(metadata(&instance_1, asset_id_1, key.clone()).await, None);
         set_metadata(&instance_1, asset_id_1, key.clone(), metadata1.clone()).await;
@@ -101,7 +101,7 @@ mod success {
         let key2 = String::from("key2");
         let key3 = String::from("key3");
 
-        constructor(&instance_1, owner_identity.clone()).await;
+        constructor(&instance_1, owner_identity).await;
 
         assert_eq!(metadata(&instance_1, asset_id_1, key1.clone()).await, None);
         set_metadata(&instance_1, asset_id_1, key1.clone(), metadata1.clone()).await;

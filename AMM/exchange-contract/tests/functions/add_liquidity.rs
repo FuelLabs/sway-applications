@@ -51,7 +51,7 @@ mod success {
         let log = response
             .decode_logs_with_type::<AddLiquidityEvent>()
             .unwrap();
-        let event = log.get(0).unwrap();
+        let event = log.first().unwrap();
 
         let added_liquidity = response.value;
 
@@ -145,7 +145,7 @@ mod success {
         let log = response
             .decode_logs_with_type::<AddLiquidityEvent>()
             .unwrap();
-        let event = log.get(0).unwrap();
+        let event = log.first().unwrap();
 
         let added_liquidity = response.value;
 
@@ -245,7 +245,7 @@ mod success {
         let log = response
             .decode_logs_with_type::<AddLiquidityEvent>()
             .unwrap();
-        let event = log.get(0).unwrap();
+        let event = log.first().unwrap();
 
         let added_liquidity = response.value;
 

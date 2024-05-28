@@ -27,7 +27,7 @@ mod success {
         let tx_hash = compute_hash(
             &deployer.contract,
             TypeToHash::Threshold(Threshold {
-                contract_identifier: deployer.contract.contract_id().try_into().unwrap(),
+                contract_identifier: deployer.contract.contract_id().into(),
                 nonce: initial_nonce,
                 threshold: previous_threshold - 1,
             }),
@@ -46,7 +46,7 @@ mod success {
         let log = response
             .decode_logs_with_type::<SetThresholdEvent>()
             .unwrap();
-        let event = log.get(0).unwrap();
+        let event = log.first().unwrap();
 
         assert_eq!(
             *event,
@@ -76,7 +76,7 @@ mod revert {
         let tx_hash = compute_hash(
             &deployer.contract,
             TypeToHash::Threshold(Threshold {
-                contract_identifier: deployer.contract.contract_id().try_into().unwrap(),
+                contract_identifier: deployer.contract.contract_id().into(),
                 nonce: initial_nonce,
                 threshold: previous_threshold,
             }),
@@ -103,7 +103,7 @@ mod revert {
         let tx_hash = compute_hash(
             &deployer.contract,
             TypeToHash::Threshold(Threshold {
-                contract_identifier: deployer.contract.contract_id().try_into().unwrap(),
+                contract_identifier: deployer.contract.contract_id().into(),
                 nonce: initial_nonce,
                 threshold: new_threshold,
             }),
@@ -130,7 +130,7 @@ mod revert {
         let tx_hash = compute_hash(
             &deployer.contract,
             TypeToHash::Threshold(Threshold {
-                contract_identifier: deployer.contract.contract_id().try_into().unwrap(),
+                contract_identifier: deployer.contract.contract_id().into(),
                 nonce: initial_nonce,
                 threshold: previous_threshold,
             }),
@@ -157,7 +157,7 @@ mod revert {
         let tx_hash = compute_hash(
             &deployer.contract,
             TypeToHash::Threshold(Threshold {
-                contract_identifier: deployer.contract.contract_id().try_into().unwrap(),
+                contract_identifier: deployer.contract.contract_id().into(),
                 nonce: initial_nonce,
                 threshold: previous_threshold - 1,
             }),

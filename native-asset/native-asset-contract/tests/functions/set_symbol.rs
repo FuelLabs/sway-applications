@@ -21,7 +21,7 @@ mod success {
             _other_identity,
         ) = defaults(id, owner_wallet, other_wallet.clone());
 
-        constructor(&instance_1, owner_identity.clone()).await;
+        constructor(&instance_1, owner_identity).await;
 
         assert_eq!(symbol(&instance_1, asset_id_1).await, None);
 
@@ -45,7 +45,7 @@ mod success {
             _other_identity,
         ) = defaults(id, owner_wallet, other_wallet.clone());
 
-        constructor(&instance_1, owner_identity.clone()).await;
+        constructor(&instance_1, owner_identity).await;
 
         assert_eq!(symbol(&instance_1, asset_id_1).await, None);
         set_symbol(&instance_1, asset_id_1, String::from("FA1")).await;
@@ -99,7 +99,7 @@ mod success {
             _other_identity,
         ) = defaults(id, owner_wallet, other_wallet.clone());
 
-        constructor(&instance_1, owner_identity.clone()).await;
+        constructor(&instance_1, owner_identity).await;
 
         assert_eq!(symbol(&instance_1, asset_id_1).await, None);
         set_symbol(&instance_1, asset_id_1, String::from("FA1")).await;
@@ -140,7 +140,7 @@ mod revert {
             _other_identity,
         ) = defaults(id, owner_wallet, other_wallet.clone());
 
-        constructor(&instance_1, owner_identity.clone()).await;
+        constructor(&instance_1, owner_identity).await;
 
         set_symbol(&instance_2, asset_id_1, String::from("FA1")).await;
     }
@@ -159,7 +159,7 @@ mod revert {
             _other_identity,
         ) = defaults(id, owner_wallet, other_wallet.clone());
 
-        constructor(&instance_1, owner_identity.clone()).await;
+        constructor(&instance_1, owner_identity).await;
 
         set_symbol(&instance_1, asset_id_1, String::from("FA1")).await;
         set_symbol(&instance_1, asset_id_1, String::from("FA1")).await;

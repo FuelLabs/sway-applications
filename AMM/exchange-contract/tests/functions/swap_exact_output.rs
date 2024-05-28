@@ -32,7 +32,7 @@ mod success {
         )
         .await;
         let log = response.decode_logs_with_type::<SwapEvent>().unwrap();
-        let event = log.get(0).unwrap();
+        let event = log.first().unwrap();
 
         let input_amount = response.value;
 
@@ -99,7 +99,7 @@ mod success {
         )
         .await;
         let log = response.decode_logs_with_type::<SwapEvent>().unwrap();
-        let event = log.get(0).unwrap();
+        let event = log.first().unwrap();
 
         let input_amount = response.value;
 
@@ -164,7 +164,7 @@ mod success {
         )
         .await;
         let log = response.decode_logs_with_type::<SwapEvent>().unwrap();
-        let event = log.get(0).unwrap();
+        let event = log.first().unwrap();
 
         let input_amount = response.value;
 
@@ -231,7 +231,7 @@ mod success {
         )
         .await;
         let log = response.decode_logs_with_type::<SwapEvent>().unwrap();
-        let event = log.get(0).unwrap();
+        let event = log.first().unwrap();
 
         let input_amount = response.value;
 

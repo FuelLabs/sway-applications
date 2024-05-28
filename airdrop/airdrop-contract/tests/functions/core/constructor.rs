@@ -23,7 +23,7 @@ mod success {
         assert_eq!(end_block(&deploy_wallet.airdrop_distributor).await, 0);
 
         let response = airdrop_constructor(
-            admin.clone(),
+            admin,
             asset_supply,
             asset_id,
             claim_time,
@@ -35,7 +35,7 @@ mod success {
         let log = response
             .decode_logs_with_type::<CreateAirdropEvent>()
             .unwrap();
-        let event = log.get(0).unwrap();
+        let event = log.first().unwrap();
 
         assert_eq!(
             *event,
@@ -74,7 +74,7 @@ mod revert {
         let root = Bits256([1u8; 32]);
 
         airdrop_constructor(
-            admin.clone(),
+            admin,
             asset_supply / 2,
             asset_id,
             claim_time,

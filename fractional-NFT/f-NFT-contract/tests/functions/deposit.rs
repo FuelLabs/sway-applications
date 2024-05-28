@@ -20,7 +20,7 @@ mod success {
         assert_eq!(total_assets(&admin.f_nft).await, 0);
         assert_eq!(total_supply(&admin.f_nft, share_asset1).await, None);
 
-        let response = deposit(&admin.f_nft, nft_1, vault_admin.clone(), vault_sub_id).await;
+        let response = deposit(&admin.f_nft, nft_1, vault_admin, vault_sub_id).await;
 
         assert_eq!(
             get_wallet_balance(&admin.wallet, &share_asset1).await,
@@ -38,7 +38,7 @@ mod success {
         assert_eq!(
             *event,
             Deposit {
-                caller: vault_admin.clone(),
+                caller: vault_admin,
                 receiver: vault_admin,
                 underlying_asset: nft_1,
                 vault_sub_id: Bits256(*vault_sub_id),
@@ -60,7 +60,7 @@ mod success {
         assert_eq!(total_assets(&admin.f_nft).await, 0);
         assert_eq!(total_supply(&admin.f_nft, share_asset1).await, None);
 
-        let response = deposit(&admin.f_nft, nft_1, vault_admin.clone(), vault_sub_id).await;
+        let response = deposit(&admin.f_nft, nft_1, vault_admin, vault_sub_id).await;
 
         assert_eq!(
             get_wallet_balance(&admin.wallet, &share_asset1).await,
@@ -78,8 +78,8 @@ mod success {
         assert_eq!(
             *event,
             Deposit {
-                caller: vault_admin.clone(),
-                receiver: vault_admin.clone(),
+                caller: vault_admin,
+                receiver: vault_admin,
                 underlying_asset: nft_1,
                 vault_sub_id: Bits256(*vault_sub_id),
                 deposited_amount: 1,
@@ -91,7 +91,7 @@ mod success {
         assert_eq!(get_wallet_balance(&admin.wallet, &nft_2).await, 1);
         assert_eq!(total_supply(&admin.f_nft, share_asset2).await, None);
 
-        let response = deposit(&admin.f_nft, nft_2, vault_admin.clone(), vault_sub_id).await;
+        let response = deposit(&admin.f_nft, nft_2, vault_admin, vault_sub_id).await;
 
         assert_eq!(
             get_wallet_balance(&admin.wallet, &share_asset2).await,
@@ -109,7 +109,7 @@ mod success {
         assert_eq!(
             *event,
             Deposit {
-                caller: vault_admin.clone(),
+                caller: vault_admin,
                 receiver: vault_admin,
                 underlying_asset: nft_2,
                 vault_sub_id: Bits256(*vault_sub_id),
