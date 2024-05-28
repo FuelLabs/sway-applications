@@ -259,8 +259,7 @@ mod success {
             original_balance,
         ) = defaults(&deploy_wallet, &wallet1, &wallet2, &wallet3).await;
 
-        let identity_vec: Vec<Identity> =
-            vec![identity_a, identity_b, identity_c];
+        let identity_vec: Vec<Identity> = vec![identity_a, identity_b, identity_c];
 
         let depth = 2;
         let airdrop_leaves = leaves_with_depth(depth, identity_vec.clone()).await;
@@ -341,8 +340,7 @@ mod success {
             original_balance,
         ) = defaults(&deploy_wallet, &wallet1, &wallet2, &wallet3).await;
 
-        let identity_vec: Vec<Identity> =
-            vec![identity_a, identity_b, identity_c];
+        let identity_vec: Vec<Identity> = vec![identity_a, identity_b, identity_c];
 
         let depth = 16;
         let airdrop_leaves = leaves_with_depth(depth, identity_vec.clone()).await;
