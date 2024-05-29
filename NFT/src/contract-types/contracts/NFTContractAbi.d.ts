@@ -4,8 +4,8 @@
 /* eslint-disable */
 
 /*
-  Fuels version: 0.88.1
-  Forc version: 0.59.0
+  Fuels version: 0.89.0
+  Forc version: 0.60.0
   Fuel-Core version: 0.26.0
 */
 
@@ -51,8 +51,6 @@ export type ContractIdInput = { bits: string };
 export type ContractIdOutput = ContractIdInput;
 export type OwnershipSetInput = { new_owner: IdentityInput };
 export type OwnershipSetOutput = { new_owner: IdentityOutput };
-export type RawBytesInput = { ptr: BigNumberish, cap: BigNumberish };
-export type RawBytesOutput = { ptr: BN, cap: BN };
 
 export type NFTContractAbiConfigurables = {
   MAX_SUPPLY: BigNumberish;

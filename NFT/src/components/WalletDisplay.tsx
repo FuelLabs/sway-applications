@@ -13,6 +13,9 @@ const copyToClipboard = (text: string) => {
 export const WalletDisplay = () => {
   const { wallet, walletBalance } = useActiveWallet();
 
+  console.log(`wallet.address`, wallet?.address.toString());
+  console.log("temp", wallet?.address.toHexString())
+
   return (
     wallet && (
       <div className="flex gap-4 items-center">
@@ -26,7 +29,7 @@ export const WalletDisplay = () => {
           onClick={() => copyToClipboard(wallet.address.toB256() as string)}
         />
         <span className="text-gray-400">
-          Balance: {walletBalance?.toString()}
+          Balance: {walletBalance?.format()} ETH
         </span>
       </div>
     )

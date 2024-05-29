@@ -5,6 +5,8 @@ type DappEnvironment = 'local' | 'testnet';
 export const CURRENT_ENVIRONMENT: DappEnvironment =
   (process.env.NEXT_PUBLIC_DAPP_ENVIRONMENT as DappEnvironment) || 'local';
 
+export const IS_PROD = CURRENT_ENVIRONMENT === 'testnet';
+
 export const NODE_URL =
   CURRENT_ENVIRONMENT === 'local'
     ? `http://127.0.0.1:${process.env.NEXT_PUBLIC_FUEL_NODE_PORT || 4000}/v1/graphql`

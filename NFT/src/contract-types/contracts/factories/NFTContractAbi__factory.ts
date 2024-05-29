@@ -4,8 +4,8 @@
 /* eslint-disable */
 
 /*
-  Fuels version: 0.88.1
-  Forc version: 0.59.0
+  Fuels version: 0.89.0
+  Forc version: 0.60.0
   Fuel-Core version: 0.26.0
 */
 
@@ -3532,33 +3532,31 @@ const _storageSlots: StorageSlot[] = [
   }
 ];
 
-export class NFTContractAbi__factory {
-  static readonly abi = _abi;
+export const NFTContractAbi__factory = {
+  abi: _abi,
 
-  static readonly storageSlots = _storageSlots;
+  storageSlots: _storageSlots,
 
-  static createInterface(): NFTContractAbiInterface {
+  createInterface(): NFTContractAbiInterface {
     return new Interface(_abi) as unknown as NFTContractAbiInterface
-  }
+  },
 
-  static connect(
+  connect(
     id: string | AbstractAddress,
     accountOrProvider: Account | Provider
   ): NFTContractAbi {
     return new Contract(id, _abi, accountOrProvider) as unknown as NFTContractAbi
-  }
+  },
 
-  static async deployContract(
+  async deployContract(
     bytecode: BytesLike,
     wallet: Account,
     options: DeployContractOptions = {}
   ): Promise<NFTContractAbi> {
     const factory = new ContractFactory(bytecode, _abi, wallet);
 
-    const { storageSlots } = NFTContractAbi__factory;
-
     const contract = await factory.deployContract({
-      storageSlots,
+      storageSlots: _storageSlots,
       ...options,
     });
 
