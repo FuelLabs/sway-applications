@@ -2,19 +2,20 @@ import toast, { Toaster } from "react-hot-toast";
 import { Link } from "./Link";
 import { Button } from "./Button";
 import { CURRENT_ENVIRONMENT, NODE_URL, TESTNET_FAUCET_LINK } from "@/lib";
-import { useConnectUI, useDisconnect } from "@fuels/react";
+import { useConnectUI, useDisconnect, useFuel } from "@fuels/react";
 import { WalletDisplay } from "./WalletDisplay";
 import { useBrowserWallet } from "@/hooks/useBrowserWallet";
 import { useActiveWallet } from "@/hooks/useActiveWallet";
 import { useFaucet } from "@/hooks/useFaucet";
 import Head from "next/head";
+import { useAsync } from "react-use";
 
 export const Layout = ({ children }: { children: React.ReactNode }) => {
   const { faucetWallet } = useFaucet();
 
   const {
     wallet: browserWallet,
-    walletBalance: isBrowserWalletConnected,
+    isConnected: isBrowserWalletConnected,
     network: browserWalletNetwork,
   } = useBrowserWallet();
 
@@ -22,7 +23,7 @@ export const Layout = ({ children }: { children: React.ReactNode }) => {
   const { disconnect } = useDisconnect();
 
   const { wallet, refreshWalletBalance, walletBalance } = useActiveWallet();
-
+  
   const topUpWallet = async () => {
     if (!wallet) {
       return console.error("Unable to topup wallet because wallet is not set.");
@@ -44,7 +45,7 @@ export const Layout = ({ children }: { children: React.ReactNode }) => {
     if (CURRENT_ENVIRONMENT === "testnet") {
       return window.open(
         `${TESTNET_FAUCET_LINK}?address=${wallet.address.toAddress()}`,
-        "_blank",
+        "_blank"
       );
     }
   };
@@ -57,8 +58,8 @@ export const Layout = ({ children }: { children: React.ReactNode }) => {
     browserWalletNetwork?.url !== NODE_URL;
 
   const tryToAddNetwork = () => {
-    return alert(
-      `Please add the network ${NODE_URL} to your Fuel wallet, or swtich to it if you have it already, and refresh the page.`,
+    toast(
+      `Please add the network ${NODE_URL} to your Fuel wallet, or swtich to it if you have it already, and refresh the page.`
     );
   };
 
