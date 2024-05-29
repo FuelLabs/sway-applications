@@ -27,7 +27,7 @@ mod success {
             duration,
             initial_price,
             Some(reserve_price),
-            seller_identity.clone(),
+            seller_identity,
             sell_asset,
             sell_amount,
         )
@@ -80,7 +80,7 @@ mod success {
             duration,
             initial_price,
             Some(reserve_price),
-            seller_identity.clone(),
+            seller_identity,
             sell_asset,
             sell_amount,
         )
@@ -101,7 +101,7 @@ mod success {
             Some(reserve_price),
             sell_asset,
             sell_amount,
-            seller_identity.clone(),
+            seller_identity,
             State::Open,
         )
         .await;
@@ -113,7 +113,7 @@ mod success {
             duration,
             initial_price,
             Some(reserve_price),
-            seller_identity.clone(),
+            seller_identity,
             sell_asset,
             sell_amount,
         )
@@ -135,7 +135,7 @@ mod success {
             Some(reserve_price),
             sell_asset,
             sell_amount,
-            seller_identity.clone(),
+            seller_identity,
             State::Open,
         )
         .await;

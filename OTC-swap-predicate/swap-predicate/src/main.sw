@@ -38,12 +38,15 @@ fn main() -> bool {
 
     // Check if the transaction contains a single input coin from the receiver, to cancel their own order (in addition to this predicate)
     if input_count() == 2u8 {
-        if input_coin_owner(0).unwrap() == RECEIVER
-            || input_coin_owner(1).unwrap() == RECEIVER
-        {
-            return true;
-        };
-    };
+        match (input_coin_owner(0), input_coin_owner(1)) {
+            (Some(owner1), Some(owner2)) => {
+                if owner1 == RECEIVER || owner2 == RECEIVER {
+                    return true;
+                }
+            }
+            _ => return false,
+        }
+    }
 
     // Otherwise, evaluate the terms of the order:
     // The output which pays the receiver must be the first output
@@ -52,12 +55,19 @@ fn main() -> bool {
     // Revert if output is not an Output::Coin
     match output_type(output_index) {
         Output::Coin => (),
-        _ => revert(0),
+        _ => return false,
     };
 
     // Since output is known to be a Coin, the following are always valid
-    let to = Address::from(output_asset_to(output_index).unwrap());
-    let asset_id = output_asset_id(output_index).unwrap();
+    let to = match output_asset_to(output_index) {
+        Some(address) => address,
+        None => return false,
+    };
+
+    let asset_id = match output_asset_id(output_index) {
+        Some(asset_id) => asset_id,
+        None => return false,
+    };
 
     let amount = output_amount(output_index);
 

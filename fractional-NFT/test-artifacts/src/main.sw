@@ -3,9 +3,9 @@ contract;
 mod errors;
 
 use errors::MintError;
-use src20::SRC20;
-use src3::SRC3;
-use asset::{
+use standards::src20::SRC20;
+use standards::src3::SRC3;
+use sway_libs::asset::{
     base::{
         _name,
         _set_name,
@@ -14,12 +14,12 @@ use asset::{
         _total_assets,
         _total_supply,
     },
-    mint::{
+    supply::{
         _burn,
         _mint,
     },
 };
-use std::{call_frames::contract_id, hash::Hash, storage::storage_string::*, string::String};
+use std::{hash::Hash, storage::storage_string::*, string::String};
 
 storage {
     /// The total number of unique assets minted by this contract.
@@ -229,7 +229,7 @@ impl SRC3 for Contract {
     /// ```
     #[storage(read, write)]
     fn mint(recipient: Identity, sub_id: SubId, amount: u64) {
-        let asset = AssetId::new(contract_id(), sub_id);
+        let asset = AssetId::new(ContractId::this(), sub_id);
         require(amount == 1, MintError::CannotMintMoreThanOneNFTWithSubId);
         require(
             storage
@@ -287,6 +287,7 @@ impl SRC3 for Contract {
     ///     } (ZERO_B256, 1);
     /// }
     /// ```
+    #[payable]
     #[storage(read, write)]
     fn burn(sub_id: SubId, amount: u64) {
         _burn(storage.total_supply, sub_id, amount);

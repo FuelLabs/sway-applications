@@ -29,7 +29,7 @@ mod success {
         let response = deposit(&user.dao_voting, call_params).await;
 
         let log = response.decode_logs_with_type::<DepositEvent>().unwrap();
-        let event = log.get(0).unwrap();
+        let event = log.first().unwrap();
 
         assert_eq!(
             *event,

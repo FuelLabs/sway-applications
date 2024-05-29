@@ -11,7 +11,7 @@ pub(crate) async fn new_game(
 ) -> FuelCallResponse<()> {
     contract
         .methods()
-        .new_game(player_one.clone(), player_two.clone())
+        .new_game(*player_one, *player_two)
         .with_tx_policies(TxPolicies::default().with_script_gas_limit(2_000_000))
         .call()
         .await

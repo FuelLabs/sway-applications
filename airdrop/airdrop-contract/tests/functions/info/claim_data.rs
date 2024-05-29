@@ -28,7 +28,7 @@ mod success {
         let (_tree, root, _leaf, proof) = build_tree(key, airdrop_leaves.clone()).await;
 
         airdrop_constructor(
-            minter.clone(),
+            minter,
             asset_supply / 2,
             asset_id,
             claim_time,
@@ -41,7 +41,7 @@ mod success {
         assert_eq!(
             claim_data(
                 &deploy_wallet.airdrop_distributor,
-                airdrop_leaves[key as usize].0.clone()
+                airdrop_leaves[key as usize].0
             )
             .await,
             ClaimState::Unclaimed
@@ -52,14 +52,14 @@ mod success {
             &wallet1.airdrop_distributor,
             key,
             proof.clone(),
-            identity_a.clone(),
+            identity_a,
         )
         .await;
 
         assert_eq!(
             claim_data(
                 &deploy_wallet.airdrop_distributor,
-                airdrop_leaves[key as usize].0.clone()
+                airdrop_leaves[key as usize].0
             )
             .await,
             ClaimState::Claimed(airdrop_leaves[key as usize].1)
@@ -86,7 +86,7 @@ mod success {
         let (_, proof, root) = build_tree_manual(airdrop_leaves.clone(), depth, key).await;
 
         airdrop_constructor(
-            minter.clone(),
+            minter,
             asset_supply / 2,
             asset_id,
             claim_time,
@@ -99,7 +99,7 @@ mod success {
         assert_eq!(
             claim_data(
                 &deploy_wallet.airdrop_distributor,
-                airdrop_leaves[key as usize].0.clone()
+                airdrop_leaves[key as usize].0
             )
             .await,
             ClaimState::Unclaimed
@@ -110,14 +110,14 @@ mod success {
             &wallet1.airdrop_distributor,
             key,
             proof.clone(),
-            identity_a.clone(),
+            identity_a,
         )
         .await;
 
         assert_eq!(
             claim_data(
                 &deploy_wallet.airdrop_distributor,
-                airdrop_leaves[key as usize].0.clone()
+                airdrop_leaves[key as usize].0
             )
             .await,
             ClaimState::Claimed(airdrop_leaves[key as usize].1)

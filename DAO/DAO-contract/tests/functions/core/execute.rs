@@ -25,7 +25,7 @@ mod success {
         let response = execute(&user.dao_voting, 0).await;
 
         let log = response.decode_logs_with_type::<ExecuteEvent>().unwrap();
-        let event = log.get(0).unwrap();
+        let event = log.first().unwrap();
 
         assert_eq!(
             *event,

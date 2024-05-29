@@ -3,8 +3,9 @@ use fuels::{
     prelude::{
         abigen, launch_custom_provider_and_get_wallets, Address, AssetConfig, AssetId, Contract,
         LoadConfiguration, StorageConfiguration, TxPolicies, WalletUnlocked, WalletsConfig,
-        BASE_ASSET_ID,
     },
+    test_helpers::ChainConfig,
+    tx::{ConsensusParameters, ContractParameters, TxParameters},
     types::Identity,
 };
 
@@ -85,7 +86,7 @@ pub(crate) async fn setup() -> (User, User, User, Defaults) {
     let number_of_wallets = 4;
 
     let base_asset = AssetConfig {
-        id: BASE_ASSET_ID,
+        id: AssetId::zeroed(),
         num_coins: number_of_coins,
         coin_amount,
     };
@@ -105,9 +106,23 @@ pub(crate) async fn setup() -> (User, User, User, Defaults) {
 
     let wallet_config = WalletsConfig::new_multiple_assets(number_of_wallets, assets);
 
-    let mut wallets = launch_custom_provider_and_get_wallets(wallet_config, None, None)
-        .await
-        .unwrap();
+    let mut consensus_parameters = ConsensusParameters::default();
+
+    let tx_params = TxParameters::default().with_max_size(100_000_000);
+    consensus_parameters.set_tx_params(tx_params);
+
+    let contract_params = ContractParameters::default().with_contract_max_size(10_000_000);
+    consensus_parameters.set_contract_params(contract_params);
+
+    let chain_config = ChainConfig {
+        consensus_parameters,
+        ..ChainConfig::local_testnet()
+    };
+
+    let mut wallets =
+        launch_custom_provider_and_get_wallets(wallet_config, None, Some(chain_config))
+            .await
+            .unwrap();
 
     let deployer_wallet = wallets.pop().unwrap();
     let arbiter_wallet = wallets.pop().unwrap();

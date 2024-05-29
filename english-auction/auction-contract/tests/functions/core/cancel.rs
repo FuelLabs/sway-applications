@@ -23,7 +23,7 @@ mod success {
             duration,
             initial_price,
             Some(reserve_price),
-            seller_identity.clone(),
+            seller_identity,
             sell_asset,
             sell_amount,
         )
@@ -52,7 +52,7 @@ mod success {
             duration,
             initial_price,
             Some(reserve_price),
-            seller_identity.clone(),
+            seller_identity,
             sell_asset,
             sell_amount,
         )
@@ -64,7 +64,7 @@ mod success {
             duration,
             initial_price,
             Some(reserve_price),
-            seller_identity.clone(),
+            seller_identity,
             sell_asset,
             sell_amount,
         )
@@ -103,7 +103,7 @@ mod success {
             duration,
             initial_price,
             Some(reserve_price),
-            seller_identity.clone(),
+            seller_identity,
             sell_asset,
             sell_amount,
         )
@@ -145,7 +145,7 @@ mod revert {
             duration,
             initial_price,
             Some(reserve_price),
-            seller_identity.clone(),
+            seller_identity,
             sell_asset,
             sell_amount,
         )
@@ -171,7 +171,7 @@ mod revert {
             duration,
             initial_price,
             Some(reserve_price),
-            seller_identity.clone(),
+            seller_identity,
             sell_asset,
             sell_amount,
         )
@@ -197,7 +197,7 @@ mod revert {
             duration,
             initial_price,
             Some(reserve_price),
-            seller_identity.clone(),
+            seller_identity,
             sell_asset,
             sell_amount,
         )
@@ -222,7 +222,7 @@ mod revert {
             duration,
             initial_price,
             Some(reserve_price),
-            seller_identity.clone(),
+            seller_identity,
             sell_asset,
             sell_amount,
         )

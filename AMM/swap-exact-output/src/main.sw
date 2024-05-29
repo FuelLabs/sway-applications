@@ -1,6 +1,6 @@
 script;
 
-use libraries::{AMM, data_structures::Asset, Exchange};
+use libraries::{AMM, data_structures::Asset, data_structures::PreviewSwapInfo, Exchange};
 
 /// Determines the type of input error.
 enum InputError {
@@ -14,21 +14,6 @@ enum SwapError {
     ExcessiveSlippage: u64,
     /// The exchange for this asset pair could not be found.
     PairExchangeNotRegistered: (AssetId, AssetId),
-}
-
-// TODO: Remove this when its automatically implemented
-impl AbiEncode for SwapError {
-    fn abi_encode(self, ref mut buffer: Buffer) {
-        match self {
-            SwapError::ExcessiveSlippage(amount) => {
-                buffer.push(amount);
-            }
-            SwapError::PairExchangeNotRegistered(asset_pair) => {
-                buffer.push(asset_pair.0);
-                buffer.push(asset_pair.1);
-            }
-        }
-    }
 }
 
 configurable {

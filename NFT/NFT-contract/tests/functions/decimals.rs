@@ -21,7 +21,7 @@ mod success {
             _other_identity,
         ) = defaults(id, owner_wallet, other_wallet.clone());
 
-        constructor(&instance_1, owner_identity.clone()).await;
+        constructor(&instance_1, owner_identity).await;
 
         assert_eq!(decimals(&instance_1, asset_id_1).await, Some(0u8));
     }
@@ -40,7 +40,7 @@ mod success {
             _other_identity,
         ) = defaults(id, owner_wallet, other_wallet.clone());
 
-        constructor(&instance_1, owner_identity.clone()).await;
+        constructor(&instance_1, owner_identity).await;
 
         assert_eq!(decimals(&instance_1, asset_id_1).await, Some(0u8));
         assert_eq!(decimals(&instance_1, asset_id_2).await, Some(0u8));

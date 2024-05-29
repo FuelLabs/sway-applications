@@ -17,7 +17,7 @@ mod success {
         let (private_key, deployer, _non_owner) = setup_env(VALID_SIGNER_PK).await.unwrap();
 
         let users = default_users();
-        let mut user = users.get(0).unwrap().clone();
+        let mut user = users.first().unwrap().clone();
 
         constructor(&deployer.contract, users.clone()).await;
 
@@ -28,7 +28,7 @@ mod success {
         let tx_hash = compute_hash(
             &deployer.contract,
             TypeToHash::Weight(Weight {
-                contract_identifier: deployer.contract.contract_id().try_into().unwrap(),
+                contract_identifier: deployer.contract.contract_id().into(),
                 nonce: initial_nonce,
                 user: user.clone(),
             }),
@@ -51,7 +51,7 @@ mod success {
             .value;
 
         let log = response.decode_logs_with_type::<SetWeightEvent>().unwrap();
-        let event = log.get(0).unwrap();
+        let event = log.first().unwrap();
 
         assert_eq!(*event, SetWeightEvent { user: user.clone() });
         assert_eq!(initial_nonce, 1);
@@ -72,12 +72,12 @@ mod revert {
 
         let initial_nonce = nonce(&deployer.contract).await.value;
         let users = default_users();
-        let user = users.get(0).unwrap().clone();
+        let user = users.first().unwrap().clone();
 
         let tx_hash = compute_hash(
             &deployer.contract,
             TypeToHash::Weight(Weight {
-                contract_identifier: deployer.contract.contract_id().try_into().unwrap(),
+                contract_identifier: deployer.contract.contract_id().into(),
                 nonce: initial_nonce,
                 user: user.clone(),
             }),
@@ -97,7 +97,7 @@ mod revert {
         let (private_key, deployer, _non_owner) = setup_env(VALID_SIGNER_PK).await.unwrap();
 
         let users = default_users();
-        let mut user = users.get(0).unwrap().clone();
+        let mut user = users.first().unwrap().clone();
 
         constructor(&deployer.contract, users.clone()).await;
 
@@ -107,7 +107,7 @@ mod revert {
         let tx_hash = compute_hash(
             &deployer.contract,
             TypeToHash::Weight(Weight {
-                contract_identifier: deployer.contract.contract_id().try_into().unwrap(),
+                contract_identifier: deployer.contract.contract_id().into(),
                 nonce: initial_nonce,
                 user: user.clone(),
             }),
@@ -128,7 +128,7 @@ mod revert {
         let (private_key, deployer, _non_owner) = setup_env(VALID_SIGNER_PK).await.unwrap();
 
         let users = default_users();
-        let mut user = users.get(0).unwrap().clone();
+        let mut user = users.first().unwrap().clone();
 
         constructor(&deployer.contract, users.clone()).await;
 
@@ -138,7 +138,7 @@ mod revert {
         let tx_hash = compute_hash(
             &deployer.contract,
             TypeToHash::Weight(Weight {
-                contract_identifier: deployer.contract.contract_id().try_into().unwrap(),
+                contract_identifier: deployer.contract.contract_id().into(),
                 nonce: initial_nonce,
                 user: user.clone(),
             }),

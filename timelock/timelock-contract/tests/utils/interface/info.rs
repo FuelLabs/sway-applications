@@ -1,14 +1,14 @@
 use crate::utils::setup::{Asset, ExecutionRange, Timelock};
 use fuels::{
     accounts::wallet::WalletUnlocked,
-    prelude::{Bytes, ContractId},
+    prelude::{Bytes, AssetId},
     programs::call_response::FuelCallResponse,
     types::{Bits256, Identity},
 };
 
 pub async fn balance(
     contract: &Timelock<WalletUnlocked>,
-    asset_id: ContractId,
+    asset_id: AssetId,
 ) -> FuelCallResponse<u64> {
     contract.methods().balance(asset_id).call().await.unwrap()
 }

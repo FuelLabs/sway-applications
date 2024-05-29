@@ -5,8 +5,8 @@ mod success {
     use super::*;
     use crate::utils::wallet_balances;
     use fuels::{
-        tx::{Bytes32, ContractIdExt},
-        types::AssetId,
+        tx::ContractIdExt,
+        types::{AssetId, Bytes32},
     };
     use test_utils::interface::{Asset, AssetPair, RemoveLiquidityEvent};
 
@@ -38,7 +38,7 @@ mod success {
         let log = response
             .decode_logs_with_type::<RemoveLiquidityEvent>()
             .unwrap();
-        let event = log.get(0).unwrap();
+        let event = log.first().unwrap();
 
         let remove_liquidity_info = response.value;
 
@@ -130,7 +130,7 @@ mod success {
         let log = response
             .decode_logs_with_type::<RemoveLiquidityEvent>()
             .unwrap();
-        let event = log.get(0).unwrap();
+        let event = log.first().unwrap();
 
         let remove_liquidity_info = response.value;
 
@@ -222,7 +222,7 @@ mod success {
         let log = response
             .decode_logs_with_type::<RemoveLiquidityEvent>()
             .unwrap();
-        let event = log.get(0).unwrap();
+        let event = log.first().unwrap();
 
         let remove_liquidity_info = response.value;
 
@@ -314,7 +314,7 @@ mod success {
         let log = response
             .decode_logs_with_type::<RemoveLiquidityEvent>()
             .unwrap();
-        let event = log.get(0).unwrap();
+        let event = log.first().unwrap();
 
         let remove_liquidity_info = response.value;
 

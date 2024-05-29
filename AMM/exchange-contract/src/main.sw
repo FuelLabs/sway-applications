@@ -32,10 +32,7 @@ use std::{
     },
     auth::msg_sender,
     block::height,
-    call_frames::{
-        contract_id,
-        msg_asset_id,
-    },
+    call_frames::msg_asset_id,
     constants::ZERO_B256,
     context::msg_amount,
     hash::Hash,

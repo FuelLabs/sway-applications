@@ -7,7 +7,6 @@ use fuels::{
     prelude::{
         abigen, launch_custom_provider_and_get_wallets, AssetConfig, AssetId, Contract,
         LoadConfiguration, StorageConfiguration, TxPolicies, WalletUnlocked, WalletsConfig,
-        BASE_ASSET_ID,
     },
     types::{Bits256, Identity},
 };
@@ -64,7 +63,7 @@ pub(crate) async fn build_tree(
 
     for datum in leaves.iter() {
         let mut hasher = Sha256::new();
-        let identity = datum.0.clone();
+        let identity = datum.0;
 
         match identity {
             Identity::Address(identity) => {
@@ -78,7 +77,7 @@ pub(crate) async fn build_tree(
         }
         hasher.update(datum.1.to_be_bytes());
 
-        let digest: [u8; 32] = hasher.finalize().try_into().unwrap();
+        let digest: [u8; 32] = hasher.finalize().into();
         tree.push(&digest);
     }
 
@@ -112,7 +111,7 @@ pub(crate) async fn build_tree_manual(
     for (n, leaf) in leaves.iter().enumerate().take(num_leaves) {
         let mut hasher = Sha256::new();
 
-        let identity = leaf.0.clone();
+        let identity = leaf.0;
         match identity {
             Identity::Address(identity_a) => {
                 hasher.update([0, 0, 0, 0, 0, 0, 0, 0]);
@@ -124,12 +123,12 @@ pub(crate) async fn build_tree_manual(
             }
         }
         hasher.update(leaf.1.to_be_bytes());
-        let hash_leaf_data: Bytes32 = hasher.finalize().try_into().unwrap();
+        let hash_leaf_data: Bytes32 = hasher.finalize().into();
 
         let mut hasher2 = Sha256::new();
         hasher2.update([LEAF]);
         hasher2.update(hash_leaf_data);
-        let hash2_leaf: Bytes32 = hasher2.finalize().try_into().unwrap();
+        let hash2_leaf: Bytes32 = hasher2.finalize().into();
 
         let new_node = Node::new(hash2_leaf);
         nodes.push(new_node);
@@ -149,7 +148,7 @@ pub(crate) async fn build_tree_manual(
             hasher.update([NODE]);
             hasher.update(nodes[iterator].hash);
             hasher.update(nodes[iterator + 1].hash);
-            let hash: Bytes32 = hasher.finalize().try_into().unwrap();
+            let hash: Bytes32 = hasher.finalize().into();
 
             let new_node = Node::new(hash).left(iterator).right(iterator + 1);
             nodes.push(new_node);
@@ -222,7 +221,7 @@ pub(crate) async fn defaults(
     let depth = 8;
     let original_balance = 1_000_000;
 
-    let identity_vec = vec![identity_a.clone(), identity_b.clone(), identity_c.clone()];
+    let identity_vec = vec![identity_a, identity_b, identity_c];
 
     let airdrop_leaves = leaves_with_depth(depth, identity_vec.clone()).await;
 
@@ -252,7 +251,7 @@ pub(crate) async fn leaves_with_depth(
     for n in 0..num_elements_in_tree {
         let n_u64: u64 = (n % i64::MAX).try_into().unwrap();
 
-        return_vec.push((identities[n as usize % num_identities].clone(), n_u64 + 1));
+        return_vec.push((identities[n as usize % num_identities], n_u64 + 1));
     }
 
     return_vec
@@ -264,7 +263,7 @@ pub(crate) async fn setup() -> (Metadata, Metadata, Metadata, Metadata, AssetId)
     let number_of_wallets = 4;
 
     let base_asset = AssetConfig {
-        id: BASE_ASSET_ID,
+        id: AssetId::zeroed(),
         num_coins: number_of_coins,
         coin_amount,
     };

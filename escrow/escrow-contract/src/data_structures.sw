@@ -5,11 +5,11 @@ use core::ops::Eq;
 /// Trusted 3rd party who handles the resolution of a dispute.
 pub struct Arbiter {
     /// Address identifying the arbiter.
-    address: Identity,
+    pub address: Identity,
     /// The asset that the arbiter will be paid in upon resolution.
-    asset: AssetId,
+    pub asset: AssetId,
     /// The quantity of asset to be taken as payment.
-    fee_amount: u64,
+    pub fee_amount: u64,
 }
 
 impl Eq for Arbiter {
@@ -21,42 +21,42 @@ impl Eq for Arbiter {
 /// Represents the amount and type of assets being escrowed.
 pub struct Asset {
     /// Amount of asset the user must deposit.
-    amount: u64,
+    pub amount: u64,
     /// The id used to identify the asset for deposit.
-    id: AssetId,
+    pub id: AssetId,
 }
 
 /// Represents the user who is buying the asset.
 pub struct Buyer {
     /// Address identifying the buyer.
-    address: Identity,
+    pub address: Identity,
     /// The asset that the user has currently deposited in the contract.
-    asset: Option<AssetId>,
+    pub asset: Option<AssetId>,
     // Minor data duplication allows us to forego validating unique assets upon escrow creation
     // otherwise the same asset with different values can be added which, if handled incorrectly,
     // may allow the user to drain the contract
     /// The amount of asset that has been deposited.
-    deposited_amount: u64,
+    pub deposited_amount: u64,
 }
 
 /// All the information about an escrow transaction.
 pub struct EscrowInfo {
     /// Trusted 3rd party who handles the resolution of a dispute.
-    arbiter: Arbiter,
+    pub arbiter: Arbiter,
     /// Total number of assets the escrow accepts.
-    asset_count: u64,
+    pub asset_count: u64,
     /// The authorized user who is able to make a payment into the escrow.
-    buyer: Buyer,
+    pub buyer: Buyer,
     /// End height after which the buyer can no longer deposit and the seller can take payment.
-    deadline: u64,
+    pub deadline: u64,
     /// Marker set by the buyer to lock the escrow and prevent the seller from taking payment.
-    disputed: bool,
+    pub disputed: bool,
     /// Index of the first asset in storage vec `assets`.
-    first_asset_index: u64,
+    pub first_asset_index: u64,
     /// The authorized user who is the recipient of payments made by the buyer.
-    seller: Seller,
+    pub seller: Seller,
     /// Mechanism used to manage the control flow of the escrow.
-    state: State,
+    pub state: State,
 }
 
 impl EscrowInfo {
@@ -104,7 +104,7 @@ impl EscrowInfo {
 /// Represents the user who is selling the asset.
 pub struct Seller {
     /// Address identifying the seller.
-    address: Identity,
+    pub address: Identity,
 }
 
 /// Represents the state of an escrow transaction.

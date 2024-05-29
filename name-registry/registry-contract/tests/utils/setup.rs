@@ -1,7 +1,10 @@
 use core::fmt::Debug;
 use fuels::{
     accounts::Account as FuelAccount,
-    core::traits::{Parameterize, Tokenizable},
+    core::{
+        codec::EncoderConfig,
+        traits::{Parameterize, Tokenizable},
+    },
     prelude::{
         abigen, launch_custom_provider_and_get_wallets, Address, Contract, LoadConfiguration,
         StorageConfiguration, TxPolicies, WalletUnlocked, WalletsConfig,
@@ -59,8 +62,9 @@ pub(crate) async fn setup() -> (NameRegistry<WalletUnlocked>, Account, WalletUnl
 
     let storage_configuration =
         StorageConfiguration::default().add_slot_overrides_from_file(CONTRACT_STORAGE_PATH);
-    let configurables = NameRegistryConfigurables::new()
-        .with_OWNER(Identity::Address(Address::from(wallet.address())));
+    let configurables = NameRegistryConfigurables::new(EncoderConfig::default())
+        .with_OWNER(Identity::Address(Address::from(wallet.address())))
+        .unwrap();
 
     let configuration = LoadConfiguration::default()
         .with_storage_configuration(storage_configuration.unwrap())

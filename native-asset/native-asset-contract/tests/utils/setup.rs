@@ -2,10 +2,9 @@ use fuels::{
     accounts::ViewOnlyAccount,
     prelude::{
         abigen, launch_custom_provider_and_get_wallets, AssetConfig, Contract, ContractId,
-        LoadConfiguration, TxPolicies, WalletUnlocked, WalletsConfig, BASE_ASSET_ID,
+        LoadConfiguration, TxPolicies, WalletUnlocked, WalletsConfig,
     },
-    tx::Bytes32,
-    types::{Address, AssetId, Bits256, Identity},
+    types::{Address, AssetId, Bits256, Bytes32, Identity},
 };
 use sha2::{Digest, Sha256};
 
@@ -53,7 +52,7 @@ pub(crate) async fn setup() -> (
     let number_of_wallets = 2;
 
     let base_asset = AssetConfig {
-        id: BASE_ASSET_ID,
+        id: AssetId::zeroed(),
         num_coins: number_of_coins,
         coin_amount,
     };

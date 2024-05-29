@@ -6,7 +6,7 @@ edition = "2021"
 license = "Apache-2.0"
 
 [dev-dependencies]
-fuels = { version = "0.55.0", features = ["fuel-core-lib"] }
+fuels = { version = "0.62.0", features = ["fuel-core-lib"] }
 test-utils = { path = "../test-utils" }
 tokio = { version = "1.12", features = ["rt", "macros"] }
 

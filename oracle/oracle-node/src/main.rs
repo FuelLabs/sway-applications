@@ -1,8 +1,8 @@
 use dotenv::dotenv;
 use fuels::{
-    accounts::{fuel_crypto::SecretKey, wallet::WalletUnlocked},
+    accounts::wallet::WalletUnlocked,
+    crypto::SecretKey,
     prelude::{Bech32ContractId, ContractId, Provider},
-    tx::ConsensusParameters,
 };
 use oracle_node::{spawn_oracle_updater_job, NetworkPriceProvider};
 use reqwest::Url;
@@ -11,7 +11,7 @@ use utils::Oracle;
 
 #[tokio::main]
 async fn main() {
-    let (oracle, client, api_url) = setup();
+    let (oracle, client, api_url) = setup().await;
     let (handle, _receipts_receiver) = spawn_oracle_updater_job(
         oracle,
         Duration::from_secs(10),
@@ -21,7 +21,7 @@ async fn main() {
 }
 
 /// Initialize and return objects for use in main
-fn setup() -> (Oracle<WalletUnlocked>, reqwest::Client, Url) {
+async fn setup() -> (Oracle<WalletUnlocked>, reqwest::Client, Url) {
     let root_env_path = env::current_dir().unwrap();
     let env_path = root_env_path.join("project").join("oracle-node");
     env::set_current_dir(env_path).unwrap();
@@ -41,11 +41,10 @@ fn setup() -> (Oracle<WalletUnlocked>, reqwest::Client, Url) {
         .unwrap(),
     );
 
-    let provider = Provider::new(
-        env::var("FUEL_PROVIDER_URL").expect("FUEL_PROVIDER_URL must be set."),
-        ConsensusParameters::default(),
-    )
-    .unwrap();
+    let provider =
+        Provider::connect(env::var("FUEL_PROVIDER_URL").expect("FUEL_PROVIDER_URL must be set."))
+            .await
+            .unwrap();
 
     let key = SecretKey::from_str(&env::var("WALLET_SECRET").expect("WALLET_SECRET must be set."))
         .unwrap();

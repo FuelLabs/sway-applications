@@ -215,7 +215,7 @@ pub mod scripts {
         wallet: &WalletUnlocked,
         provider: &Provider,
         amm: &mut AMMContract,
-        asset_ids: &Vec<AssetId>,
+        asset_ids: &[AssetId],
     ) {
         let mut exchange_index = 0;
 
@@ -264,7 +264,7 @@ pub mod scripts {
         let coins = &provider
             .get_spendable_resources(ResourceFilter {
                 from: from.clone(),
-                asset_id,
+                asset_id: Some(asset_id),
                 amount,
                 ..Default::default()
             })
@@ -293,7 +293,7 @@ pub mod scripts {
     pub async fn transaction_inputs_outputs(
         wallet: &WalletUnlocked,
         provider: &Provider,
-        assets: &Vec<AssetId>,
+        assets: &[AssetId],
         amounts: Option<&Vec<u64>>,
     ) -> TransactionParameters {
         let mut input_coins: Vec<Input> = vec![]; // capacity depends on wallet resources

@@ -1,7 +1,8 @@
 use fuels::{
     accounts::ViewOnlyAccount,
     prelude::{AssetId, WalletUnlocked},
-    tx::{Bytes32, ContractIdExt},
+    tx::ContractIdExt,
+    types::Bytes32,
 };
 use test_utils::{
     data_structures::{

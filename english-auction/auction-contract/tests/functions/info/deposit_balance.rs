@@ -25,19 +25,18 @@ mod success {
             duration,
             initial_price,
             Some(reserve_price),
-            seller_identity.clone(),
+            seller_identity,
             sell_asset,
             sell_amount,
         )
         .await;
 
-        let buyer1_deposit =
-            deposit_balance(auction_id, &buyer1.auction, buyer1_identity.clone()).await;
+        let buyer1_deposit = deposit_balance(auction_id, &buyer1.auction, buyer1_identity).await;
         assert!(buyer1_deposit.is_none());
 
         bid(auction_id, buy_asset, initial_price, &buyer1.auction).await;
 
-        let buyer1_deposit = deposit_balance(auction_id, &buyer1.auction, buyer1_identity.clone())
+        let buyer1_deposit = deposit_balance(auction_id, &buyer1.auction, buyer1_identity)
             .await
             .unwrap();
         assert_eq!(buyer1_deposit, initial_price);
@@ -58,7 +57,7 @@ mod success {
             duration,
             initial_price,
             Some(reserve_price),
-            seller_identity.clone(),
+            seller_identity,
             sell_asset,
             sell_amount,
         )
@@ -70,40 +69,34 @@ mod success {
             duration,
             initial_price,
             Some(reserve_price),
-            seller_identity.clone(),
+            seller_identity,
             sell_asset,
             sell_amount,
         )
         .await;
 
-        let buyer1_deposit1 =
-            deposit_balance(auction_id1, &buyer1.auction, buyer1_identity.clone()).await;
-        let buyer1_deposit2 =
-            deposit_balance(auction_id2, &buyer1.auction, buyer1_identity.clone()).await;
+        let buyer1_deposit1 = deposit_balance(auction_id1, &buyer1.auction, buyer1_identity).await;
+        let buyer1_deposit2 = deposit_balance(auction_id2, &buyer1.auction, buyer1_identity).await;
         assert!(buyer1_deposit1.is_none());
         assert!(buyer1_deposit2.is_none());
 
         bid(auction_id1, buy_asset, initial_price, &buyer1.auction).await;
 
-        let buyer1_deposit1 =
-            deposit_balance(auction_id1, &buyer1.auction, buyer1_identity.clone())
-                .await
-                .unwrap();
-        let buyer1_deposit2 =
-            deposit_balance(auction_id2, &buyer1.auction, buyer1_identity.clone()).await;
+        let buyer1_deposit1 = deposit_balance(auction_id1, &buyer1.auction, buyer1_identity)
+            .await
+            .unwrap();
+        let buyer1_deposit2 = deposit_balance(auction_id2, &buyer1.auction, buyer1_identity).await;
         assert_eq!(buyer1_deposit1, initial_price);
         assert!(buyer1_deposit2.is_none());
 
         bid(auction_id2, buy_asset, initial_price + 1, &buyer1.auction).await;
 
-        let buyer1_deposit1 =
-            deposit_balance(auction_id1, &buyer1.auction, buyer1_identity.clone())
-                .await
-                .unwrap();
-        let buyer1_deposit2 =
-            deposit_balance(auction_id2, &buyer1.auction, buyer1_identity.clone())
-                .await
-                .unwrap();
+        let buyer1_deposit1 = deposit_balance(auction_id1, &buyer1.auction, buyer1_identity)
+            .await
+            .unwrap();
+        let buyer1_deposit2 = deposit_balance(auction_id2, &buyer1.auction, buyer1_identity)
+            .await
+            .unwrap();
         assert_eq!(buyer1_deposit1, initial_price);
         assert_eq!(buyer1_deposit2, initial_price + 1);
     }

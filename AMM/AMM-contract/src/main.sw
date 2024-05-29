@@ -5,8 +5,8 @@ mod events;
 
 use ::errors::InitError;
 use ::events::{RegisterPoolEvent, SetExchangeBytecodeRootEvent};
-use libraries::{AMM, Exchange};
-use std::{constants::BASE_ASSET_ID, external::bytecode_root, hash::Hash};
+use libraries::{AMM, data_structures::PoolInfo, Exchange};
+use std::{external::bytecode_root, hash::Hash};
 
 storage {
     /// The valid exchange contract bytecode root.
@@ -57,7 +57,10 @@ impl AMM for Contract {
 
         require(pair_matches_exchange_pair, InitError::PairDoesNotDefinePool);
 
-        let ordered_asset_pair = if asset_pair.0.into() < asset_pair.1.into() {
+        let asset_pair_0_b256: b256 = asset_pair.0.into();
+        let asset_pair_1_b256: b256 = asset_pair.1.into();
+
+        let ordered_asset_pair = if asset_pair_0_b256 < asset_pair_1_b256 {
             asset_pair
         } else {
             (asset_pair.1, asset_pair.0)
@@ -73,7 +76,9 @@ impl AMM for Contract {
 
     #[storage(read)]
     fn pool(asset_pair: (AssetId, AssetId)) -> Option<ContractId> {
-        let ordered_asset_pair = if asset_pair.0.into() < asset_pair.1.into() {
+        let asset_pair_0_b256: b256 = asset_pair.0.into();
+        let asset_pair_1_b256: b256 = asset_pair.1.into();
+        let ordered_asset_pair = if asset_pair_0_b256 < asset_pair_1_b256 {
             asset_pair
         } else {
             (asset_pair.1, asset_pair.0)

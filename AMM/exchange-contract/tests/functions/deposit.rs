@@ -17,7 +17,7 @@ mod success {
 
         let response = deposit(&exchange.instance, deposit_amount, exchange.pair.0).await;
         let log = response.decode_logs_with_type::<DepositEvent>().unwrap();
-        let event = log.get(0).unwrap();
+        let event = log.first().unwrap();
 
         let final_contract_balance = balance(&exchange.instance, exchange.pair.0).await;
         let final_wallet_balance = wallet.get_asset_balance(&exchange.pair.0).await.unwrap();
@@ -56,7 +56,7 @@ mod success {
 
         let response = deposit(&exchange.instance, second_deposit_amount, exchange.pair.0).await;
         let log = response.decode_logs_with_type::<DepositEvent>().unwrap();
-        let event = log.get(0).unwrap();
+        let event = log.first().unwrap();
 
         let final_contract_balance = balance(&exchange.instance, exchange.pair.0).await;
         let final_wallet_balance = wallet.get_asset_balance(&exchange.pair.0).await.unwrap();

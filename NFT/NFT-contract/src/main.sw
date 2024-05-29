@@ -36,7 +36,7 @@ use sway_libs::{
         require_not_paused,
     },
 };
-use std::{call_frames::contract_id, hash::Hash, storage::storage_string::*, string::String};
+use std::{hash::Hash, storage::storage_string::*, string::String};
 
 storage {
     /// The total number of unique assets minted by this contract.
@@ -254,7 +254,7 @@ impl SRC3 for Contract {
     ///
     /// fn foo(contract_id: ContractId) {
     ///     let contract_abi = abi(SR3, contract_id);
-    ///     contract_abi.mint(Identity::ContractId(this_contract()), ZERO_B256, 1);
+    ///     contract_abi.mint(Identity::ContractId(ContractId::this()), ZERO_B256, 1);
     /// }
     /// ```
     #[storage(read, write)]
@@ -262,7 +262,7 @@ impl SRC3 for Contract {
         require_not_paused();
 
         // Checks to ensure this is a valid mint.
-        let asset = AssetId::new(contract_id(), sub_id);
+        let asset = AssetId::new(ContractId::this(), sub_id);
         require(amount == 1, MintError::CannotMintMoreThanOneNFTWithSubId);
         require(
             storage

@@ -21,7 +21,7 @@ mod success {
             _other_identity,
         ) = defaults(id, owner_wallet, other_wallet.clone());
 
-        constructor(&instance_1, owner_identity.clone()).await;
+        constructor(&instance_1, owner_identity).await;
 
         assert_eq!(name(&instance_1, asset_id_1).await, None);
 
@@ -46,7 +46,7 @@ mod success {
             _other_identity,
         ) = defaults(id, owner_wallet, other_wallet.clone());
 
-        constructor(&instance_1, owner_identity.clone()).await;
+        constructor(&instance_1, owner_identity).await;
 
         assert_eq!(name(&instance_1, asset_id_1).await, None);
         set_name(&instance_1, asset_id_1, String::from("Fuel NFT 1")).await;
@@ -84,7 +84,7 @@ mod success {
             _other_identity,
         ) = defaults(id, owner_wallet, other_wallet.clone());
 
-        constructor(&instance_1, owner_identity.clone()).await;
+        constructor(&instance_1, owner_identity).await;
 
         assert_eq!(name(&instance_1, asset_id_1).await, None);
         set_name(&instance_1, asset_id_1, String::from("Fuel NFT 1")).await;
