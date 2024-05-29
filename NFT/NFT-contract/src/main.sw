@@ -36,7 +36,7 @@ use sway_libs::{
         require_not_paused,
     },
 };
-use std::{hash::Hash, storage::storage_string::*, string::String};
+use std::{contract_id::ContractId, hash::Hash, storage::storage_string::*, string::String};
 
 storage {
     /// The total number of unique assets minted by this contract.
@@ -254,7 +254,7 @@ impl SRC3 for Contract {
     ///
     /// fn foo(contract_id: ContractId) {
     ///     let contract_abi = abi(SR3, contract_id);
-    ///     contract_abi.mint(Identity::ContractId(ContractId::this()), ZERO_B256, 1);
+    ///     contract_abi.mint(Identity::ContractId(this_contract()), ZERO_B256, 1);
     /// }
     /// ```
     #[storage(read, write)]
