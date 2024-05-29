@@ -16,21 +16,6 @@ enum SwapError {
     PairExchangeNotRegistered: (AssetId, AssetId),
 }
 
-// TODO: Remove this when its automatically implemented
-impl AbiEncode for SwapError {
-    fn abi_encode(self, ref mut buffer: Buffer) {
-        match self {
-            SwapError::ExcessiveSlippage(amount) => {
-                buffer.push(amount);
-            }
-            SwapError::PairExchangeNotRegistered(asset_pair) => {
-                buffer.push(asset_pair.0);
-                buffer.push(asset_pair.1);
-            }
-        }
-    }
-}
-
 configurable {
     /// The ContractId of the AMM contract.
     AMM_ID: b256 = 0x8aea4274cd6fcc79094c55fb3c065046b6c759c2169786bc350536660eaba670,
@@ -70,7 +55,7 @@ fn main(
     let mut sold_asset_index = 0;
 
     // swap subsequent asset pairs along route.
-    while sold_asset_index < assets.len - 1 {
+    while sold_asset_index < assets.len() - 1 {
         let asset_pair = (
             assets.get(sold_asset_index).unwrap(),
             assets.get(sold_asset_index + 1).unwrap(),

@@ -7,10 +7,7 @@ use test_utils::{
 mod success {
     use super::*;
     use crate::utils::{contract_balances, wallet_balances};
-    use fuels::{
-        prelude::ContractId,
-        tx::{Bytes32, ContractIdExt},
-    };
+    use fuels::{prelude::ContractId, tx::ContractIdExt, types::Bytes32};
     use test_utils::{
         interface::{
             exchange::{deposit, pool_info},
@@ -54,7 +51,7 @@ mod success {
         let log = response
             .decode_logs_with_type::<AddLiquidityEvent>()
             .unwrap();
-        let event = log.get(0).unwrap();
+        let event = log.first().unwrap();
 
         let added_liquidity = response.value;
 
@@ -148,7 +145,7 @@ mod success {
         let log = response
             .decode_logs_with_type::<AddLiquidityEvent>()
             .unwrap();
-        let event = log.get(0).unwrap();
+        let event = log.first().unwrap();
 
         let added_liquidity = response.value;
 
@@ -248,7 +245,7 @@ mod success {
         let log = response
             .decode_logs_with_type::<AddLiquidityEvent>()
             .unwrap();
-        let event = log.get(0).unwrap();
+        let event = log.first().unwrap();
 
         let added_liquidity = response.value;
 

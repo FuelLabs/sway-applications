@@ -5,6 +5,7 @@ use fuels::{
     programs::call_response::FuelCallResponse,
     types::{Bits256, Identity},
 };
+use fuels::programs::call_utils::TxDependencyExtension;
 
 pub async fn cancel(contract: &Timelock<WalletUnlocked>, id: Bits256) -> FuelCallResponse<()> {
     contract.methods().cancel(id).call().await.unwrap()

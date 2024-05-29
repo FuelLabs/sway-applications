@@ -67,7 +67,7 @@ mod success {
         let log = response
             .decode_logs_with_type::<WithdrawnCollateralEvent>()
             .unwrap();
-        let event = log.get(0).unwrap();
+        let event = log.first().unwrap();
 
         assert_eq!(*event, WithdrawnCollateralEvent { identifier: 0 });
     }
@@ -118,7 +118,7 @@ mod success {
         let log = response
             .decode_logs_with_type::<WithdrawnCollateralEvent>()
             .unwrap();
-        let event = log.get(0).unwrap();
+        let event = log.first().unwrap();
 
         assert_eq!(*event, WithdrawnCollateralEvent { identifier: 0 });
     }
@@ -198,7 +198,7 @@ mod success {
         let log0 = response0
             .decode_logs_with_type::<WithdrawnCollateralEvent>()
             .unwrap();
-        let event0 = log0.get(0).unwrap();
+        let event0 = log0.first().unwrap();
         assert_eq!(
             *event0,
             WithdrawnCollateralEvent {
@@ -209,7 +209,7 @@ mod success {
         let log1 = response1
             .decode_logs_with_type::<WithdrawnCollateralEvent>()
             .unwrap();
-        let event1 = log1.get(0).unwrap();
+        let event1 = log1.first().unwrap();
         assert_eq!(
             *event1,
             WithdrawnCollateralEvent {

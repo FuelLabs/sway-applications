@@ -23,7 +23,7 @@ mod success {
         let log = response
             .decode_logs_with_type::<CreateProposalEvent>()
             .unwrap();
-        let event = log.get(0).unwrap();
+        let event = log.first().unwrap();
 
         let expected_proposal = ProposalInfo {
             author: Identity::Address(user.wallet.address().into()),
@@ -57,7 +57,7 @@ mod success {
         let log = response
             .decode_logs_with_type::<CreateProposalEvent>()
             .unwrap();
-        let event = log.get(0).unwrap();
+        let event = log.first().unwrap();
 
         assert_eq!(
             *event,
@@ -93,7 +93,7 @@ mod success {
         let log = response
             .decode_logs_with_type::<CreateProposalEvent>()
             .unwrap();
-        let event = log.get(0).unwrap();
+        let event = log.first().unwrap();
 
         assert_eq!(
             *event,

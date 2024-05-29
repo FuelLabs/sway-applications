@@ -56,7 +56,7 @@ mod success {
         let log = response
             .decode_logs_with_type::<AcceptedArbiterEvent>()
             .unwrap();
-        let event = log.get(0).unwrap();
+        let event = log.first().unwrap();
 
         assert_eq!(*event, AcceptedArbiterEvent { identifier: 0 });
     }
@@ -138,8 +138,8 @@ mod success {
             .decode_logs_with_type::<AcceptedArbiterEvent>()
             .unwrap();
 
-        let event1 = log1.get(0).unwrap();
-        let event2 = log2.get(0).unwrap();
+        let event1 = log1.first().unwrap();
+        let event2 = log2.first().unwrap();
 
         assert_eq!(*event1, AcceptedArbiterEvent { identifier: 0 });
         assert_eq!(*event2, AcceptedArbiterEvent { identifier: 1 });

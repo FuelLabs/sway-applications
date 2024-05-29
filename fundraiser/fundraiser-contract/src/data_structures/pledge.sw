@@ -3,9 +3,9 @@ library;
 /// Used to track the amount pledged by a user to a specific campaign.
 pub struct Pledge {
     /// The amount pledged to a campaign.
-    amount: u64,
+    pub amount: u64,
     /// The unique identifier for the campaign.
-    campaign_id: u64,
+    pub campaign_id: u64,
 }
 
 impl Pledge {

@@ -3,11 +3,9 @@ use fuels::{
     prelude::{
         abigen, launch_custom_provider_and_get_wallets, AssetConfig, Contract, ContractId,
         LoadConfiguration, StorageConfiguration, TxPolicies, WalletUnlocked, WalletsConfig,
-        BASE_ASSET_ID,
     },
     programs::call_utils::TxDependencyExtension,
-    tx::Bytes32,
-    types::{AssetId, Bits256, Identity},
+    types::{AssetId, Bits256, Bytes32, Identity},
 };
 use sha2::{Digest, Sha256};
 
@@ -66,7 +64,7 @@ pub(crate) async fn deploy() -> (User, User, ContractId, ContractId) {
     let number_of_wallets = 2;
 
     let base_asset = AssetConfig {
-        id: BASE_ASSET_ID,
+        id: AssetId::zeroed(),
         num_coins: number_of_coins,
         coin_amount,
     };
@@ -146,13 +144,13 @@ pub(crate) async fn setup_nft(
 
     let _ = nft
         .methods()
-        .mint(identity.clone(), Bits256(*sub_id_1), 1)
+        .mint(identity, Bits256(*sub_id_1), 1)
         .append_variable_outputs(1)
         .call()
         .await;
     let _ = nft
         .methods()
-        .mint(identity.clone(), Bits256(*sub_id_2), 1)
+        .mint(identity, Bits256(*sub_id_2), 1)
         .append_variable_outputs(1)
         .call()
         .await;

@@ -14,7 +14,7 @@ use libraries::Counter;
 /// * [u64] - The count at the end of the script.
 fn main(contract_id: ContractId, clear: bool) -> u64 {
     // An abi cast is a way to call a contract at a given contract_id with the given abi
-    let counter = abi(Counter, contract_id.value);
+    let counter = abi(Counter, contract_id.bits());
     // Here we call the count method, which returns the current count
     let count = counter.count();
     // As we just deployed the contract, the counter should be 0

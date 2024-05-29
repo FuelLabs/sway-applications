@@ -21,7 +21,7 @@ mod success {
             _other_identity,
         ) = defaults(id, owner_wallet, other_wallet.clone());
 
-        constructor(&instance_1, owner_identity.clone()).await;
+        constructor(&instance_1, owner_identity).await;
 
         assert_eq!(owner(&instance_1).await, State::Initialized(owner_identity));
     }
@@ -46,7 +46,7 @@ mod revert {
             _other_identity,
         ) = defaults(id, owner_wallet, other_wallet.clone());
 
-        constructor(&instance_1, owner_identity.clone()).await;
-        constructor(&instance_1, owner_identity.clone()).await;
+        constructor(&instance_1, owner_identity).await;
+        constructor(&instance_1, owner_identity).await;
     }
 }

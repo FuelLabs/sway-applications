@@ -11,7 +11,6 @@ use libraries::{
     },
     Exchange,
 };
-use std::{call_frames::contract_id, constants::BASE_ASSET_ID};
 
 storage {
     pair: Option<AssetPair> = Option::None,
@@ -62,7 +61,10 @@ impl Exchange for Contract {
     #[storage(read)]
     fn pool_info() -> PoolInfo {
         PoolInfo {
-            reserves: storage.pair.read().unwrap_or(AssetPair::new(Asset::new(BASE_ASSET_ID, 0), Asset::new(BASE_ASSET_ID, 0))),
+            reserves: storage.pair.read().unwrap_or(AssetPair::new(
+                Asset::new(AssetId::base(), 0),
+                Asset::new(AssetId::base(), 0),
+            )),
             liquidity: 0,
         }
     }

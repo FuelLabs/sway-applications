@@ -31,7 +31,7 @@ mod success {
 
         assert_eq!(previous_owner.value.unwrap(), acc1.identity());
 
-        let _response = set_owner(&instance, acc1.name.clone(), wallet_identity2.clone()).await;
+        let _response = set_owner(&instance, acc1.name.clone(), wallet_identity2).await;
         let new_owner = owner(&instance, acc1.name.clone()).await;
 
         assert_eq!(new_owner.value.unwrap(), wallet_identity2);
@@ -74,9 +74,9 @@ mod revert {
         .await;
 
         set_owner(
-            &instance.with_account(wallet2).unwrap(),
+            &instance.with_account(wallet2),
             acc1.name.clone(),
-            wallet_identity2.clone(),
+            wallet_identity2,
         )
         .await;
     }

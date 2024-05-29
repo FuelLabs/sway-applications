@@ -13,7 +13,7 @@ mod success {
         let (asset_id_1, _asset_id_2, sub_id_1, _sub_id_2, _supply, owner_identity, other_identity) =
             defaults(id, owner_wallet, other_wallet.clone());
 
-        constructor(&instance_1, owner_identity.clone()).await;
+        constructor(&instance_1, owner_identity).await;
 
         mint(&instance_1, other_identity, sub_id_1, 100).await;
 
@@ -34,8 +34,8 @@ mod success {
         let (asset_id_1, asset_id_2, sub_id_1, sub_id_2, _supply, owner_identity, other_identity) =
             defaults(id, owner_wallet, other_wallet.clone());
 
-        constructor(&instance_1, owner_identity.clone()).await;
-        mint(&instance_1, other_identity.clone(), sub_id_1, 100).await;
+        constructor(&instance_1, owner_identity).await;
+        mint(&instance_1, other_identity, sub_id_1, 100).await;
         mint(&instance_1, other_identity, sub_id_2, 200).await;
 
         assert_eq!(get_wallet_balance(&other_wallet, &asset_id_1).await, 100);
@@ -67,7 +67,7 @@ mod success {
         let (asset_id_1, _asset_id_2, sub_id_1, _sub_id_2, _supply, owner_identity, other_identity) =
             defaults(id, owner_wallet, other_wallet.clone());
 
-        constructor(&instance_1, owner_identity.clone()).await;
+        constructor(&instance_1, owner_identity).await;
 
         mint(&instance_1, other_identity, sub_id_1, 100).await;
 
@@ -98,7 +98,7 @@ mod success {
 mod revert {
 
     use super::*;
-    use fuels::prelude::{CallParameters, TxPolicies, BASE_ASSET_ID};
+    use fuels::prelude::{AssetId, CallParameters, TxPolicies};
 
     #[tokio::test]
     #[should_panic(expected = "AmountMismatch")]
@@ -107,7 +107,7 @@ mod revert {
         let (asset_id_1, _asset_id_2, sub_id_1, _sub_id_2, _supply, owner_identity, other_identity) =
             defaults(id, owner_wallet, other_wallet.clone());
 
-        constructor(&instance_1, owner_identity.clone()).await;
+        constructor(&instance_1, owner_identity).await;
 
         mint(&instance_1, other_identity, sub_id_1, 100).await;
 
@@ -130,7 +130,7 @@ mod revert {
         let (asset_id_1, _asset_id_2, sub_id_1, sub_id_2, _supply, owner_identity, other_identity) =
             defaults(id, owner_wallet, other_wallet.clone());
 
-        constructor(&instance_1, owner_identity.clone()).await;
+        constructor(&instance_1, owner_identity).await;
 
         mint(&instance_1, other_identity, sub_id_1, 100).await;
 
@@ -160,11 +160,11 @@ mod revert {
             other_identity,
         ) = defaults(id, owner_wallet, other_wallet.clone());
 
-        constructor(&instance_1, owner_identity.clone()).await;
+        constructor(&instance_1, owner_identity).await;
 
         mint(&instance_1, other_identity, sub_id_1, 100).await;
 
-        let call_params = CallParameters::new(50, BASE_ASSET_ID, 1_000_000);
+        let call_params = CallParameters::new(50, AssetId::zeroed(), 1_000_000);
         instance_2
             .methods()
             .burn(sub_id_1, 50)

@@ -30,13 +30,7 @@ use sway_libs::{
     },
 };
 use interface::Constructor;
-use std::{
-    call_frames::contract_id,
-    context::msg_amount,
-    hash::Hash,
-    storage::storage_string::*,
-    string::String,
-};
+use std::{context::msg_amount, hash::Hash, storage::storage_string::*, string::String,};
 
 storage {
     /// The total number of unique assets minted by this contract.
@@ -249,7 +243,7 @@ impl SRC3 for Contract {
     fn mint(recipient: Identity, sub_id: SubId, amount: u64) {
         only_owner();
 
-        let asset = AssetId::new(contract_id(), sub_id);
+        let asset = AssetId::new(ContractId::this(), sub_id);
         let cumulative_supply = storage.cumulative_supply.get(asset).try_read().unwrap_or(0);
         require(
             cumulative_supply + amount <= MAX_SUPPLY,

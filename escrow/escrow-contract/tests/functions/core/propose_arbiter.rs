@@ -49,7 +49,7 @@ mod success {
         let log = response
             .decode_logs_with_type::<ProposedArbiterEvent>()
             .unwrap();
-        let event = log.get(0).unwrap();
+        let event = log.first().unwrap();
 
         assert_eq!(
             *event,
@@ -107,8 +107,8 @@ mod success {
         let log2 = response2
             .decode_logs_with_type::<ProposedArbiterEvent>()
             .unwrap();
-        let event1 = log1.get(0).unwrap();
-        let event2 = log2.get(0).unwrap();
+        let event1 = log1.first().unwrap();
+        let event2 = log2.first().unwrap();
 
         assert_eq!(
             *event1,
@@ -188,8 +188,8 @@ mod success {
         let log2 = response2
             .decode_logs_with_type::<ProposedArbiterEvent>()
             .unwrap();
-        let event1 = log1.get(0).unwrap();
-        let event2 = log2.get(0).unwrap();
+        let event1 = log1.first().unwrap();
+        let event2 = log2.first().unwrap();
 
         assert_eq!(
             *event1,
@@ -303,10 +303,10 @@ mod success {
         let log4 = response4
             .decode_logs_with_type::<ProposedArbiterEvent>()
             .unwrap();
-        let event1 = log1.get(0).unwrap();
-        let event2 = log2.get(0).unwrap();
-        let event3 = log3.get(0).unwrap();
-        let event4 = log4.get(0).unwrap();
+        let event1 = log1.first().unwrap();
+        let event2 = log2.first().unwrap();
+        let event3 = log3.first().unwrap();
+        let event4 = log4.first().unwrap();
 
         assert_eq!(
             *event1,

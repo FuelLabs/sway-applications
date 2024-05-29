@@ -89,7 +89,7 @@ mod success {
             &wallet1.airdrop_distributor,
             key,
             proof.clone(),
-            identity_a.clone(),
+            identity_a,
         )
         .await;
 

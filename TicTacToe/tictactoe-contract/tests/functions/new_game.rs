@@ -16,7 +16,7 @@ mod success {
         )
         .await;
         let log = response.decode_logs_with_type::<NewGameEvent>().unwrap();
-        let event = log.get(0).unwrap();
+        let event = log.first().unwrap();
 
         assert_eq!(
             *event,

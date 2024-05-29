@@ -75,7 +75,7 @@ mod success {
         let log = response
             .decode_logs_with_type::<ResolvedDisputeEvent>()
             .unwrap();
-        let event = log.get(0).unwrap();
+        let event = log.first().unwrap();
 
         assert_eq!(
             *event,
@@ -143,7 +143,7 @@ mod success {
         let log = response
             .decode_logs_with_type::<ResolvedDisputeEvent>()
             .unwrap();
-        let event = log.get(0).unwrap();
+        let event = log.first().unwrap();
 
         assert_eq!(
             *event,
@@ -210,7 +210,7 @@ mod success {
         let log = response
             .decode_logs_with_type::<ResolvedDisputeEvent>()
             .unwrap();
-        let event = log.get(0).unwrap();
+        let event = log.first().unwrap();
 
         assert_eq!(
             *event,
@@ -278,7 +278,7 @@ mod success {
         let log = response
             .decode_logs_with_type::<ResolvedDisputeEvent>()
             .unwrap();
-        let event = log.get(0).unwrap();
+        let event = log.first().unwrap();
 
         assert_eq!(
             *event,
@@ -351,7 +351,7 @@ mod success {
         let log = response
             .decode_logs_with_type::<ResolvedDisputeEvent>()
             .unwrap();
-        let event = log.get(0).unwrap();
+        let event = log.first().unwrap();
 
         assert_eq!(
             *event,
@@ -461,8 +461,8 @@ mod success {
         let log2 = response2
             .decode_logs_with_type::<ResolvedDisputeEvent>()
             .unwrap();
-        let event1 = log1.get(0).unwrap();
-        let event2 = log2.get(0).unwrap();
+        let event1 = log1.first().unwrap();
+        let event2 = log2.first().unwrap();
 
         assert_eq!(
             *event1,

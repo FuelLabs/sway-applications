@@ -2,7 +2,7 @@ use fuels::{
     prelude::{
         abigen, launch_custom_provider_and_get_wallets, AssetConfig, AssetId, Bech32Address,
         Contract, LoadConfiguration, StorageConfiguration, TxPolicies, WalletUnlocked,
-        WalletsConfig, BASE_ASSET_ID,
+        WalletsConfig,
     },
     types::Identity,
 };
@@ -42,7 +42,7 @@ pub(crate) async fn setup() -> (User, User, Coin, Coin, DefaultParameters) {
     let number_of_wallets = 3;
 
     let base_asset = AssetConfig {
-        id: BASE_ASSET_ID,
+        id: AssetId::zeroed(),
         num_coins: number_of_coins,
         coin_amount,
     };

@@ -40,7 +40,7 @@ mod success {
 
         let response = claim_pledges(&author.contract, 1).await;
         let log = response.decode_logs_with_type::<ClaimedEvent>().unwrap();
-        let event = log.get(0).unwrap();
+        let event = log.first().unwrap();
 
         assert_eq!(*event, ClaimedEvent { campaign_id: 1 });
         assert_eq!(

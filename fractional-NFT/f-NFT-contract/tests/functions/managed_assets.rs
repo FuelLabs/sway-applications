@@ -2,7 +2,7 @@ use crate::utils::{
     interface::{deposit, managed_assets, withdraw},
     setup::{defaults, deploy, setup_nft},
 };
-use fuels::tx::Bytes32;
+use fuels::types::Bytes32;
 
 mod success {
 
@@ -29,7 +29,7 @@ mod success {
         let (vault_sub_id, vault_admin, share_asset1, _share_asset2, share_supply) =
             defaults(&admin.wallet, nft_1, nft_2, f_nft_id);
 
-        deposit(&admin.f_nft, nft_1, vault_admin.clone(), vault_sub_id).await;
+        deposit(&admin.f_nft, nft_1, vault_admin, vault_sub_id).await;
 
         assert_eq!(managed_assets(&admin.f_nft, nft_1, vault_sub_id).await, 1);
 

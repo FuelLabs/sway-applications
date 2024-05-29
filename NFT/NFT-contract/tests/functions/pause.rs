@@ -21,7 +21,7 @@ mod success {
             _other_identity,
         ) = defaults(id, owner_wallet, other_wallet.clone());
 
-        constructor(&instance_1, owner_identity.clone()).await;
+        constructor(&instance_1, owner_identity).await;
 
         assert!(!is_paused(&instance_1).await);
 
@@ -44,7 +44,7 @@ mod success {
             _other_identity,
         ) = defaults(id, owner_wallet, other_wallet.clone());
 
-        constructor(&instance_1, owner_identity.clone()).await;
+        constructor(&instance_1, owner_identity).await;
 
         assert!(!is_paused(&instance_1).await);
 
@@ -74,7 +74,7 @@ mod revert {
             _other_identity,
         ) = defaults(id, owner_wallet, other_wallet.clone());
 
-        constructor(&instance_1, owner_identity.clone()).await;
+        constructor(&instance_1, owner_identity).await;
 
         pause(&instance_2).await;
     }

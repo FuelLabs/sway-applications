@@ -12,10 +12,7 @@ use ::interface::{EnglishAuction, Info};
 use std::{
     asset::transfer,
     block::height,
-    call_frames::{
-        contract_id,
-        msg_asset_id,
-    },
+    call_frames::msg_asset_id,
     context::msg_amount,
     hash::Hash,
 };

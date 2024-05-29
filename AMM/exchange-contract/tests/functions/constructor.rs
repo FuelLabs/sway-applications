@@ -13,7 +13,7 @@ mod success {
         let log = response
             .decode_logs_with_type::<DefineAssetPairEvent>()
             .unwrap();
-        let event = log.get(0).unwrap();
+        let event = log.first().unwrap();
 
         let pool_info = pool_info(&exchange_instance).await;
 

@@ -31,7 +31,7 @@ mod success {
         let response = withdraw(&user.dao_voting, asset_amount).await;
 
         let log = response.decode_logs_with_type::<WithdrawEvent>().unwrap();
-        let event = log.get(0).unwrap();
+        let event = log.first().unwrap();
 
         assert_eq!(
             *event,

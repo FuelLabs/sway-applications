@@ -18,7 +18,7 @@ mod success {
         let log = response
             .decode_logs_with_type::<PriceUpdateEvent>()
             .unwrap();
-        let event = log.get(0).unwrap();
+        let event = log.first().unwrap();
 
         assert_eq!(
             *event,
@@ -39,7 +39,6 @@ mod revert {
         let (user, wallets) = setup().await;
         user.oracle
             .with_account(wallets[1].clone())
-            .unwrap()
             .methods()
             .set_price(1000)
             .call()

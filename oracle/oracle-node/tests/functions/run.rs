@@ -62,7 +62,9 @@ mod success {
             pc: 0,
             is: 0,
         }];
-        price_updater.receipts = receipts_from_price_updater.clone();
+        price_updater
+            .receipts
+            .clone_from(&receipts_from_price_updater);
 
         let (_handle, mut receipts_receiver) = spawn_oracle_updater_job(
             price_updater,

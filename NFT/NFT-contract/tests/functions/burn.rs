@@ -2,7 +2,7 @@ use crate::utils::{
     interface::{burn, constructor, mint, pause, total_assets, total_supply},
     setup::{defaults, get_wallet_balance, setup},
 };
-use fuels::prelude::{CallParameters, TxPolicies, BASE_ASSET_ID};
+use fuels::prelude::{AssetId, CallParameters, TxPolicies};
 
 mod success {
 
@@ -22,7 +22,7 @@ mod success {
             other_identity,
         ) = defaults(id, owner_wallet, other_wallet.clone());
 
-        constructor(&instance_1, owner_identity.clone()).await;
+        constructor(&instance_1, owner_identity).await;
 
         mint(&instance_1, other_identity, sub_id_1, 1).await;
 
@@ -51,9 +51,9 @@ mod success {
             other_identity,
         ) = defaults(id, owner_wallet, other_wallet.clone());
 
-        constructor(&instance_1, owner_identity.clone()).await;
-        mint(&instance_1, other_identity.clone(), sub_id_1, 1).await;
-        mint(&instance_1, other_identity.clone(), sub_id_2, 1).await;
+        constructor(&instance_1, owner_identity).await;
+        mint(&instance_1, other_identity, sub_id_1, 1).await;
+        mint(&instance_1, other_identity, sub_id_2, 1).await;
         mint(&instance_1, other_identity, sub_id_3, 1).await;
 
         assert_eq!(get_wallet_balance(&other_wallet, &asset_id_1).await, 1);
@@ -115,7 +115,7 @@ mod revert {
             other_identity,
         ) = defaults(id, owner_wallet, other_wallet.clone());
 
-        constructor(&instance_1, owner_identity.clone()).await;
+        constructor(&instance_1, owner_identity).await;
 
         mint(&instance_1, other_identity, sub_id_1, 1).await;
 
@@ -146,11 +146,11 @@ mod revert {
             other_identity,
         ) = defaults(id, owner_wallet, other_wallet.clone());
 
-        constructor(&instance_1, owner_identity.clone()).await;
+        constructor(&instance_1, owner_identity).await;
 
         mint(&instance_1, other_identity, sub_id_1, 1).await;
 
-        let call_params = CallParameters::new(1, BASE_ASSET_ID, 1_000_000);
+        let call_params = CallParameters::new(1, AssetId::zeroed(), 1_000_000);
         instance_2
             .methods()
             .burn(sub_id_1, 1)
@@ -177,7 +177,7 @@ mod revert {
             other_identity,
         ) = defaults(id, owner_wallet, other_wallet.clone());
 
-        constructor(&instance_1, owner_identity.clone()).await;
+        constructor(&instance_1, owner_identity).await;
 
         mint(&instance_1, other_identity, sub_id_1, 1).await;
 
@@ -208,7 +208,7 @@ mod revert {
             other_identity,
         ) = defaults(id, owner_wallet, other_wallet.clone());
 
-        constructor(&instance_1, owner_identity.clone()).await;
+        constructor(&instance_1, owner_identity).await;
 
         mint(&instance_1, other_identity, sub_id_1, 1).await;
         pause(&instance_1).await;

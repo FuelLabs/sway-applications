@@ -31,7 +31,7 @@ mod success {
 
         assert_eq!(previous_identity.value.unwrap(), acc1.identity(),);
 
-        let _response = set_identity(&instance, acc1.name.clone(), wallet_identity2.clone()).await;
+        let _response = set_identity(&instance, acc1.name.clone(), wallet_identity2).await;
 
         let new_identity = identity(&instance, acc1.name.clone()).await;
 
@@ -76,9 +76,9 @@ mod revert {
         .await;
 
         set_identity(
-            &instance.with_account(wallet2).unwrap(),
+            &instance.with_account(wallet2),
             acc1.name.clone(),
-            wallet_identity2.clone(),
+            wallet_identity2,
         )
         .await;
     }

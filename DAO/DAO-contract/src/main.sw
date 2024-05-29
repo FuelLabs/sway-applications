@@ -43,8 +43,8 @@ storage {
     proposal_count: u64 = 0,
     /// The initialization state of the contract.
     state: State = State::NotInitialized,
-    /// Contract Id of the governance asset
-    asset: AssetId = AssetId::base_asset_id(),
+    /// AssetId of the governance asset
+    asset: AssetId = AssetId::zero(),
     /// The amount of votes a user has used on a proposal
     votes: StorageMap<(Identity, u64), Votes> = StorageMap {},
 }

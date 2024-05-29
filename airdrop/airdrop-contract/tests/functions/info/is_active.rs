@@ -16,7 +16,7 @@ mod success {
         assert!(!is_active(&deploy_wallet.airdrop_distributor,).await);
 
         airdrop_constructor(
-            minter.clone(),
+            minter,
             asset_supply / 2,
             asset_id,
             claim_time,
