@@ -59,14 +59,10 @@ fn main() -> bool {
     };
 
     // Since output is known to be a Coin, the following are always valid
-    // let to = Address::from(output_asset_to(output_index).unwrap());
-    // let asset_id = output_asset_id(output_index).unwrap();
-
     let to = match output_asset_to(output_index) {
         Some(address) => address,
         None => return false,
     };
-    let to = Address::from(to);
 
     let asset_id = match output_asset_id(output_index) {
         Some(asset_id) => asset_id,
