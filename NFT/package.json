@@ -18,8 +18,11 @@
   "dependencies": {
     "@fuels/connectors": "^0.5.0",
     "@fuels/react": "^0.20.0",
+    "@pinata/sdk": "^2.1.0",
     "@tanstack/react-query": "^5.29.2",
     "dotenv": "^16.4.5",
+    "form-data": "^4.0.0",
+    "formidable": "^3.5.1",
     "fuels": "0.89.0",
     "next": "14.2.2",
     "react": "^18.2",
@@ -28,6 +31,7 @@
     "react-use": "^17.5.0"
   },
   "devDependencies": {
+    "@types/formidable": "^3.4.5",
     "@types/node": "^20",
     "@types/react": "^18.2",
     "@types/react-dom": "^18.2",

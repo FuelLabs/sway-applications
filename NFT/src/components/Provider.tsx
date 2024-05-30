@@ -13,7 +13,7 @@ import {
 } from "@fuels/connectors";
 import { NODE_URL } from "@/lib";
 
-const queryClient: QueryClient = new QueryClient();
+export const queryClient: QueryClient = new QueryClient();
 
 export const AppProvider = ({ children }: { children: React.ReactNode }) => {
   const [fuelConfig, setFuelConfig] = useState<FuelConfig>({});
