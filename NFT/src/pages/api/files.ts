@@ -1,6 +1,7 @@
 import formidable, { File } from "formidable";
 import fs from "fs";
 import pinataSDK from "@pinata/sdk";
+import type { PinataPin } from "@pinata/sdk";
 import { NextApiRequest, NextApiResponse } from "next";
 
 const pinata = new pinataSDK({ pinataJWTKey: process.env.PINATA_JWT });
@@ -47,8 +48,8 @@ export default async function handler(
       });
     } else if (req.method === "GET") {
         // TODO: support pagination for an explore page
-        const response = await pinata.pinList({ pageLimit: 1});
-        res.json(response.rows[0]);
+        const nftData = await pinata.pinList({});
+        res.json(nftData.rows);
     }
   } catch (error) {
     console.error(error);

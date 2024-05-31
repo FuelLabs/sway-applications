@@ -1,14 +1,15 @@
 import { useUploadFile } from "@/hooks/useUploadFile";
-import { ChangeEvent, useEffect, useRef, useState } from "react";
+import { ChangeEvent, useEffect, useRef } from "react";
+import type { Dispatch, SetStateAction } from "react";
 import { Button } from "./Button";
 
-export const UploadButton = () => {
-  const [file, setFile] = useState<File | null>(null);
-  const [cid, setCid] = useState("");
+type UploadButtonProps = {
+    setCid: Dispatch<SetStateAction<string>>
+}
 
-  console.log(`file`, file);
-
-  console.log(`cid`, cid);
+export const UploadButton = ({ setCid }: UploadButtonProps) => {
+  //const [file, setFile] = useState<File | null>(null);
+  //const [cid, setCid] = useState("");
 
   const inputFile = useRef<HTMLInputElement>(null);
 
@@ -22,7 +23,7 @@ export const UploadButton = () => {
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length) {
-      setFile(e.target.files[0]);
+      //setFile(e.target.files[0]);
       uploadFile.mutate(e.target.files[0]);
     }
   };

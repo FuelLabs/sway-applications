@@ -1,14 +1,24 @@
-import { FuelLogo } from "@/components/FuelLogo";
-import { UploadButton } from "@/components/UploadButton";
 import contractId from "@/contract-types/contract-ids.json";
+import {
+  Grid,
+} from "@mui/material";
+import { NFTCard } from "@/components/NFTCard";
+import { useGetNFTData } from "@/hooks/useGetNFTData";
 
 export default function Home() {
+  const { nftData } = useGetNFTData();
 
   return (
-      <div className="flex gap-4 items-center">
-        <FuelLogo />
-        <h1 className="text-2xl font-semibold ali">Welcome to Fuel</h1>
-        <UploadButton />
-      </div>
+    <Grid container spacing={2}>
+      {[...Array(10)].map(() => {
+        return (
+          <Grid xs={3}>
+            <NFTCard cid={nftData[0]?.ipfs_pin_hash} />
+          </Grid>
+        );
+      })}
+      {/* <UploadButton setCid={setCid} />
+      {cid && <Files cid={cid} />} */}
+    </Grid>
   );
 }

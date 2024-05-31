@@ -1,4 +1,5 @@
 import { Account, BN } from 'fuels';
+import contractId from "@/contract-types/contract-ids.json";
 
 type DappEnvironment = 'local' | 'testnet';
 
@@ -26,3 +27,9 @@ export interface AppWallet {
 }
 
 export const TESTNET_FAUCET_LINK = 'https://faucet-devnet.fuel.network/';
+
+export const GATEWAY_URL = process.env.NEXT_PUBLIC_GATEWAY_URL
+  ? process.env.NEXT_PUBLIC_GATEWAY_URL
+  : "https://gateway.pinata.cloud";
+
+export const CONTRACT_ID = IS_PROD ? "TODO" : contractId.nftContract
