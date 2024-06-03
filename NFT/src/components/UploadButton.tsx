@@ -8,9 +8,6 @@ type UploadButtonProps = {
 }
 
 export const UploadButton = ({ setCid }: UploadButtonProps) => {
-  //const [file, setFile] = useState<File | null>(null);
-  //const [cid, setCid] = useState("");
-
   const inputFile = useRef<HTMLInputElement>(null);
 
   const uploadFile = useUploadFile();
@@ -23,7 +20,6 @@ export const UploadButton = ({ setCid }: UploadButtonProps) => {
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length) {
-      //setFile(e.target.files[0]);
       uploadFile.mutate(e.target.files[0]);
     }
   };
@@ -37,8 +33,8 @@ export const UploadButton = ({ setCid }: UploadButtonProps) => {
         onChange={handleChange}
         style={{ display: "none" }}
       />
-      <Button onClick={() => inputFile.current?.click()}>
-        {uploadFile.isPending ? "Uploading..." : "Upload"}
+      <Button onClick={() => inputFile.current?.click()} className="h-10">
+        {uploadFile.isPending ? "Uploading..." : "Choose File"}
       </Button>
     </>
   );

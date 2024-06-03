@@ -4,7 +4,7 @@ mod errors;
 mod interface;
 
 use errors::{MintError, SetError};
-use interface::Constructor;
+use interface::{Constructor, MaxSupply};
 use standards::{src20::SRC20, src3::SRC3, src5::{SRC5, State}, src7::{Metadata, SRC7},};
 use sway_libs::{
     asset::{
@@ -671,5 +671,11 @@ impl Constructor for Contract {
     #[storage(read, write)]
     fn constructor(owner: Identity) {
         initialize_ownership(owner);
+    }
+}
+
+impl MaxSupply for Contract {
+    fn max_supply() -> u64 {
+        MAX_SUPPLY
     }
 }
