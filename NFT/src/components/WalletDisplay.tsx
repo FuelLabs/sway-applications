@@ -13,9 +13,6 @@ const copyToClipboard = (text: string) => {
 export const WalletDisplay = () => {
   const { wallet, walletBalance } = useActiveWallet();
 
-  console.log(`wallet.address`, wallet?.address.toString());
-  console.log("temp", wallet?.address.toHexString())
-
   return (
     wallet && (
       <div className="flex gap-4 items-center">

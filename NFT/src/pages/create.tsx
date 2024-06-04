@@ -5,6 +5,8 @@ import { useCreateNFT } from "@/hooks/useCreateNFT";
 import { Box, Stack, Typography } from "@mui/material";
 import { useState } from "react";
 
+import { GATEWAY_URL } from "@/lib";
+
 export default function Create() {
   const [cid, setCid] = useState("");
   const [name, setName] = useState("");
@@ -13,6 +15,7 @@ export default function Create() {
 
   const createNFT = useCreateNFT();
 
+  // TODO: add way to change file
   return (
     <Stack spacing={2}>
       <Typography variant="h2" sx={{ paddingBottom: "48px" }}>
@@ -20,15 +23,21 @@ export default function Create() {
       </Typography>
       <Typography>Upload File</Typography>
       <Stack
-        height={150}
         alignItems="center"
         justifyContent="space-around"
+        padding={5}
         sx={{ border: "1px dashed grey", borderRadius: "15px" }}
       >
-        <Typography>
-          TODO: add info about supported files types and size
-        </Typography>
-        <UploadButton setCid={setCid} />
+        {cid ? (
+          <img src={`${GATEWAY_URL}/ipfs/${cid}`} />
+        ) : (
+          <>
+            <Typography>
+              TODO: add info about supported files types and size
+            </Typography>
+            <UploadButton setCid={setCid} />
+          </>
+        )}
       </Stack>
       <Typography>Name</Typography>
       <Input

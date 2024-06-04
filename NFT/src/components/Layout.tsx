@@ -23,6 +23,8 @@ export const Layout = ({ children }: { children: React.ReactNode }) => {
 
   const { wallet, refreshWalletBalance, walletBalance } = useActiveWallet();
 
+  const TOP_UP_AMOUNT = 100_000_000;
+
   const topUpWallet = async () => {
     if (!wallet) {
       return console.error("Unable to topup wallet because wallet is not set.");
@@ -33,7 +35,7 @@ export const Layout = ({ children }: { children: React.ReactNode }) => {
         return toast.error("Faucet wallet not found.");
       }
 
-      const tx = await faucetWallet?.transfer(wallet.address, 10_000);
+      const tx = await faucetWallet?.transfer(wallet.address, TOP_UP_AMOUNT);
       await tx?.waitForResult();
 
       toast.success("Wallet topped up!");
@@ -49,7 +51,7 @@ export const Layout = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
-  const showTopUpButton = walletBalance?.lt(10_000);
+  const showTopUpButton = walletBalance?.lt(TOP_UP_AMOUNT);
 
   const showAddNetworkButton =
     browserWallet &&
@@ -84,7 +86,7 @@ export const Layout = ({ children }: { children: React.ReactNode }) => {
 
           <Link href="/create">Create</Link>
 
-          <Link href="/explore">Explore</Link>
+          <Link href="/">Explore</Link>
 
           {isBrowserWalletConnected && (
             <Button onClick={disconnect}>Disconnect Wallet</Button>
