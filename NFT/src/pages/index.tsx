@@ -10,15 +10,13 @@ export default function Home() {
 
   return (
     <Grid container spacing={2}>
-      {[...Array(10)].map(() => {
+      {nftData.map((nftDatum) => {
         return (
           <Grid xs={3}>
-            <NFTCard cid={nftData[0]?.ipfs_pin_hash} />
+            <NFTCard cid={nftDatum?.ipfs_pin_hash} />
           </Grid>
         );
       })}
-      {/* <UploadButton setCid={setCid} />
-      {cid && <Files cid={cid} />} */}
     </Grid>
   );
 }
