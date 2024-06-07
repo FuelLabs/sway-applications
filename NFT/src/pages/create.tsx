@@ -6,8 +6,10 @@ import { useUploadFile } from "@/hooks/useUploadFile";
 import { IconButton, Stack, Typography } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import { useState, useEffect } from "react";
+import { useUpdateMetadata } from "@/hooks/useUpdateMetadata";
 
 export default function Create() {
+  const [cid, setCid] = useState("");
   const [file, setFile] = useState<File>();
   const [name, setName] = useState("");
   const [symbol, setSymbol] = useState("");
@@ -15,14 +17,15 @@ export default function Create() {
   const [numberOfCopies, setNumberOfCopies] = useState<number>();
 
   const createNFT = useCreateNFT();
-
   const uploadFile = useUploadFile();
+  const updateMetadata = useUpdateMetadata();
 
   useEffect(() => {
     if (uploadFile.data) {
-      const cid = uploadFile.data;
+      const newCid = uploadFile.data;
+      setCid(newCid);
       createNFT.mutate({
-        cid,
+        cid: newCid,
         name,
         symbol,
         numberOfCopies: numberOfCopies || 0,
@@ -30,6 +33,17 @@ export default function Create() {
     }
   }, [uploadFile.data]);
 
+  useEffect(() => {
+    if (createNFT.data) {
+      const nftContractId = createNFT.data;
+      updateMetadata.mutate({
+        ipfsHash: cid,
+        metadata: { keyvalues: { nftContractId: nftContractId.toB256() } },
+      });
+    }
+  }, [createNFT.data]);
+
+  // TODO: unpin file if user does not approve txs
   return (
     <Stack spacing={2}>
       <Typography variant="h2" sx={{ paddingBottom: "48px" }}>

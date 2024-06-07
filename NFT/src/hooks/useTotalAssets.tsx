@@ -1,17 +1,16 @@
 import { NFTContractAbi__factory } from "@/contract-types";
-import { CONTRACT_ID } from "@/lib";
 import { useWallet } from "@fuels/react";
 import { useQuery } from "@tanstack/react-query";
 
-export const useTotalAssets = () => {
+export const useTotalAssets = (contractId: string) => {
     const { wallet, isError, isLoading } = useWallet();
 
     const query = useQuery({
-        queryKey: ["totalAssets"],
+        queryKey: ["totalAssets", contractId],
         queryFn: async () => {
             if (!wallet) throw new Error(`Cannot get total assets if wallet is ${wallet}`);
 
-            const contract = NFTContractAbi__factory.connect(CONTRACT_ID, wallet);
+            const contract = NFTContractAbi__factory.connect(contractId, wallet);
 
             const result = await contract.functions.total_assets().get();
             return result.value;

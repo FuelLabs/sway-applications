@@ -3,11 +3,15 @@ import { useRouter } from "next/router";
 import { GATEWAY_URL } from "@/lib";
 import { Box, Stack, Typography } from "@mui/material";
 import { Button } from "@/components/Button";
+import { useTotalAssets } from "@/hooks/useTotalAssets";
+import { useMint } from "@/hooks/useMint";
+import toast from "react-hot-toast";
 
 export default function Mint() {
   const router = useRouter();
 
-  console.log(`router.query`, router.query);
+  const { totalAssets } = useTotalAssets();
+  const mint = useMint();
 
   return (
     <Box display="flex" justifyContent="space-between" width="50rem">
@@ -21,7 +25,11 @@ export default function Mint() {
         )}
         <Button
           onClick={() => {
-            console.log("mint");
+            if (totalAssets) {
+              mint.mutate(totalAssets.toNumber());
+            } else {
+              toast.error(`Cannot mint if total assets is ${totalAssets}`);
+            }
           }}
           className="w-48"
         >

@@ -4,8 +4,8 @@ import toast from "react-hot-toast";
 import { contracts } from "../generated/contract";
 import { ContractFactory } from "fuels";
 import { NFTContractAbi__factory } from "@/contract-types";
-import crypto from "crypto";
 import { AssetIdInput } from "@/contract-types/contracts/NFTContractAbi";
+import { createAssetId, createSubId } from "@/utils/assetId";
 
 type CreateNFT = {
   cid: string;
@@ -43,7 +43,7 @@ export const useCreateNFT = () => {
       let contractCalls = [];
       contractCalls.push(constructorCall);
       for (let i = 1; i <= numberOfCopies; ++i) {
-        const subId = i.toString().repeat(32);
+        const subId = createSubId(i);
         const assetId: AssetIdInput = createAssetId(subId, deployedContract.id.toB256());
         contractCalls.push(
           contract.functions.set_metadata(assetId, "image", { String: cid })
@@ -52,6 +52,7 @@ export const useCreateNFT = () => {
         contractCalls.push(contract.functions.set_symbol(assetId, symbol));
       }
       await contract.multiCall(contractCalls).call();
+      return deployedContract.id;
     },
     onSuccess: () => {
         toast.success("NFT successfully created.");
@@ -63,13 +64,3 @@ export const useCreateNFT = () => {
 
   return mutation;
 };
-
-function createAssetId(subId: string, contractId: string) {
-    const hasher = crypto.createHash("sha256");
-    hasher.update(subId);
-    hasher.update(contractId);
-    const assetId: AssetIdInput = {
-        bits: `0x${hasher.digest('hex')}`
-    }
-    return assetId
-}
