@@ -2,24 +2,34 @@ import { Button } from "@/components/Button";
 import { Input } from "@/components/Input";
 import { UploadButton } from "@/components/UploadButton";
 import { useCreateNFT } from "@/hooks/useCreateNFT";
-import { Box, IconButton, Stack, Typography } from "@mui/material";
+import { useUploadFile } from "@/hooks/useUploadFile";
+import { IconButton, Stack, Typography } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
-import { useState } from "react";
-
-import { GATEWAY_URL } from "@/lib";
+import { useState, useEffect } from "react";
 
 export default function Create() {
-  const [cid, setCid] = useState("");
   const [file, setFile] = useState<File>();
   const [name, setName] = useState("");
   const [symbol, setSymbol] = useState("");
+  const [description, setDescription] = useState("");
   const [numberOfCopies, setNumberOfCopies] = useState<number>();
-
-  console.log(`file`, file);
 
   const createNFT = useCreateNFT();
 
-  // TODO: add way to change file
+  const uploadFile = useUploadFile();
+
+  useEffect(() => {
+    if (uploadFile.data) {
+      const cid = uploadFile.data;
+      createNFT.mutate({
+        cid,
+        name,
+        symbol,
+        numberOfCopies: numberOfCopies || 0,
+      });
+    }
+  }, [uploadFile.data]);
+
   return (
     <Stack spacing={2}>
       <Typography variant="h2" sx={{ paddingBottom: "48px" }}>
@@ -34,7 +44,16 @@ export default function Create() {
       >
         {file ? (
           <>
-            <IconButton sx={{ color: "white", alignSelf: "end", padding: "0px", marginRight: "-30px", marginTop: "-10px" }}>
+            <IconButton
+              onClick={() => setFile(undefined)}
+              sx={{
+                color: "white",
+                alignSelf: "end",
+                padding: "0px",
+                marginRight: "-30px",
+                marginTop: "-10px",
+              }}
+            >
               <CloseIcon />
             </IconButton>
             <img src={URL.createObjectURL(file)} />
@@ -44,7 +63,7 @@ export default function Create() {
             <Typography>
               TODO: add info about supported files types and size
             </Typography>
-            <UploadButton setCid={setCid} setFile={setFile}/>
+            <UploadButton setFile={setFile} />
           </>
         )}
       </Stack>
@@ -60,6 +79,12 @@ export default function Create() {
         onChange={(event) => setSymbol(event.target.value)}
         placeholder="BD"
       />
+      <Typography>Description (Optional)</Typography>
+      <Input
+        value={description}
+        onChange={(event) => setDescription(event.target.value)}
+        placeholder="Cool dragons that like to lift weights"
+      />
       <Typography>Number of copies</Typography>
       <Input
         value={numberOfCopies?.toString()}
@@ -69,12 +94,13 @@ export default function Create() {
       />
       <Button
         onClick={() => {
-          createNFT.mutate({
-            cid,
-            name,
-            symbol,
-            numberOfCopies: numberOfCopies || 0,
-          });
+          if (file) {
+            uploadFile.mutate({
+              fileToUpload: file,
+              nftName: name,
+              nftDescription: description,
+            });
+          }
         }}
       >
         Create NFT

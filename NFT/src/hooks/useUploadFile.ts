@@ -5,9 +5,19 @@ import toast from "react-hot-toast";
 // and only pin to ipfs if user deploys nft contract
 export const useUploadFile = () => {
   const mutation = useMutation({
-    mutationFn: async (fileToUpload: File) => {
+    mutationFn: async ({
+      fileToUpload,
+      nftName,
+      nftDescription,
+    }: {
+      fileToUpload: File;
+      nftName: string;
+      nftDescription: string;
+    }) => {
       const formData = new FormData();
       formData.append("file", fileToUpload);
+      formData.append("nftName", nftName);
+      formData.append("nftDescription", nftDescription);
       const res = await fetch("/api/files", {
         method: "POST",
         body: formData,

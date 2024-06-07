@@ -7,15 +7,18 @@ import { Button } from "@/components/Button";
 export default function Mint() {
   const router = useRouter();
 
+  console.log(`router.query`, router.query);
+
   return (
     <Box display="flex" justifyContent="space-between" width="50rem">
-      <img src={`${GATEWAY_URL}/ipfs/${router.query.id}`} />
+      <img
+        src={`${GATEWAY_URL}/ipfs/${router.query.id}/${router.query.fileId}`}
+      />
       <Stack width="300px" spacing={2}>
-        <Typography variant="h5">NFT TITLE</Typography>
-        <Typography>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-          eiusmod tempor incididunt ut labore et dolore magna aliqua.
-        </Typography>
+        <Typography variant="h5">{router.query.nftName}</Typography>
+        {router.query.nftDescription && (
+          <Typography>{router.query.nftDescription}</Typography>
+        )}
         <Button
           onClick={() => {
             console.log("mint");
