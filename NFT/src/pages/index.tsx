@@ -1,4 +1,3 @@
-import contractId from "@/contract-types/contract-ids.json";
 import {
   Grid,
 } from "@mui/material";

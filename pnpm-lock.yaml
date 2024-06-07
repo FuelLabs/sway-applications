@@ -39,6 +39,9 @@ importers:
       '@fuels/react':
         specifier: ^0.20.0
         version: 0.20.0(@tanstack/react-query@5.40.0(react@18.2.0))(@types/react-dom@18.2.22)(@types/react@18.2.67)(fuels@0.89.0)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
+      '@mui/icons-material':
+        specifier: ^5.15.12
+        version: 5.15.14(@mui/material@5.15.14(@emotion/react@11.11.4(@types/react@18.2.67)(react@18.2.0))(@emotion/styled@11.11.0(@emotion/react@11.11.4(@types/react@18.2.67)(react@18.2.0))(@types/react@18.2.67)(react@18.2.0))(@types/react@18.2.67)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(@types/react@18.2.67)(react@18.2.0)
       '@mui/material':
         specifier: ^5.15.12
         version: 5.15.14(@emotion/react@11.11.4(@types/react@18.2.67)(react@18.2.0))(@emotion/styled@11.11.0(@emotion/react@11.11.4(@types/react@18.2.67)(react@18.2.0))(@types/react@18.2.67)(react@18.2.0))(@types/react@18.2.67)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)

@@ -2,7 +2,7 @@ import { useWallet } from "@fuels/react";
 import { useMutation } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import { contracts } from "../generated/contract";
-import { ContractFactory, arrayify, hash } from "fuels";
+import { ContractFactory } from "fuels";
 import { NFTContractAbi__factory } from "@/contract-types";
 import crypto from "crypto";
 import { AssetIdInput } from "@/contract-types/contracts/NFTContractAbi";
