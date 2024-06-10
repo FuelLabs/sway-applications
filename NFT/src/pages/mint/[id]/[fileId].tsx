@@ -10,8 +10,11 @@ import toast from "react-hot-toast";
 export default function Mint() {
   const router = useRouter();
 
-  const { totalAssets } = useTotalAssets();
+  const contractId = router.query.nftContractId as string;
+  const { totalAssets } = useTotalAssets(contractId);
   const mint = useMint();
+
+  console.log(`contractId`, contractId);
 
   return (
     <Box display="flex" justifyContent="space-between" width="50rem">
@@ -26,7 +29,7 @@ export default function Mint() {
         <Button
           onClick={() => {
             if (totalAssets) {
-              mint.mutate(totalAssets.toNumber());
+              mint.mutate({ totalAssets: totalAssets.toNumber(), contractId });
             } else {
               toast.error(`Cannot mint if total assets is ${totalAssets}`);
             }

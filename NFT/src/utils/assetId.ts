@@ -8,8 +8,8 @@ export function createSubId(numberToRepeat: number) {
 
 export function createAssetId(subId: string, contractId: string) {
     const hasher = crypto.createHash("sha256");
-    hasher.update(subId);
     hasher.update(contractId);
+    hasher.update(subId);
     const assetId: AssetIdInput = {
         bits: `0x${hasher.digest('hex')}`
     }

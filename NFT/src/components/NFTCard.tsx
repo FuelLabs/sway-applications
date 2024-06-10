@@ -7,13 +7,15 @@ type NFTCardProps = {
   fileCid: string;
   nftName: string;
   nftDescription: string;
+  nftContractId: string;
 };
 
 export const NFTCard = ({
   cid,
   fileCid,
   nftName,
-  nftDescription
+  nftDescription,
+  nftContractId
 }: NFTCardProps) => {
   const router = useRouter();
 
@@ -21,7 +23,7 @@ export const NFTCard = ({
     <Card>
       <CardActionArea
         onClick={() => {
-          router.push(`/mint/${cid}/${fileCid}?nftName=${nftName}&nftDescription=${nftDescription}`);
+          router.push(`/mint/${cid}/${fileCid}?nftName=${nftName}&nftDescription=${nftDescription}&nftContractId=${nftContractId}`);
         }}
       >
         <img src={`${GATEWAY_URL}/ipfs/${cid}/${fileCid}`} />
