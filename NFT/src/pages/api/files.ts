@@ -16,7 +16,11 @@ const saveFile = async (file: File, nftName: string, nftDescription: string) => 
   try {
     const stream = fs.createReadStream(file.filepath);
     const fileCid = getRandomB256();
-    const options: PinataPinOptions = {
+
+    // Make this any type to get rid of type error
+    // the actual backend does not take the same type
+    // as defined in their ts lib
+    const options: any = {
       pinataMetadata: {
         name: fileCid,
         keyvalues: {
