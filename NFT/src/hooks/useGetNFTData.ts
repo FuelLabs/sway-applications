@@ -4,7 +4,7 @@ import type { PinataPin } from "@pinata/sdk";
 // We need this custom type bc pinata does not return the same type
 // as the type they have defined in ts
 type NFTData = Omit<PinataPin, "metadata"> & {
-  metadata: { name: string; keyvalues: { [key: string]: string } };
+  metadata: { name?: string; keyvalues: { [key: string]: string | undefined } };
 };
 
 export const useGetNFTData = () => {

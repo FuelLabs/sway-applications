@@ -1,18 +1,16 @@
 import { useMutation } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 
-export const useUpdateMetadata = () => {
+export const useUnpin = () => {
   const mutation = useMutation({
     mutationFn: async ({
-      metadata,
       ipfsHash,
     }: {
-      metadata: { name?: string; keyvalues?: { [key: string]: string } };
       ipfsHash: string;
     }) => {
-      await fetch("/api/metadata", {
+      await fetch("/api/unpin", {
         method: "POST",
-        body: JSON.stringify({ metadata, ipfsHash }),
+        body: JSON.stringify({ ipfsHash }),
       });
     },
     onError: (err) => {

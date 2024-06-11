@@ -11,10 +11,9 @@ export default function Mint() {
   const router = useRouter();
 
   const contractId = router.query.nftContractId as string;
+  console.log(`contractId`, contractId);
   const { totalAssets } = useTotalAssets(contractId);
   const mint = useMint();
-
-  console.log(`contractId`, contractId);
 
   return (
     <Box display="flex" justifyContent="space-between" width="50rem">
@@ -29,7 +28,11 @@ export default function Mint() {
         <Button
           onClick={() => {
             if (totalAssets) {
-              mint.mutate({ totalAssets: totalAssets.toNumber(), contractId });
+              mint.mutate({
+                totalAssets: totalAssets.toNumber(),
+                contractId,
+                cid: router.query.fileId as string,
+              });
             } else {
               toast.error(`Cannot mint if total assets is ${totalAssets}`);
             }

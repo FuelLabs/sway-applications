@@ -73,7 +73,11 @@ export const Layout = ({ children }: { children: React.ReactNode }) => {
       <Toaster />
       <div className="flex flex-col">
         <nav className="flex justify-between items-center p-4 bg-black text-white gap-6">
-          <Link href="/">Home</Link>
+          <Link href="/">Explore</Link>
+
+          <Link href="/create">Create</Link>
+
+          <Link href="/collection">Collection</Link>
 
           <Link
             href={
@@ -83,10 +87,6 @@ export const Layout = ({ children }: { children: React.ReactNode }) => {
           >
             Faucet
           </Link>
-
-          <Link href="/create">Create</Link>
-
-          <Link href="/">Explore</Link>
 
           {isBrowserWalletConnected && (
             <Button onClick={disconnect}>Disconnect Wallet</Button>

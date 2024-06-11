@@ -6,21 +6,25 @@ import { ContractFactory } from "fuels";
 import { NFTContractAbi__factory } from "@/contract-types";
 import { AssetIdInput } from "@/contract-types/contracts/NFTContractAbi";
 import { createAssetId, createSubId } from "@/utils/assetId";
+import { useUpdateMetadata } from "./useUpdateMetadata";
+import { useUnpin } from "./useUnpin";
 
 type CreateNFT = {
   cid: string;
   name: string;
   symbol: string;
+  description: string;
   numberOfCopies: number;
 };
 
 export const useCreateNFT = () => {
   const { wallet } = useWallet();
   const { bytecode, abi } = contracts["nft-contract"];
+  const updateMetadata = useUpdateMetadata();
+  const unpin = useUnpin();
 
   const mutation = useMutation({
     mutationFn: async ({ cid, name, symbol, numberOfCopies }: CreateNFT) => {
-      console.log(`wallet.provider.url`, wallet?.provider.url);
       if (!wallet)
         throw new Error(
           `Cannot create NFT if wallet is ${wallet}.  Please connect your wallet.`
@@ -44,7 +48,10 @@ export const useCreateNFT = () => {
       contractCalls.push(constructorCall);
       for (let i = 1; i <= numberOfCopies; ++i) {
         const subId = createSubId(i);
-        const assetId: AssetIdInput = createAssetId(subId, deployedContract.id.toB256());
+        const assetId: AssetIdInput = createAssetId(
+          subId,
+          deployedContract.id.toB256()
+        );
         contractCalls.push(
           contract.functions.set_metadata(assetId, "image", { String: cid })
         );
@@ -54,10 +61,21 @@ export const useCreateNFT = () => {
       await contract.multiCall(contractCalls).call();
       return deployedContract.id;
     },
-    onSuccess: () => {
-        toast.success("NFT successfully created.");
+    onSuccess: (data, { cid, name, description }) => {
+      updateMetadata.mutate({
+        ipfsHash: cid,
+        metadata: {
+          keyvalues: {
+            nftContractId: data.toB256(),
+            nftName: name,
+            nftDescription: description,
+          },
+        },
+      });
+      toast.success("NFT successfully created.");
     },
-    onError: (err) => {
+    onError: (err, { cid }) => {
+      unpin.mutate({ ipfsHash: cid });
       toast.error(err.message);
     },
   });

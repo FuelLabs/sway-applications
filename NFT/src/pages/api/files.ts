@@ -12,7 +12,7 @@ export const config = {
   },
 };
 
-const saveFile = async (file: File, nftName: string, nftDescription: string) => {
+const saveFile = async (file: File) => {
   try {
     const stream = fs.createReadStream(file.filepath);
     const fileCid = getRandomB256();
@@ -23,10 +23,6 @@ const saveFile = async (file: File, nftName: string, nftDescription: string) => 
     const options: any = {
       pinataMetadata: {
         name: fileCid,
-        keyvalues: {
-          nftName,
-          nftDescription,
-        }
       },
       pinataOptions: {
         wrapWithDirectory: true
@@ -53,7 +49,7 @@ export default async function handler(
           console.error({ err });
           return res.status(500).send("Upload Error");
         }
-        const response = await saveFile(files.file[0], fields.nftName?.at(0) || "", fields.nftDescription?.at(0) || "");
+        const response = await saveFile(files.file[0]);
         const { IpfsHash } = response;
 
         return res.send(IpfsHash);

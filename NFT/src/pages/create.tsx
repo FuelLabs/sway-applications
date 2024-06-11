@@ -18,7 +18,6 @@ export default function Create() {
 
   const createNFT = useCreateNFT();
   const uploadFile = useUploadFile();
-  const updateMetadata = useUpdateMetadata();
 
   useEffect(() => {
     if (uploadFile.data) {
@@ -27,21 +26,12 @@ export default function Create() {
       createNFT.mutate({
         cid: newCid,
         name,
+        description,
         symbol,
         numberOfCopies: numberOfCopies || 0,
       });
     }
   }, [uploadFile.data]);
-
-  useEffect(() => {
-    if (createNFT.data) {
-      const nftContractId = createNFT.data;
-      updateMetadata.mutate({
-        ipfsHash: cid,
-        metadata: { keyvalues: { nftContractId: nftContractId.toB256() } },
-      });
-    }
-  }, [createNFT.data]);
 
   // TODO: unpin file if user does not approve txs
   return (
@@ -110,9 +100,7 @@ export default function Create() {
         onClick={() => {
           if (file) {
             uploadFile.mutate({
-              fileToUpload: file,
-              nftName: name,
-              nftDescription: description,
+              fileToUpload: file
             });
           }
         }}
