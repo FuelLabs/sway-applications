@@ -35,3 +35,4 @@ Closes #\<issue number\>
 - [ ] I have added (or requested a maintainer to add) the necessary `Breaking*` or `New Feature` labels where relevant.
 - [ ] I have done my best to ensure that my PR adheres to [the Fuel Labs Code Review Standards](https://github.com/FuelLabs/rfcs/blob/master/text/code-standards/external-contributors.md).
 - [ ] I have requested a review from the relevant team or maintainers.
+- [ ] I have updated the changelog to reflect the changes on this PR.
