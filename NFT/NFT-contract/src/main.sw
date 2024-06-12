@@ -64,11 +64,6 @@ storage {
     metadata: StorageMetadata = StorageMetadata {},
 }
 
-configurable {
-    /// The maximum number of NFTs that may be minted.
-    MAX_SUPPLY: u64 = 3,
-}
-
 impl SRC20 for Contract {
     /// Returns the total number of individual NFTs for this contract.
     ///
@@ -272,13 +267,6 @@ impl SRC3 for Contract {
                 .is_none(),
             MintError::NFTAlreadyMinted,
         );
-        require(
-            storage
-                .total_assets
-                .try_read()
-                .unwrap_or(0) + amount <= MAX_SUPPLY,
-            MintError::MaxNFTsMinted,
-        );
 
         // Mint the NFT
         let _ = _mint(
@@ -437,7 +425,6 @@ impl SetAssetAttributes for Contract {
     /// ```
     #[storage(write)]
     fn set_name(asset: AssetId, name: String) {
-        only_owner();
         require(
             storage
                 .name
@@ -483,7 +470,6 @@ impl SetAssetAttributes for Contract {
     /// ```
     #[storage(write)]
     fn set_symbol(asset: AssetId, symbol: String) {
-        only_owner();
         require(
             storage
                 .symbol
@@ -671,11 +657,5 @@ impl Constructor for Contract {
     #[storage(read, write)]
     fn constructor(owner: Identity) {
         initialize_ownership(owner);
-    }
-}
-
-impl MaxSupply for Contract {
-    fn max_supply() -> u64 {
-        MAX_SUPPLY
     }
 }

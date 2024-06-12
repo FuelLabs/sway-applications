@@ -10,9 +10,10 @@ import toast from "react-hot-toast";
 export default function Mint() {
   const router = useRouter();
 
-  const contractId = router.query.nftContractId as string;
-  console.log(`contractId`, contractId);
-  const { totalAssets } = useTotalAssets(contractId);
+  const subId = router.query.nftSubId as string;
+  const nftName = router.query.nftName as string;
+  const nftDescription = router.query.nftDescription as string;
+
   const mint = useMint();
 
   return (
@@ -21,21 +22,18 @@ export default function Mint() {
         src={`${GATEWAY_URL}/ipfs/${router.query.id}/${router.query.fileId}`}
       />
       <Stack width="300px" spacing={2}>
-        <Typography variant="h5">{router.query.nftName}</Typography>
+        <Typography variant="h5">{nftName}</Typography>
         {router.query.nftDescription && (
-          <Typography>{router.query.nftDescription}</Typography>
+          <Typography>{nftDescription}</Typography>
         )}
         <Button
           onClick={() => {
-            if (totalAssets) {
               mint.mutate({
-                totalAssets: totalAssets.toNumber(),
-                contractId,
-                cid: router.query.fileId as string,
+                nftSubId: subId,
+                cid: router.query.id as string,
+                nftName,
+                nftDescription
               });
-            } else {
-              toast.error(`Cannot mint if total assets is ${totalAssets}`);
-            }
           }}
           className="w-48"
         >

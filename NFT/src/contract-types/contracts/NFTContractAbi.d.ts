@@ -52,10 +52,6 @@ export type ContractIdOutput = ContractIdInput;
 export type OwnershipSetInput = { new_owner: IdentityInput };
 export type OwnershipSetOutput = { new_owner: IdentityOutput };
 
-export type NFTContractAbiConfigurables = {
-  MAX_SUPPLY: BigNumberish;
-};
-
 interface NFTContractAbiInterface extends Interface {
   functions: {
     decimals: FunctionFragment;
@@ -75,7 +71,6 @@ interface NFTContractAbiInterface extends Interface {
     pause: FunctionFragment;
     unpause: FunctionFragment;
     constructor: FunctionFragment;
-    max_supply: FunctionFragment;
   };
 
   encodeFunctionData(functionFragment: 'decimals', values: [AssetIdInput]): Uint8Array;
@@ -95,7 +90,6 @@ interface NFTContractAbiInterface extends Interface {
   encodeFunctionData(functionFragment: 'pause', values: []): Uint8Array;
   encodeFunctionData(functionFragment: 'unpause', values: []): Uint8Array;
   encodeFunctionData(functionFragment: 'constructor', values: [IdentityInput]): Uint8Array;
-  encodeFunctionData(functionFragment: 'max_supply', values: []): Uint8Array;
 
   decodeFunctionData(functionFragment: 'decimals', data: BytesLike): DecodedValue;
   decodeFunctionData(functionFragment: 'name', data: BytesLike): DecodedValue;
@@ -114,7 +108,6 @@ interface NFTContractAbiInterface extends Interface {
   decodeFunctionData(functionFragment: 'pause', data: BytesLike): DecodedValue;
   decodeFunctionData(functionFragment: 'unpause', data: BytesLike): DecodedValue;
   decodeFunctionData(functionFragment: 'constructor', data: BytesLike): DecodedValue;
-  decodeFunctionData(functionFragment: 'max_supply', data: BytesLike): DecodedValue;
 }
 
 export class NFTContractAbi extends Contract {
@@ -137,6 +130,5 @@ export class NFTContractAbi extends Contract {
     pause: InvokeFunction<[], void>;
     unpause: InvokeFunction<[], void>;
     constructor: InvokeFunction<[owner: IdentityInput], void>;
-    max_supply: InvokeFunction<[], BN>;
   };
 }

@@ -14,7 +14,6 @@ export default function Create() {
   const [name, setName] = useState("");
   const [symbol, setSymbol] = useState("");
   const [description, setDescription] = useState("");
-  const [numberOfCopies, setNumberOfCopies] = useState<number>();
 
   const createNFT = useCreateNFT();
   const uploadFile = useUploadFile();
@@ -28,7 +27,6 @@ export default function Create() {
         name,
         description,
         symbol,
-        numberOfCopies: numberOfCopies || 0,
       });
     }
   }, [uploadFile.data]);
@@ -88,13 +86,6 @@ export default function Create() {
         value={description}
         onChange={(event) => setDescription(event.target.value)}
         placeholder="Cool dragons that like to lift weights"
-      />
-      <Typography>Number of copies</Typography>
-      <Input
-        value={numberOfCopies?.toString()}
-        onChange={(event) => setNumberOfCopies(Number(event.target.value))}
-        type="number"
-        placeholder="10"
       />
       <Button
         onClick={() => {

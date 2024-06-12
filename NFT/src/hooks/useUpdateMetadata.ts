@@ -1,6 +1,8 @@
 import { useMutation } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 
+// WARNING: although this can take arbitrary metadata
+// it overwrites the past metadata
 export const useUpdateMetadata = () => {
   const mutation = useMutation({
     mutationFn: async ({
@@ -11,7 +13,7 @@ export const useUpdateMetadata = () => {
       ipfsHash: string;
     }) => {
       await fetch("/api/metadata", {
-        method: "POST",
+        method: "PUT",
         body: JSON.stringify({ metadata, ipfsHash }),
       });
     },

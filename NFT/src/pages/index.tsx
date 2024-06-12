@@ -17,7 +17,7 @@ export default function Home() {
               fileCid={nftDatum.metadata?.name || ""}
               nftName={nftDatum.metadata.keyvalues?.nftName || ""}
               nftDescription={nftDatum.metadata.keyvalues?.nftDescription || ""}
-              nftContractId={nftDatum.metadata.keyvalues?.nftContractId || ""}
+              nftSubId={nftDatum.metadata.keyvalues?.nftSubId || ""}
             />
           </Grid>
         );

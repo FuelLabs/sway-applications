@@ -3451,16 +3451,6 @@ const _abi = {
           ]
         }
       ]
-    },
-    {
-      "inputs": [],
-      "name": "max_supply",
-      "output": {
-        "name": "",
-        "type": 22,
-        "typeArguments": null
-      },
-      "attributes": null
     }
   ],
   "loggedTypes": [
@@ -3522,17 +3512,7 @@ const _abi = {
     }
   ],
   "messagesTypes": [],
-  "configurables": [
-    {
-      "name": "MAX_SUPPLY",
-      "configurableType": {
-        "name": "",
-        "type": 22,
-        "typeArguments": null
-      },
-      "offset": 49536
-    }
-  ]
+  "configurables": []
 };
 
 const _storageSlots: StorageSlot[] = [

@@ -5,6 +5,7 @@ import toast from "react-hot-toast";
 import { createSubId } from "@/utils/assetId";
 import { hash } from "fuels";
 import { useUpdateMetadata } from "./useUpdateMetadata";
+import { CONTRACT_ID } from "@/lib";
 
 export const useMint = () => {
   const { wallet } = useWallet();
@@ -12,28 +13,34 @@ export const useMint = () => {
 
   const mutation = useMutation({
     mutationFn: async ({
-      totalAssets,
-      contractId,
+      nftSubId,
     }: {
-      totalAssets: number;
-      contractId: string;
       cid: string;
+      nftName: string;
+      nftDescription: string;
+      nftSubId: string;
     }) => {
       if (!wallet) throw new Error(`Cannot mint if wallet is ${wallet}`);
 
-      const contract = NFTContractAbi__factory.connect(contractId, wallet);
+      const contract = NFTContractAbi__factory.connect(CONTRACT_ID, wallet);
 
       const recipient = { Address: { bits: wallet.address.toB256() } };
-      // We need to hash subId
-      const subId = hash(`0x${createSubId(totalAssets + 1)}`);
 
-      const result = await contract.functions.mint(recipient, subId, 1).call();
+      const result = await contract.functions.mint(recipient, nftSubId, 1).call();
       return result;
     },
-    onSuccess: (_, { cid }) => {
+    onSuccess: (_, { cid, nftName, nftDescription, nftSubId }) => {
+      // Updating the info overwrites it so we also need to pass in past info
       updateMetadata.mutate({
         ipfsHash: cid,
-        metadata: { keyvalues: { minter: wallet?.address.toB256() as string } },
+        metadata: {
+          keyvalues: {
+            minter: wallet?.address.toB256() as string,
+            nftName,
+            nftDescription,
+            nftSubId,
+          },
+        },
       });
       toast.success("Successfully minted nft!");
     },
