@@ -1,6 +1,6 @@
 import formidable, { File } from "formidable";
 import fs from "fs";
-import pinataSDK, { PinataPinOptions } from "@pinata/sdk";
+import pinataSDK from "@pinata/sdk";
 import { getRandomB256 } from "fuels";
 import { NextApiRequest, NextApiResponse } from "next";
 
@@ -55,6 +55,7 @@ export default async function handler(
         return res.send(IpfsHash);
       });
     } else if (req.method === "GET") {
+      console.log(`req.query`, req.query);
         const hashContains = JSON.stringify(req.query) === JSON.stringify({}) ? undefined : req.query['cid'] as string;
         // TODO: support pagination for an explore page
         const nftData = await pinata.pinList({ hashContains, status: "pinned" });

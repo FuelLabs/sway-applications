@@ -77,7 +77,7 @@ export const Layout = ({ children }: { children: React.ReactNode }) => {
 
           <Link href="/create">Create</Link>
 
-          <Link href="/collection">Collection</Link>
+          <Link href={`/collection/${wallet?.address.toB256()}`}>Collection</Link>
 
           <Link
             href={
