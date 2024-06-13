@@ -9,7 +9,7 @@ import toast from "react-hot-toast";
 export default function Faucet() {
   const { faucetWallet } = useFaucet();
 
-  const { refreshWalletBalance } = useActiveWallet();
+  const { refetchBalnce } = useActiveWallet();
 
   const [receiverAddress, setReceiverAddress] = useState<string>();
   const [amountToSend, setAmountToSend] = useState<BN>();
@@ -32,7 +32,7 @@ export default function Faucet() {
 
     toast.success("Funds sent!");
 
-    await refreshWalletBalance?.();
+    await refetchBalnce?.();
   };
 
   return (

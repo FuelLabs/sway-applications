@@ -6,7 +6,8 @@ export const Input: React.FC<{
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   placeholder?: string;
   className?: string;
-}> = ({ value, onChange, placeholder, className }) => {
+  type?: string;
+}> = ({ value, onChange, placeholder, className, type }) => {
   return (
     <BaseInput
       value={value}
@@ -31,6 +32,7 @@ export const Input: React.FC<{
       ])}
       onChange={onChange}
       placeholder={placeholder}
+      type={type}
     />
   );
 };
