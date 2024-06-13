@@ -55,7 +55,6 @@ export default async function handler(
         return res.send(IpfsHash);
       });
     } else if (req.method === "GET") {
-      console.log(`req.query`, req.query);
         const hashContains = JSON.stringify(req.query) === JSON.stringify({}) ? undefined : req.query['cid'] as string;
         // TODO: support pagination for an explore page
         const nftData = await pinata.pinList({ hashContains, status: "pinned" });

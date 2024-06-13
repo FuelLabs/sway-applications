@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { FuelProvider } from "@fuels/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -12,6 +12,7 @@ import {
   BurnerWalletConnector,
 } from "@fuels/connectors";
 import { NODE_URL } from "@/lib";
+import { StyledEngineProvider } from "@mui/material";
 
 export const queryClient: QueryClient = new QueryClient();
 
@@ -42,8 +43,10 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
   }, [currentProvider]);
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <FuelProvider fuelConfig={fuelConfig}>{children}</FuelProvider>
-    </QueryClientProvider>
+    <StyledEngineProvider injectFirst>
+      <QueryClientProvider client={queryClient}>
+        <FuelProvider fuelConfig={fuelConfig}>{children}</FuelProvider>
+      </QueryClientProvider>
+    </StyledEngineProvider>
   );
 };

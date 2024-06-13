@@ -16,7 +16,7 @@ export const WalletDisplay = () => {
   return (
     wallet && (
       <div className="flex gap-4 items-center">
-        <span className="text-gray-400">
+        <span className="text-gray-400 font-sans">
           {getTruncatedAddress(wallet.address.toB256() as string)}
         </span>
         <img
@@ -25,7 +25,7 @@ export const WalletDisplay = () => {
           className="cursor-pointer h-5 hover:opacity-80 active:scale-[90%]"
           onClick={() => copyToClipboard(wallet.address.toB256() as string)}
         />
-        <span className="text-gray-400">
+        <span className="text-gray-400 font-sans">
           Balance: {walletBalance?.format()} ETH
         </span>
       </div>

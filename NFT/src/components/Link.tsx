@@ -12,7 +12,7 @@ export const Link = ({
   return (
     <a
       href={href}
-      className={`text-fuel-green hover:underline ${className}`}
+      className={`text-white no-underline font-sans hover:underline hover:text-green-500 ${className}`}
       target={target}
     >
       {children}

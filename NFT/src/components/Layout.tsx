@@ -8,6 +8,7 @@ import { useBrowserWallet } from "@/hooks/useBrowserWallet";
 import { useActiveWallet } from "@/hooks/useActiveWallet";
 import { useFaucet } from "@/hooks/useFaucet";
 import Head from "next/head";
+import clsx from "clsx";
 
 export const Layout = ({ children }: { children: React.ReactNode }) => {
   const { faucetWallet } = useFaucet();
@@ -72,12 +73,19 @@ export const Layout = ({ children }: { children: React.ReactNode }) => {
       </Head>
       <Toaster />
       <div className="flex flex-col">
-        <nav className="flex justify-between items-center p-4 bg-black text-white gap-6">
+        <nav
+          className="flex justify-between items-center p-4 bg-black text-white gap-6 gradient-border
+            bg-gradient-to-b
+            from-zinc-900
+            to-zinc-950/80"
+        >
           <Link href="/">Explore</Link>
 
           <Link href="/create">Create</Link>
 
-          <Link href={`/collection/${wallet?.address.toB256()}`}>Collection</Link>
+          <Link href={`/collection/${wallet?.address.toB256()}`}>
+            Collection
+          </Link>
 
           <Link
             href={

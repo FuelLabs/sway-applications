@@ -1,14 +1,20 @@
+import { Button as BaseButton } from "@mui/material";
+import clsx from "clsx";
+
 export const Button: React.FC<{
   children: React.ReactNode;
-  className?: string;
+  disabled?: boolean;
   onClick?: () => void;
-}> = ({ children, className, onClick }) => {
+  className?: string;
+}> = ({ disabled, children, onClick, className }) => {
   return (
-    <button
-      className={`bg-fuel-green text-white px-4 py-2 rounded-md ${className}`}
+    <BaseButton
+      variant="contained"
+      disabled={disabled}
+      className={clsx("btn", "btn-primary", className)}
       onClick={onClick}
     >
       {children}
-    </button>
+    </BaseButton>
   );
 };
