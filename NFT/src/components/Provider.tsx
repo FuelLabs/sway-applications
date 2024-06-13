@@ -36,7 +36,7 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
         new FueletWalletConnector(),
         new EVMWalletConnector({ fuelProvider: currentProvider }),
         new FuelWalletDevelopmentConnector(),
-        new BurnerWalletConnector(),
+        new BurnerWalletConnector({ fuelProvider: currentProvider }),
       ],
     };
     setFuelConfig(newFuelConfig);

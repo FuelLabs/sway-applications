@@ -12,6 +12,8 @@ const copyToClipboard = (text: string) => {
 
 export const WalletDisplay = () => {
   const { wallet, walletBalance } = useActiveWallet();
+  console.log(`wallet`, wallet);
+  console.log(`walletBalance`, walletBalance);
 
   return (
     wallet && (

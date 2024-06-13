@@ -1,16 +1,18 @@
 import { NFTCard } from "@/components/NFTCard";
+import { useActiveWallet } from "@/hooks/useActiveWallet";
 import { useGetNFTData } from "@/hooks/useGetNFTData";
 import { Grid, Stack, Typography } from "@mui/material";
 import { useRouter } from "next/router";
 
-export default function Collection() {
-  const router = useRouter();
+export default function Home() {
+  const { isConnected, wallet } = useActiveWallet();
 
-  const walletAddress = router.query.address as string;
+  // The filter expects a value so we pass in an impossible wallet address
+  // in the case the user is disconnected
   const { nftData } = useGetNFTData({
     keyvalues: {
       minter: {
-        value: walletAddress,
+        value: wallet?.address.toB256() || "dud",
         op: "eq",
       },
     },
@@ -20,13 +22,13 @@ export default function Collection() {
 
   return (
     <>
-      {nftData ? (
-        <Stack>
-          <Typography>Your NFTs</Typography>
+      {nftData.length ? (
+        <Stack spacing={2}>
+          <Typography variant="h5" className="text-white font-sans">Your NFTs</Typography>
           <Grid container spacing={2}>
             {nftData.map((nftDatum) => {
               return (
-                <Grid xs={3}>
+                <Grid>
                   <NFTCard
                     cid={nftDatum.ipfs_pin_hash}
                     fileCid={nftDatum.metadata?.name || ""}
@@ -35,14 +37,17 @@ export default function Collection() {
                       nftDatum.metadata.keyvalues?.nftDescription || ""
                     }
                     nftSubId={nftDatum.metadata.keyvalues?.nftSubId || ""}
+                    showDescription
                   />
                 </Grid>
               );
             })}
           </Grid>
         </Stack>
+      ) : isConnected ? (
+        <Typography className="text-white font-sans">No NFTs found</Typography>
       ) : (
-        <Typography>No NFTs found</Typography>
+        <Typography className="text-white font-sans">Please connect your wallet to view your NFTs.</Typography>
       )}
     </>
   );

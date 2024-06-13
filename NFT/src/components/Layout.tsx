@@ -4,25 +4,17 @@ import { Button } from "./Button";
 import { CURRENT_ENVIRONMENT, NODE_URL, TESTNET_FAUCET_LINK } from "@/lib";
 import { useConnectUI, useDisconnect } from "@fuels/react";
 import { WalletDisplay } from "./WalletDisplay";
-import { useBrowserWallet } from "@/hooks/useBrowserWallet";
 import { useActiveWallet } from "@/hooks/useActiveWallet";
 import { useFaucet } from "@/hooks/useFaucet";
 import Head from "next/head";
-import clsx from "clsx";
 
 export const Layout = ({ children }: { children: React.ReactNode }) => {
   const { faucetWallet } = useFaucet();
 
-  const {
-    wallet: browserWallet,
-    isConnected: isBrowserWalletConnected,
-    network: browserWalletNetwork,
-  } = useBrowserWallet();
-
   const { connect } = useConnectUI();
   const { disconnect } = useDisconnect();
 
-  const { wallet, refreshWalletBalance, walletBalance } = useActiveWallet();
+  const { wallet, network, walletBalance, isConnected, refetchBalnce } = useActiveWallet();
 
   const TOP_UP_AMOUNT = 100_000_000;
 
@@ -40,8 +32,6 @@ export const Layout = ({ children }: { children: React.ReactNode }) => {
       await tx?.waitForResult();
 
       toast.success("Wallet topped up!");
-
-      return await refreshWalletBalance?.();
     }
 
     if (CURRENT_ENVIRONMENT === "testnet") {
@@ -50,14 +40,12 @@ export const Layout = ({ children }: { children: React.ReactNode }) => {
         "_blank"
       );
     }
+    await refetchBalnce();
   };
 
   const showTopUpButton = walletBalance?.lt(TOP_UP_AMOUNT);
 
-  const showAddNetworkButton =
-    browserWallet &&
-    browserWalletNetwork &&
-    browserWalletNetwork?.url !== NODE_URL;
+  const showAddNetworkButton = wallet && network && network?.url !== NODE_URL;
 
   const tryToAddNetwork = () => {
     toast(
@@ -83,7 +71,7 @@ export const Layout = ({ children }: { children: React.ReactNode }) => {
 
           <Link href="/create">Create</Link>
 
-          <Link href={`/collection/${wallet?.address.toB256()}`}>
+          <Link href={`/collection`}>
             Collection
           </Link>
 
@@ -96,15 +84,13 @@ export const Layout = ({ children }: { children: React.ReactNode }) => {
             Faucet
           </Link>
 
-          {isBrowserWalletConnected && (
+          {isConnected && (
             <Button onClick={disconnect}>Disconnect Wallet</Button>
           )}
-          {!isBrowserWalletConnected && (
-            <Button onClick={connect}>Connect Wallet</Button>
-          )}
+          {!isConnected && <Button onClick={connect}>Connect Wallet</Button>}
 
           {showAddNetworkButton && (
-            <Button onClick={tryToAddNetwork} className="bg-red-500">
+            <Button onClick={tryToAddNetwork} className="bg-red-500 text-white">
               Wrong Network
             </Button>
           )}

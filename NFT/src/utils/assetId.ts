@@ -1,5 +1,5 @@
-import crypto from "crypto";
 import { AssetIdInput } from "@/contract-types/contracts/NFTContractAbi";
+import { arrayify, concat, sha256 } from "fuels";
 
 // creates a subId repeating the provided number
 export function createSubId(numberToRepeat: number) {
@@ -7,11 +7,11 @@ export function createSubId(numberToRepeat: number) {
 }
 
 export function createAssetId(subId: string, contractId: string) {
-    const hasher = crypto.createHash("sha256");
-    hasher.update(contractId);
-    hasher.update(subId);
+    const contractIdBytes = arrayify(contractId);
+    const subIdBytes = arrayify(subId);
+    const bits = sha256(concat([contractIdBytes, subIdBytes]));
     const assetId: AssetIdInput = {
-        bits: `0x${hasher.digest('hex')}`
+        bits
     }
     return assetId
 }

@@ -12,9 +12,12 @@ export const useGetNFTData = (filter?: PinataMetadataFilter) => {
     queryKey: ["getNFTData", filter],
     queryFn: async () => {
       const res = await fetch(`/api/files/${filter ? JSON.stringify(filter) : ''}`, { method: "GET" });
-      const nftData = await res.json();
-      return nftData;
-    },
+      if (res.ok) {
+        const nftData = await res.json();
+        return nftData;
+      }
+      return [];
+    }, 
   });
 
   return {

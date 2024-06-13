@@ -2,10 +2,9 @@ import { NFTContractAbi__factory } from "@/contract-types";
 import { useWallet } from "@fuels/react";
 import { useMutation } from "@tanstack/react-query";
 import toast from "react-hot-toast";
-import { createSubId } from "@/utils/assetId";
-import { hash } from "fuels";
 import { useUpdateMetadata } from "./useUpdateMetadata";
 import { CONTRACT_ID } from "@/lib";
+import { queryClient } from "@/components/Provider";
 
 export const useMint = () => {
   const { wallet } = useWallet();
@@ -30,6 +29,7 @@ export const useMint = () => {
       return result;
     },
     onSuccess: (_, { cid, nftName, nftDescription, nftSubId }) => {
+      queryClient.invalidateQueries();
       // Updating the info overwrites it so we also need to pass in past info
       updateMetadata.mutate({
         ipfsHash: cid,

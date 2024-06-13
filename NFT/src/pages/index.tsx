@@ -7,7 +7,7 @@ export default function Home() {
 
   return (
     <Stack alignItems="flex-start" width="stretch" spacing={3}>
-      <Typography variant="h3">Latest NFTs</Typography>
+      <Typography className="text-white font-sans" variant="h3">Latest NFTs</Typography>
       <Grid container spacing={2}>
         {nftData?.map((nftDatum) => {
           return (

@@ -8,6 +8,7 @@ type NFTCardProps = {
   nftName: string;
   nftDescription: string;
   nftSubId: string;
+  showDescription?: boolean;
 };
 
 export const NFTCard = ({
@@ -15,7 +16,8 @@ export const NFTCard = ({
   fileCid,
   nftName,
   nftDescription,
-  nftSubId
+  nftSubId,
+  showDescription
 }: NFTCardProps) => {
   const router = useRouter();
 
@@ -28,7 +30,8 @@ export const NFTCard = ({
       >
         <img src={`${GATEWAY_URL}/ipfs/${cid}/${fileCid}`} width="350px" height="350px" />
         <CardContent sx={{ paddingBottom: "0px" }}>
-          <Typography color="white" variant="h5">{nftName}</Typography>
+          <Typography color="white" variant="h5" className="font-sans">{nftName}</Typography>
+          {showDescription && <Typography className="text-white font-sans">{nftDescription}</Typography>}
         </CardContent>
       </CardActionArea>
     </Card>
