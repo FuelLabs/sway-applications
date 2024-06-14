@@ -2,7 +2,6 @@
     "$schema": "https://openapi.vercel.sh/vercel.json",
     "installCommand": "pnpm install",
     "buildCommand": "pnpm build:preview",
-    "outputDirectory": "NFT/.next",
-    "trailingSlash": true
+    "outputDirectory": "NFT/.next"
 }
   
