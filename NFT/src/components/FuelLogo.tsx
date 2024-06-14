@@ -2,7 +2,7 @@ export const FuelLogo = () => {
   return (
     <svg
       viewBox="0 0 344 344"
-      className="PJLV PJLV-iiWunJk-css fuel_Logo w-[50px]"
+      className="PJLV PJLV-iiWunJk-css fuel_Logo w-[50px] mr-4"
     >
       <rect x="25" y="37" width="292" height="284" fill="black"></rect>
       <path

@@ -4,16 +4,16 @@
     "globalEnv": ["NODE_ENV"],
     "pipeline": {
       "ts:check": {
-        "dependsOn": [],
         "outputs": ["./**/*.typegen.ts"]
       },
       "build": {
         "dependsOn": ["ts:check"],
         "outputs": ["dist/**"]
       },
-      "build:all": {
-        "dependsOn": ["^build"],
-        "outputs": ["dist/**", "./dist", "./next/**"]
+      "build:preview": {
+        "dependsOn": ["^ts:check"],
+        "outputs": ["dist/**", "./next/**"],
+        "cache": false
       },
       "dev": {
         "dependsOn": ["^ts:check"],

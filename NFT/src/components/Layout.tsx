@@ -67,17 +67,18 @@ export const Layout = ({ children }: { children: React.ReactNode }) => {
             from-zinc-900
             to-zinc-950/80"
         >
-          <Link href="/">Explore</Link>
+          <Link href="/">Home</Link>
+          <Link href="/nft">Explore</Link>
 
-          <Link href="/create">Create</Link>
+          <Link href="/nft/create">Create</Link>
 
-          <Link href={`/collection`}>
+          <Link href={`/nft/collection`}>
             Collection
           </Link>
 
           <Link
             href={
-              CURRENT_ENVIRONMENT === "local" ? "/faucet" : TESTNET_FAUCET_LINK
+              CURRENT_ENVIRONMENT === "local" ? "/nft/faucet" : TESTNET_FAUCET_LINK
             }
             target={CURRENT_ENVIRONMENT === "local" ? "_self" : "_blank"}
           >

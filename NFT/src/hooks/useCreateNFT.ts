@@ -1,11 +1,10 @@
 import { useWallet } from "@fuels/react";
 import { useMutation } from "@tanstack/react-query";
 import toast from "react-hot-toast";
-import { contracts } from "../generated/contract";
-import { ContractFactory, getRandomB256 } from "fuels";
+import { getRandomB256 } from "fuels";
 import { NFTContractAbi__factory } from "@/contract-types";
 import { AssetIdInput } from "@/contract-types/contracts/NFTContractAbi";
-import { createAssetId, createSubId } from "@/utils/assetId";
+import { createAssetId } from "@/utils/assetId";
 import { useUpdateMetadata } from "./useUpdateMetadata";
 import { useUnpin } from "./useUnpin";
 import { CONTRACT_ID } from "@/lib";

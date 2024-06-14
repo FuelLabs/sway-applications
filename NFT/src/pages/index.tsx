@@ -1,30 +1,44 @@
-import { Grid, Stack, Typography } from "@mui/material";
-import { NFTCard } from "@/components/NFTCard";
-import { useGetNFTData } from "@/hooks/useGetNFTData";
+import { FuelLogo } from "@/components/FuelLogo";
+import { HomeCard } from "@/components/HomeCard";
+import { Box, Grid, Stack } from "@mui/material";
 
 export default function Home() {
-  const { nftData } = useGetNFTData();
-
   return (
-    <Stack alignItems="flex-start" width="stretch" spacing={3}>
-      <Typography className="text-white font-sans" variant="h3">Latest NFTs</Typography>
-      <Grid container spacing={2}>
-        {nftData?.map((nftDatum) => {
-          return (
-            <Grid>
-              <NFTCard
-                cid={nftDatum.ipfs_pin_hash}
-                fileCid={nftDatum.metadata?.name || ""}
-                nftName={nftDatum.metadata.keyvalues?.nftName || ""}
-                nftDescription={
-                  nftDatum.metadata.keyvalues?.nftDescription || ""
-                }
-                nftSubId={nftDatum.metadata.keyvalues?.nftSubId || ""}
-              />
-            </Grid>
-          );
-        })}
-      </Grid>
+    <Stack>
+      <nav
+        className="flex justify-between items-center p-4 bg-black text-white gap-6 gradient-border
+            bg-gradient-to-b
+            from-zinc-900
+            to-zinc-950/80"
+      >
+        <Box
+          display="flex"
+          alignContent="center"
+          flexWrap="wrap"
+          justifyContent="center"
+          alignItems="center"
+          paddingTop="4px"
+          paddingBottom="4px"
+          width="stretch"
+        >
+          <FuelLogo />
+          <div className="text-3xl text-whit font-sans">Sway Applications</div>
+        </Box>
+      </nav>
+      <div className="min-h-screen items-center p-20 flex flex-col gap-6">
+        <Grid container spacing={2}>
+          <Grid item>
+            <HomeCard href="/nft" title="NFT">
+              Create and mint NFTs.
+            </HomeCard>
+          </Grid>
+          <Grid item>
+            <HomeCard href="/tictactoe" title="TicTacToe">
+              Play the classic game of Tic Tac Toe on the Fuel network.
+            </HomeCard>
+          </Grid>
+        </Grid>
+      </div>
     </Stack>
   );
 }

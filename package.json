@@ -14,9 +14,11 @@
     "url": "https://github.com/FuelLabs/sway-applications/issues"
   },
   "scripts": {
-    "build:website": "node ./scripts/build-website/index.mjs",
-    "build:preview": "turbo run build:preview",
-    "build:all": "turbo run build:all"
+    "build:preview": "pnpm turbo:run build:preview",
+    "start": "pnpm turbo:run start",
+    "ts:check": "pnpm turbo:run ts:check",
+    "turbo:run": "./scripts/turbo.sh",
+    "dev": "./scripts/dev.sh"
   },
   "dependencies": {
     "execa": "^8.0.1"

@@ -10,10 +10,7 @@ export default async function handler(
     if (req.method === "PUT") {
         const { ipfsHash, metadata } = JSON.parse(req.body);
 
-        console.log(`metadata`, metadata);
-
         const response = await pinata.hashMetadata(ipfsHash, metadata);
-        console.log(`response`, response);
         return res.send(response);
     }
 }

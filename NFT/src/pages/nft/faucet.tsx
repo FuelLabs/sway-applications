@@ -5,6 +5,7 @@ import { useFaucet } from "@/hooks/useFaucet";
 import { BN, bn } from "fuels";
 import { useState } from "react";
 import toast from "react-hot-toast";
+import { NextPageWithLayout } from "../_app";
 
 export default function Faucet() {
   const { faucetWallet } = useFaucet();
