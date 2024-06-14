@@ -1,7 +1,6 @@
 library;
 
 use std::{
-    call_frames::contract_id,
     ecr::ec_recover_address,
     hash::{
         Hash,
@@ -79,12 +78,12 @@ pub fn recover_signer(message_hash: b256, signature_info: SignatureInfo) -> b256
         WalletType::Fuel => {
             let recover_result = ec_recover_address(signature_info.signature, prefixed_message);
             require(recover_result.is_ok(), recover_result.unwrap());
-            recover_result.unwrap().value
+            recover_result.unwrap().bits()
         },
         WalletType::EVM => {
             let recover_result = ec_recover_evm_address(signature_info.signature, prefixed_message);
             require(recover_result.is_ok(), recover_result.unwrap());
-            recover_result.unwrap().value
+            recover_result.unwrap().bits()
         },
     }
 }

@@ -1,15 +1,15 @@
+use std::io::Chain;
+
 use fuels::{
-    accounts::{
-        fuel_crypto::{Message, SecretKey, Signature},
-        wallet::WalletUnlocked,
-    },
-    core::codec::{calldata, fn_selector},
+    accounts::wallet::WalletUnlocked,
+    core::codec::{calldata, encode_fn_selector},
+    crypto::{Message, SecretKey, Signature},
     prelude::{
         abigen, setup_single_asset_coins, setup_test_provider, Address, Contract, Error,
-        LoadConfiguration, StorageConfiguration, TxPolicies, BASE_ASSET_ID,
+        LoadConfiguration, StorageConfiguration, TxPolicies,
     },
-    tx::Bytes32,
-    types::{Bits256, Bytes, Identity, B512},
+    test_helpers::{ChainConfig, NodeConfig},
+    types::{AssetId, Bits256, Bytes, Bytes32, Identity, B512},
 };
 
 use sha3::{Digest, Keccak256};
@@ -160,7 +160,7 @@ pub(crate) async fn setup_env(private_key: &str) -> Result<(SecretKey, Caller, C
         .flat_map(|wallet| {
             setup_single_asset_coins(
                 wallet.address(),
-                BASE_ASSET_ID,
+                AssetId::zeroed(),
                 number_of_coins,
                 amount_per_coin,
             )
@@ -201,14 +201,14 @@ pub(crate) fn transfer_parameters(
     nonce: u64,
 ) -> (WalletUnlocked, Identity, Transaction) {
     let receiver_wallet = WalletUnlocked::new_random(None);
-    let receiver = Identity::Address(receiver_wallet.address().into());
+    let receiver = Identity::Address(receiver_wallet.address().try_into().unwrap());
 
     let transaction = Transaction {
-        contract_identifier: deployer.contract.contract_id().into(),
+        contract_identifier: deployer.contract.contract_id().try_into().unwrap(),
         nonce,
         target: receiver.clone(),
         transaction_parameters: TransactionParameters::Transfer(TransferParams {
-            asset_id: BASE_ASSET_ID,
+            asset_id: AssetId::zeroed(),
             value: Some(DEFAULT_TRANSFER_AMOUNT),
         }),
     };
@@ -231,16 +231,16 @@ pub(crate) fn call_parameters(
             .unwrap(),
         ),
         forwarded_gas: DEFAULT_FORWARDED_GAS,
-        function_selector: Bytes(fn_selector!(update_counter(Address, u64))),
+        function_selector: Bytes(encode_fn_selector("update_counter(Address, u64)")),
         single_value_type_arg: false,
         transfer_params: TransferParams {
-            asset_id: BASE_ASSET_ID,
+            asset_id: AssetId::zeroed(),
             value: None,
         },
     };
 
     let mut transaction = Transaction {
-        contract_identifier: deployer.contract.contract_id().into(),
+        contract_identifier: deployer.contract.contract_id().try_into().unwrap(),
         nonce,
         target: Identity::ContractId(target_contract.contract_id().into()),
         transaction_parameters: TransactionParameters::Call(contract_call_params.clone()),
@@ -248,9 +248,9 @@ pub(crate) fn call_parameters(
 
     if with_value {
         transaction.transaction_parameters = TransactionParameters::Call(ContractCallParams {
-            function_selector: Bytes(fn_selector!(update_deposit(Address, u64))),
+            function_selector: Bytes(encode_fn_selector("update_deposit(Address, u64)")),
             transfer_params: TransferParams {
-                asset_id: BASE_ASSET_ID,
+                asset_id: AssetId::zeroed(),
                 value: Some(DEFAULT_TRANSFER_AMOUNT),
             },
             ..contract_call_params

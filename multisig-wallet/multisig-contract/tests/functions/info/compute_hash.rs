@@ -7,11 +7,14 @@ mod success {
             VALID_SIGNER_PK,
         },
     };
+    use fuel_crypto::Hasher;
     use fuels::{
-        accounts::fuel_crypto::Hasher,
-        core::{codec::ABIEncoder, constants::BASE_ASSET_ID, traits::Tokenizable},
+        core::{
+            codec::{ABIEncoder, EncoderConfig},
+            traits::Tokenizable,
+        },
         prelude::Bytes,
-        types::{Bits256, Identity, Token},
+        types::{AssetId, Bits256, Identity, Token},
     };
 
     #[tokio::test]
@@ -22,7 +25,7 @@ mod success {
         let threshold = threshold(&deployer.contract).await.value;
 
         let threshold_instance = Threshold {
-            contract_identifier: deployer.contract.contract_id().into(),
+            contract_identifier: deployer.contract.contract_id().try_into().unwrap(),
             nonce,
             threshold,
         };
@@ -33,9 +36,9 @@ mod success {
             threshold_instance.threshold.into_token(),
         ]);
 
-        let encoded_tx_struct = ABIEncoder::encode(&[threshold_instance_token])
-            .unwrap()
-            .resolve(0);
+        let encoded_tx_struct = ABIEncoder::new(EncoderConfig::default())
+            .encode(&[threshold_instance_token])
+            .unwrap();
         let expected_hash = Hasher::hash(encoded_tx_struct);
 
         let response = compute_hash(
@@ -53,14 +56,14 @@ mod success {
         let (_private_key, deployer, _non_owner) = setup_env(VALID_SIGNER_PK).await.unwrap();
 
         let nonce = nonce(&deployer.contract).await.value;
-        let target = Identity::Address(deployer.wallet.address().into());
+        let target = Identity::Address(deployer.wallet.address().try_into().unwrap());
         let transaction_parameters = TransactionParameters::Transfer(TransferParams {
-            asset_id: BASE_ASSET_ID,
+            asset_id: AssetId::zeroed(),
             value: Some(DEFAULT_TRANSFER_AMOUNT),
         });
 
         let transaction_instance = Transaction {
-            contract_identifier: deployer.contract.contract_id().into(),
+            contract_identifier: deployer.contract.contract_id().try_into().unwrap(),
             nonce,
             target,
             transaction_parameters,
@@ -76,9 +79,9 @@ mod success {
                 .into_token(),
         ]);
 
-        let encoded_tx_struct = ABIEncoder::encode(&[transaction_instance_token])
-            .unwrap()
-            .resolve(0);
+        let encoded_tx_struct = ABIEncoder::new(EncoderConfig::default())
+            .encode(&[transaction_instance_token])
+            .unwrap();
         let expected_hash = Hasher::hash(encoded_tx_struct);
 
         dbg!(Bits256(expected_hash.into()));
@@ -99,20 +102,20 @@ mod success {
         let (_private_key, deployer, _non_owner) = setup_env(VALID_SIGNER_PK).await.unwrap();
 
         let nonce = nonce(&deployer.contract).await.value;
-        let target = Identity::Address(deployer.wallet.address().into());
+        let target = Identity::Address(deployer.wallet.address().try_into().unwrap());
         let transaction_parameters = TransactionParameters::Call(ContractCallParams {
             calldata: Bytes([1u8; 32].to_vec()),
             forwarded_gas: 100,
             function_selector: Bytes([1u8; 32].to_vec()),
             single_value_type_arg: false,
             transfer_params: TransferParams {
-                asset_id: BASE_ASSET_ID,
+                asset_id: AssetId::zeroed(),
                 value: Some(DEFAULT_TRANSFER_AMOUNT),
             },
         });
 
         let transaction_instance = Transaction {
-            contract_identifier: deployer.contract.contract_id().into(),
+            contract_identifier: deployer.contract.contract_id().try_into().unwrap(),
             nonce,
             target,
             transaction_parameters,
@@ -128,9 +131,9 @@ mod success {
                 .into_token(), //This causes test to fail: tokenizing TransactionParameters::Call, does not encode the same as Sway
         ]);
 
-        let encoded_tx_struct = ABIEncoder::encode(&[transaction_instance_token])
-            .unwrap()
-            .resolve(0);
+        let encoded_tx_struct = ABIEncoder::new(EncoderConfig::default())
+            .encode(&[transaction_instance_token])
+            .unwrap();
         let expected_hash = Hasher::hash(encoded_tx_struct);
 
         let response = compute_hash(
@@ -151,7 +154,7 @@ mod success {
         let user = default_users().pop().unwrap();
 
         let weight_instance = Weight {
-            contract_identifier: deployer.contract.contract_id().into(),
+            contract_identifier: deployer.contract.contract_id().try_into().unwrap(),
             nonce,
             user: user.clone(),
         };
@@ -162,9 +165,9 @@ mod success {
             weight_instance.user.clone().into_token(),
         ]);
 
-        let encoded_tx_struct = ABIEncoder::encode(&[weight_instance_token])
-            .unwrap()
-            .resolve(0);
+        let encoded_tx_struct = ABIEncoder::new(EncoderConfig::default())
+            .encode(&[weight_instance_token])
+            .unwrap();
         let expected_hash = Hasher::hash(encoded_tx_struct);
 
         let response = compute_hash(&deployer.contract, TypeToHash::Weight(weight_instance))
