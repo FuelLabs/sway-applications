@@ -6,16 +6,16 @@ use std::{alloc::alloc, bytes::Bytes, constants::ZERO_B256, hash::{Hash, Hasher}
 impl Bytes {
     /// Converts a generic type into [Bytes].
     pub fn from_type<T>(value: T) -> Self {
-        // let ptr = alloc::<T>(1);
-        // ptr.write(value);
+        let ptr = alloc::<T>(1);
+        ptr.write(value);
 
-        // let slice = raw_slice::from_parts::<T>(ptr, 1);
+        let slice = raw_slice::from_parts::<T>(ptr, 1);
 
-        // Bytes::from(slice)
-        let s = asm(s: (__addr_of(value), __size_of::<T>())) {
-            s: raw_slice
-        };
-        Bytes::from(s)
+        Bytes::from(slice)
+        // let s = asm(s: (__addr_of(value), __size_of::<T>())) {
+        //     s: raw_slice
+        // };
+        // Bytes::from(s)
     }
 }
 
