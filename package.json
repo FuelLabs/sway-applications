@@ -26,6 +26,7 @@
   "devDependencies": {
     "@types/node": "^20.11.26",
     "dotenv": "^16.4.5",
+    "next": "14.2.2",
     "turbo": "^1.12.5",
     "typescript": "^5.2.2"
   }

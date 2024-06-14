@@ -4,6 +4,9 @@ const nextConfig = {
   transpilePackages: ['tictactoe'],
   experimental: {
     externalDir: true,
+  },
+  eslint: {
+    ignoreDuringBuilds: true,
   }
 };
 

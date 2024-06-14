@@ -18,6 +18,9 @@ importers:
       dotenv:
         specifier: ^16.4.5
         version: 16.4.5
+      next:
+        specifier: 14.2.2
+        version: 14.2.2(@babel/core@7.24.7)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       turbo:
         specifier: ^1.12.5
         version: 1.13.4
@@ -138,10 +141,10 @@ importers:
         version: 5.0.13
       '@fuel-wallet/sdk':
         specifier: ^0.15.2
-        version: 0.15.2(dexie@4.0.7)(fuels@0.76.12(dexie@4.0.7))
+        version: 0.15.2(dexie@4.0.7)(fuels@0.76.12(bufferutil@4.0.8)(dexie@4.0.7))
       '@fuels/react':
         specifier: ^0.15.3
-        version: 0.15.3(@types/react-dom@18.3.0)(@types/react@18.3.3)(fuels@0.76.12(dexie@4.0.7))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        version: 0.15.3(@types/react-dom@18.3.0)(@types/react@18.3.3)(fuels@0.76.12(bufferutil@4.0.8)(dexie@4.0.7))(react-dom@18.3.1(react@18.3.1))(react-native@0.74.2(@babel/core@7.24.7)(@types/react@18.3.3)(bufferutil@4.0.8)(react@18.3.1))(react@18.3.1)
       '@mui/icons-material':
         specifier: ^5.15.12
         version: 5.15.20(@mui/material@5.15.20(@emotion/react@11.11.4(@types/react@18.3.3)(react@18.3.1))(@emotion/styled@11.11.5(@emotion/react@11.11.4(@types/react@18.3.3)(react@18.3.1))(@types/react@18.3.3)(react@18.3.1))(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@types/react@18.3.3)(react@18.3.1)
@@ -153,7 +156,7 @@ importers:
         version: 5.45.0(react@18.3.1)
       fuels:
         specifier: ^0.76.0
-        version: 0.76.12(dexie@4.0.7)
+        version: 0.76.12(bufferutil@4.0.8)(dexie@4.0.7)
       react:
         specifier: ^18.2.0
         version: 18.3.1
@@ -184,7 +187,7 @@ importers:
         version: 7.13.0(eslint@8.57.0)(typescript@5.4.5)
       '@vitejs/plugin-react':
         specifier: ^4.2.1
-        version: 4.3.1(vite@5.3.1(@types/node@20.14.2))
+        version: 4.3.1(vite@5.3.1(@types/node@20.14.2)(terser@5.31.1))
       eslint:
         specifier: ^8.56.0
         version: 8.57.0
@@ -205,10 +208,10 @@ importers:
         version: 5.4.5
       vite:
         specifier: ^5.1.4
-        version: 5.3.1(@types/node@20.14.2)
+        version: 5.3.1(@types/node@20.14.2)(terser@5.31.1)
       vite-plugin-static-copy:
         specifier: ^1.0.1
-        version: 1.0.5(vite@5.3.1(@types/node@20.14.2))
+        version: 1.0.5(vite@5.3.1(@types/node@20.14.2)(terser@5.31.1))
 
 packages:
 
@@ -8153,15 +8156,15 @@ snapshots:
 
   '@fontsource/roboto@5.0.13': {}
 
-  '@fuel-ts/abi-coder@0.76.12':
+  '@fuel-ts/abi-coder@0.76.12(bufferutil@4.0.8)':
     dependencies:
-      '@fuel-ts/crypto': 0.76.12
+      '@fuel-ts/crypto': 0.76.12(bufferutil@4.0.8)
       '@fuel-ts/errors': 0.76.12
       '@fuel-ts/interfaces': 0.76.12
       '@fuel-ts/math': 0.76.12
       '@fuel-ts/utils': 0.76.12
       '@fuel-ts/versions': 0.76.12
-      ethers: 6.13.0
+      ethers: 6.13.0(bufferutil@4.0.8)
       type-fest: 3.13.1
     transitivePeerDependencies:
       - bufferutil
@@ -8203,25 +8206,25 @@ snapshots:
       ramda: 0.29.1
       rimraf: 3.0.2
 
-  '@fuel-ts/account@0.76.12(dexie@4.0.7)':
+  '@fuel-ts/account@0.76.12(bufferutil@4.0.8)(dexie@4.0.7)':
     dependencies:
-      '@fuel-ts/abi-coder': 0.76.12
-      '@fuel-ts/address': 0.76.12
-      '@fuel-ts/crypto': 0.76.12
+      '@fuel-ts/abi-coder': 0.76.12(bufferutil@4.0.8)
+      '@fuel-ts/address': 0.76.12(bufferutil@4.0.8)
+      '@fuel-ts/crypto': 0.76.12(bufferutil@4.0.8)
       '@fuel-ts/errors': 0.76.12
       '@fuel-ts/fuel-core': 0.76.12
-      '@fuel-ts/hasher': 0.76.12
+      '@fuel-ts/hasher': 0.76.12(bufferutil@4.0.8)
       '@fuel-ts/interfaces': 0.76.12
       '@fuel-ts/math': 0.76.12
-      '@fuel-ts/merkle': 0.76.12
-      '@fuel-ts/transactions': 0.76.12
+      '@fuel-ts/merkle': 0.76.12(bufferutil@4.0.8)
+      '@fuel-ts/transactions': 0.76.12(bufferutil@4.0.8)
       '@fuel-ts/utils': 0.76.12
       '@fuel-ts/versions': 0.76.12
       '@fuels/assets': 0.1.5
       '@fuels/vm-asm': 0.42.1
       '@noble/curves': 1.4.0
       dexie-observable: 4.0.1-beta.13(dexie@4.0.7)
-      ethers: 6.13.0
+      ethers: 6.13.0(bufferutil@4.0.8)
       events: 3.3.0
       graphql: 16.8.2
       graphql-request: 5.0.0(graphql@16.8.2)
@@ -8266,15 +8269,15 @@ snapshots:
       - encoding
       - supports-color
 
-  '@fuel-ts/address@0.76.12':
+  '@fuel-ts/address@0.76.12(bufferutil@4.0.8)':
     dependencies:
-      '@fuel-ts/crypto': 0.76.12
+      '@fuel-ts/crypto': 0.76.12(bufferutil@4.0.8)
       '@fuel-ts/errors': 0.76.12
       '@fuel-ts/interfaces': 0.76.12
       '@fuel-ts/utils': 0.76.12
       '@fuel-ts/versions': 0.76.12
       bech32: 2.0.0
-      ethers: 6.13.0
+      ethers: 6.13.0(bufferutil@4.0.8)
     transitivePeerDependencies:
       - bufferutil
       - utf-8-validate
@@ -8288,20 +8291,20 @@ snapshots:
       '@noble/hashes': 1.4.0
       bech32: 2.0.0
 
-  '@fuel-ts/contract@0.76.12(dexie@4.0.7)':
+  '@fuel-ts/contract@0.76.12(bufferutil@4.0.8)(dexie@4.0.7)':
     dependencies:
-      '@fuel-ts/abi-coder': 0.76.12
-      '@fuel-ts/account': 0.76.12(dexie@4.0.7)
-      '@fuel-ts/address': 0.76.12
-      '@fuel-ts/crypto': 0.76.12
+      '@fuel-ts/abi-coder': 0.76.12(bufferutil@4.0.8)
+      '@fuel-ts/account': 0.76.12(bufferutil@4.0.8)(dexie@4.0.7)
+      '@fuel-ts/address': 0.76.12(bufferutil@4.0.8)
+      '@fuel-ts/crypto': 0.76.12(bufferutil@4.0.8)
       '@fuel-ts/errors': 0.76.12
       '@fuel-ts/interfaces': 0.76.12
-      '@fuel-ts/merkle': 0.76.12
-      '@fuel-ts/program': 0.76.12(dexie@4.0.7)
-      '@fuel-ts/transactions': 0.76.12
+      '@fuel-ts/merkle': 0.76.12(bufferutil@4.0.8)
+      '@fuel-ts/program': 0.76.12(bufferutil@4.0.8)(dexie@4.0.7)
+      '@fuel-ts/transactions': 0.76.12(bufferutil@4.0.8)
       '@fuel-ts/utils': 0.76.12
       '@fuel-ts/versions': 0.76.12
-      ethers: 6.13.0
+      ethers: 6.13.0(bufferutil@4.0.8)
     transitivePeerDependencies:
       - bufferutil
       - dexie
@@ -8325,12 +8328,12 @@ snapshots:
       - encoding
       - supports-color
 
-  '@fuel-ts/crypto@0.76.12':
+  '@fuel-ts/crypto@0.76.12(bufferutil@4.0.8)':
     dependencies:
       '@fuel-ts/errors': 0.76.12
       '@fuel-ts/utils': 0.76.12
       ethereum-cryptography: 2.2.0
-      ethers: 6.13.0
+      ethers: 6.13.0(bufferutil@4.0.8)
     transitivePeerDependencies:
       - bufferutil
       - utf-8-validate
@@ -8363,14 +8366,14 @@ snapshots:
     transitivePeerDependencies:
       - encoding
 
-  '@fuel-ts/hasher@0.76.12':
+  '@fuel-ts/hasher@0.76.12(bufferutil@4.0.8)':
     dependencies:
-      '@fuel-ts/address': 0.76.12
-      '@fuel-ts/crypto': 0.76.12
+      '@fuel-ts/address': 0.76.12(bufferutil@4.0.8)
+      '@fuel-ts/crypto': 0.76.12(bufferutil@4.0.8)
       '@fuel-ts/interfaces': 0.76.12
       '@fuel-ts/math': 0.76.12
       '@fuel-ts/utils': 0.76.12
-      ethers: 6.13.0
+      ethers: 6.13.0(bufferutil@4.0.8)
       ramda: 0.29.1
     transitivePeerDependencies:
       - bufferutil
@@ -8399,11 +8402,11 @@ snapshots:
       '@types/bn.js': 5.1.5
       bn.js: 5.2.1
 
-  '@fuel-ts/merkle@0.76.12':
+  '@fuel-ts/merkle@0.76.12(bufferutil@4.0.8)':
     dependencies:
       '@fuel-ts/interfaces': 0.76.12
       '@fuel-ts/math': 0.76.12
-      ethers: 6.13.0
+      ethers: 6.13.0(bufferutil@4.0.8)
     transitivePeerDependencies:
       - bufferutil
       - utf-8-validate
@@ -8413,16 +8416,16 @@ snapshots:
       '@fuel-ts/hasher': 0.89.0
       '@fuel-ts/math': 0.89.0
 
-  '@fuel-ts/program@0.76.12(dexie@4.0.7)':
+  '@fuel-ts/program@0.76.12(bufferutil@4.0.8)(dexie@4.0.7)':
     dependencies:
-      '@fuel-ts/abi-coder': 0.76.12
-      '@fuel-ts/account': 0.76.12(dexie@4.0.7)
-      '@fuel-ts/address': 0.76.12
+      '@fuel-ts/abi-coder': 0.76.12(bufferutil@4.0.8)
+      '@fuel-ts/account': 0.76.12(bufferutil@4.0.8)(dexie@4.0.7)
+      '@fuel-ts/address': 0.76.12(bufferutil@4.0.8)
       '@fuel-ts/errors': 0.76.12
-      '@fuel-ts/hasher': 0.76.12
+      '@fuel-ts/hasher': 0.76.12(bufferutil@4.0.8)
       '@fuel-ts/interfaces': 0.76.12
       '@fuel-ts/math': 0.76.12
-      '@fuel-ts/transactions': 0.76.12
+      '@fuel-ts/transactions': 0.76.12(bufferutil@4.0.8)
       '@fuel-ts/utils': 0.76.12
       '@fuel-ts/versions': 0.76.12
       '@fuels/vm-asm': 0.42.1
@@ -8449,17 +8452,17 @@ snapshots:
       - encoding
       - supports-color
 
-  '@fuel-ts/script@0.76.12(dexie@4.0.7)':
+  '@fuel-ts/script@0.76.12(bufferutil@4.0.8)(dexie@4.0.7)':
     dependencies:
-      '@fuel-ts/abi-coder': 0.76.12
+      '@fuel-ts/abi-coder': 0.76.12(bufferutil@4.0.8)
       '@fuel-ts/abi-typegen': 0.76.12
-      '@fuel-ts/account': 0.76.12(dexie@4.0.7)
-      '@fuel-ts/address': 0.76.12
+      '@fuel-ts/account': 0.76.12(bufferutil@4.0.8)(dexie@4.0.7)
+      '@fuel-ts/address': 0.76.12(bufferutil@4.0.8)
       '@fuel-ts/errors': 0.76.12
       '@fuel-ts/interfaces': 0.76.12
       '@fuel-ts/math': 0.76.12
-      '@fuel-ts/program': 0.76.12(dexie@4.0.7)
-      '@fuel-ts/transactions': 0.76.12
+      '@fuel-ts/program': 0.76.12(bufferutil@4.0.8)(dexie@4.0.7)
+      '@fuel-ts/transactions': 0.76.12(bufferutil@4.0.8)
       '@fuel-ts/utils': 0.76.12
     transitivePeerDependencies:
       - bufferutil
@@ -8483,15 +8486,15 @@ snapshots:
       - encoding
       - supports-color
 
-  '@fuel-ts/transactions@0.76.12':
+  '@fuel-ts/transactions@0.76.12(bufferutil@4.0.8)':
     dependencies:
-      '@fuel-ts/abi-coder': 0.76.12
-      '@fuel-ts/address': 0.76.12
+      '@fuel-ts/abi-coder': 0.76.12(bufferutil@4.0.8)
+      '@fuel-ts/address': 0.76.12(bufferutil@4.0.8)
       '@fuel-ts/errors': 0.76.12
       '@fuel-ts/interfaces': 0.76.12
       '@fuel-ts/math': 0.76.12
       '@fuel-ts/utils': 0.76.12
-      ethers: 6.13.0
+      ethers: 6.13.0(bufferutil@4.0.8)
     transitivePeerDependencies:
       - bufferutil
       - utf-8-validate
@@ -8530,20 +8533,20 @@ snapshots:
       chalk: 4.1.2
       cli-table: 0.3.11
 
-  '@fuel-wallet/sdk@0.15.2(dexie@4.0.7)(fuels@0.76.12(dexie@4.0.7))':
+  '@fuel-wallet/sdk@0.15.2(dexie@4.0.7)(fuels@0.76.12(bufferutil@4.0.8)(dexie@4.0.7))':
     dependencies:
-      '@fuel-wallet/types': 0.15.2(dexie@4.0.7)(fuels@0.76.12(dexie@4.0.7))
+      '@fuel-wallet/types': 0.15.2(dexie@4.0.7)(fuels@0.76.12(bufferutil@4.0.8)(dexie@4.0.7))
       events: 3.3.0
-      fuels: 0.76.12(dexie@4.0.7)
+      fuels: 0.76.12(bufferutil@4.0.8)(dexie@4.0.7)
       json-rpc-2.0: 1.7.0
     transitivePeerDependencies:
       - dexie
 
-  '@fuel-wallet/types@0.15.2(dexie@4.0.7)(fuels@0.76.12(dexie@4.0.7))':
+  '@fuel-wallet/types@0.15.2(dexie@4.0.7)(fuels@0.76.12(bufferutil@4.0.8)(dexie@4.0.7))':
     dependencies:
       '@fuels/assets': 0.1.5
       dexie-observable: 4.0.1-beta.13(dexie@4.0.7)
-      fuels: 0.76.12(dexie@4.0.7)
+      fuels: 0.76.12(bufferutil@4.0.8)(dexie@4.0.7)
       json-rpc-2.0: 1.7.0
     transitivePeerDependencies:
       - dexie
@@ -8600,12 +8603,12 @@ snapshots:
     dependencies:
       prettier: 3.3.2
 
-  '@fuels/react@0.15.3(@types/react-dom@18.3.0)(@types/react@18.3.3)(fuels@0.76.12(dexie@4.0.7))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
+  '@fuels/react@0.15.3(@types/react-dom@18.3.0)(@types/react@18.3.3)(fuels@0.76.12(bufferutil@4.0.8)(dexie@4.0.7))(react-dom@18.3.1(react@18.3.1))(react-native@0.74.2(@babel/core@7.24.7)(@types/react@18.3.3)(bufferutil@4.0.8)(react@18.3.1))(react@18.3.1)':
     dependencies:
       '@radix-ui/react-dialog': 1.0.5(@types/react-dom@18.3.0)(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      '@tanstack/react-query': 4.36.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@tanstack/react-query': 4.36.1(react-dom@18.3.1(react@18.3.1))(react-native@0.74.2(@babel/core@7.24.7)(@types/react@18.3.3)(bufferutil@4.0.8)(react@18.3.1))(react@18.3.1)
       events: 3.3.0
-      fuels: 0.76.12(dexie@4.0.7)
+      fuels: 0.76.12(bufferutil@4.0.8)(dexie@4.0.7)
       react: 18.3.1
     transitivePeerDependencies:
       - '@types/react'
@@ -9601,6 +9604,16 @@ snapshots:
     optionalDependencies:
       '@types/react': 18.3.3
 
+  '@react-native/virtualized-lists@0.74.84(@types/react@18.3.3)(react-native@0.74.2(@babel/core@7.24.7)(@types/react@18.3.3)(bufferutil@4.0.8)(react@18.3.1))(react@18.3.1)':
+    dependencies:
+      invariant: 2.2.4
+      nullthrows: 1.1.1
+      react: 18.3.1
+      react-native: 0.74.2(@babel/core@7.24.7)(@types/react@18.3.3)(bufferutil@4.0.8)(react@18.3.1)
+    optionalDependencies:
+      '@types/react': 18.3.3
+    optional: true
+
   '@rnx-kit/chromium-edge-launcher@1.0.0':
     dependencies:
       '@types/node': 18.19.34
@@ -9819,13 +9832,14 @@ snapshots:
 
   '@tanstack/query-core@5.45.0': {}
 
-  '@tanstack/react-query@4.36.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
+  '@tanstack/react-query@4.36.1(react-dom@18.3.1(react@18.3.1))(react-native@0.74.2(@babel/core@7.24.7)(@types/react@18.3.3)(bufferutil@4.0.8)(react@18.3.1))(react@18.3.1)':
     dependencies:
       '@tanstack/query-core': 4.36.1
       react: 18.3.1
       use-sync-external-store: 1.2.2(react@18.3.1)
     optionalDependencies:
       react-dom: 18.3.1(react@18.3.1)
+      react-native: 0.74.2(@babel/core@7.24.7)(@types/react@18.3.3)(bufferutil@4.0.8)(react@18.3.1)
 
   '@tanstack/react-query@5.45.0(react@18.3.1)':
     dependencies:
@@ -10154,14 +10168,14 @@ snapshots:
 
   '@ungap/structured-clone@1.2.0': {}
 
-  '@vitejs/plugin-react@4.3.1(vite@5.3.1(@types/node@20.14.2))':
+  '@vitejs/plugin-react@4.3.1(vite@5.3.1(@types/node@20.14.2)(terser@5.31.1))':
     dependencies:
       '@babel/core': 7.24.7
       '@babel/plugin-transform-react-jsx-self': 7.24.7(@babel/core@7.24.7)
       '@babel/plugin-transform-react-jsx-source': 7.24.7(@babel/core@7.24.7)
       '@types/babel__core': 7.20.5
       react-refresh: 0.14.2
-      vite: 5.3.1(@types/node@20.14.2)
+      vite: 5.3.1(@types/node@20.14.2)(terser@5.31.1)
     transitivePeerDependencies:
       - supports-color
 
@@ -11688,7 +11702,7 @@ snapshots:
       eslint: 8.57.0
       eslint-import-resolver-node: 0.3.9
       eslint-import-resolver-typescript: 3.6.1(@typescript-eslint/parser@6.21.0(eslint@8.57.0)(typescript@5.4.5))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.29.1)(eslint@8.57.0)
-      eslint-plugin-import: 2.29.1(eslint@8.57.0)
+      eslint-plugin-import: 2.29.1(@typescript-eslint/parser@6.21.0(eslint@8.57.0)(typescript@5.4.5))(eslint-import-resolver-typescript@3.6.1)(eslint@8.57.0)
       eslint-plugin-jsx-a11y: 6.8.0(eslint@8.57.0)
       eslint-plugin-react: 7.34.2(eslint@8.57.0)
       eslint-plugin-react-hooks: 4.6.2(eslint@8.57.0)
@@ -11716,7 +11730,7 @@ snapshots:
       enhanced-resolve: 5.17.0
       eslint: 8.57.0
       eslint-module-utils: 2.8.1(@typescript-eslint/parser@6.21.0(eslint@8.57.0)(typescript@5.4.5))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@6.21.0(eslint@8.57.0)(typescript@5.4.5))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.29.1)(eslint@8.57.0))(eslint@8.57.0)
-      eslint-plugin-import: 2.29.1(eslint@8.57.0)
+      eslint-plugin-import: 2.29.1(@typescript-eslint/parser@6.21.0(eslint@8.57.0)(typescript@5.4.5))(eslint-import-resolver-typescript@3.6.1)(eslint@8.57.0)
       fast-glob: 3.3.2
       get-tsconfig: 4.7.5
       is-core-module: 2.13.1
@@ -11748,20 +11762,38 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  eslint-module-utils@2.8.1(eslint-import-resolver-node@0.3.9)(eslint@8.57.0):
-    dependencies:
-      debug: 3.2.7
-    optionalDependencies:
-      eslint: 8.57.0
-      eslint-import-resolver-node: 0.3.9
-    transitivePeerDependencies:
-      - supports-color
-
   eslint-plugin-eslint-comments@3.2.0(eslint@8.57.0):
     dependencies:
       escape-string-regexp: 1.0.5
       eslint: 8.57.0
       ignore: 5.3.1
+
+  eslint-plugin-import@2.29.1(@typescript-eslint/parser@6.21.0(eslint@8.57.0)(typescript@5.4.5))(eslint-import-resolver-typescript@3.6.1)(eslint@8.57.0):
+    dependencies:
+      array-includes: 3.1.8
+      array.prototype.findlastindex: 1.2.5
+      array.prototype.flat: 1.3.2
+      array.prototype.flatmap: 1.3.2
+      debug: 3.2.7
+      doctrine: 2.1.0
+      eslint: 8.57.0
+      eslint-import-resolver-node: 0.3.9
+      eslint-module-utils: 2.8.1(@typescript-eslint/parser@6.21.0(eslint@8.57.0)(typescript@5.4.5))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@6.21.0(eslint@8.57.0)(typescript@5.4.5))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.29.1)(eslint@8.57.0))(eslint@8.57.0)
+      hasown: 2.0.2
+      is-core-module: 2.13.1
+      is-glob: 4.0.3
+      minimatch: 3.1.2
+      object.fromentries: 2.0.8
+      object.groupby: 1.0.3
+      object.values: 1.2.0
+      semver: 6.3.1
+      tsconfig-paths: 3.15.0
+    optionalDependencies:
+      '@typescript-eslint/parser': 6.21.0(eslint@8.57.0)(typescript@5.4.5)
+    transitivePeerDependencies:
+      - eslint-import-resolver-typescript
+      - eslint-import-resolver-webpack
+      - supports-color
 
   eslint-plugin-import@2.29.1(@typescript-eslint/parser@7.13.0(eslint@8.57.0)(typescript@5.4.5))(eslint@8.57.0):
     dependencies:
@@ -11785,31 +11817,6 @@ snapshots:
       tsconfig-paths: 3.15.0
     optionalDependencies:
       '@typescript-eslint/parser': 7.13.0(eslint@8.57.0)(typescript@5.4.5)
-    transitivePeerDependencies:
-      - eslint-import-resolver-typescript
-      - eslint-import-resolver-webpack
-      - supports-color
-
-  eslint-plugin-import@2.29.1(eslint@8.57.0):
-    dependencies:
-      array-includes: 3.1.8
-      array.prototype.findlastindex: 1.2.5
-      array.prototype.flat: 1.3.2
-      array.prototype.flatmap: 1.3.2
-      debug: 3.2.7
-      doctrine: 2.1.0
-      eslint: 8.57.0
-      eslint-import-resolver-node: 0.3.9
-      eslint-module-utils: 2.8.1(eslint-import-resolver-node@0.3.9)(eslint@8.57.0)
-      hasown: 2.0.2
-      is-core-module: 2.13.1
-      is-glob: 4.0.3
-      minimatch: 3.1.2
-      object.fromentries: 2.0.8
-      object.groupby: 1.0.3
-      object.values: 1.2.0
-      semver: 6.3.1
-      tsconfig-paths: 3.15.0
     transitivePeerDependencies:
       - eslint-import-resolver-typescript
       - eslint-import-resolver-webpack
@@ -12001,7 +12008,7 @@ snapshots:
       '@scure/bip32': 1.4.0
       '@scure/bip39': 1.3.0
 
-  ethers@6.13.0:
+  ethers@6.13.0(bufferutil@4.0.8):
     dependencies:
       '@adraffy/ens-normalize': 1.10.1
       '@noble/curves': 1.2.0
@@ -12009,7 +12016,7 @@ snapshots:
       '@types/node': 18.15.13
       aes-js: 4.0.0-beta.5
       tslib: 2.4.0
-      ws: 8.5.0
+      ws: 8.5.0(bufferutil@4.0.8)
     transitivePeerDependencies:
       - bufferutil
       - utf-8-validate
@@ -12208,24 +12215,24 @@ snapshots:
   fsevents@2.3.3:
     optional: true
 
-  fuels@0.76.12(dexie@4.0.7):
+  fuels@0.76.12(bufferutil@4.0.8)(dexie@4.0.7):
     dependencies:
-      '@fuel-ts/abi-coder': 0.76.12
+      '@fuel-ts/abi-coder': 0.76.12(bufferutil@4.0.8)
       '@fuel-ts/abi-typegen': 0.76.12
-      '@fuel-ts/account': 0.76.12(dexie@4.0.7)
-      '@fuel-ts/address': 0.76.12
-      '@fuel-ts/contract': 0.76.12(dexie@4.0.7)
-      '@fuel-ts/crypto': 0.76.12
+      '@fuel-ts/account': 0.76.12(bufferutil@4.0.8)(dexie@4.0.7)
+      '@fuel-ts/address': 0.76.12(bufferutil@4.0.8)
+      '@fuel-ts/contract': 0.76.12(bufferutil@4.0.8)(dexie@4.0.7)
+      '@fuel-ts/crypto': 0.76.12(bufferutil@4.0.8)
       '@fuel-ts/errors': 0.76.12
       '@fuel-ts/forc': 0.76.12
       '@fuel-ts/fuel-core': 0.76.12
-      '@fuel-ts/hasher': 0.76.12
+      '@fuel-ts/hasher': 0.76.12(bufferutil@4.0.8)
       '@fuel-ts/interfaces': 0.76.12
       '@fuel-ts/math': 0.76.12
-      '@fuel-ts/merkle': 0.76.12
-      '@fuel-ts/program': 0.76.12(dexie@4.0.7)
-      '@fuel-ts/script': 0.76.12(dexie@4.0.7)
-      '@fuel-ts/transactions': 0.76.12
+      '@fuel-ts/merkle': 0.76.12(bufferutil@4.0.8)
+      '@fuel-ts/program': 0.76.12(bufferutil@4.0.8)(dexie@4.0.7)
+      '@fuel-ts/script': 0.76.12(bufferutil@4.0.8)(dexie@4.0.7)
+      '@fuel-ts/transactions': 0.76.12(bufferutil@4.0.8)
       '@fuel-ts/utils': 0.76.12
       '@fuel-ts/versions': 0.76.12
       bundle-require: 4.2.1(esbuild@0.19.12)
@@ -14050,6 +14057,57 @@ snapshots:
       - supports-color
       - utf-8-validate
 
+  react-native@0.74.2(@babel/core@7.24.7)(@types/react@18.3.3)(bufferutil@4.0.8)(react@18.3.1):
+    dependencies:
+      '@jest/create-cache-key-function': 29.7.0
+      '@react-native-community/cli': 13.6.8(bufferutil@4.0.8)
+      '@react-native-community/cli-platform-android': 13.6.8
+      '@react-native-community/cli-platform-ios': 13.6.8
+      '@react-native/assets-registry': 0.74.84
+      '@react-native/codegen': 0.74.84(@babel/preset-env@7.24.7(@babel/core@7.24.7))
+      '@react-native/community-cli-plugin': 0.74.84(@babel/core@7.24.7)(@babel/preset-env@7.24.7(@babel/core@7.24.7))(bufferutil@4.0.8)
+      '@react-native/gradle-plugin': 0.74.84
+      '@react-native/js-polyfills': 0.74.84
+      '@react-native/normalize-colors': 0.74.84
+      '@react-native/virtualized-lists': 0.74.84(@types/react@18.3.3)(react-native@0.74.2(@babel/core@7.24.7)(@types/react@18.3.3)(bufferutil@4.0.8)(react@18.3.1))(react@18.3.1)
+      abort-controller: 3.0.0
+      anser: 1.4.10
+      ansi-regex: 5.0.1
+      base64-js: 1.5.1
+      chalk: 4.1.2
+      event-target-shim: 5.0.1
+      flow-enums-runtime: 0.0.6
+      invariant: 2.2.4
+      jest-environment-node: 29.7.0
+      jsc-android: 250231.0.0
+      memoize-one: 5.2.1
+      metro-runtime: 0.80.9
+      metro-source-map: 0.80.9
+      mkdirp: 0.5.6
+      nullthrows: 1.1.1
+      pretty-format: 26.6.2
+      promise: 8.3.0
+      react: 18.3.1
+      react-devtools-core: 5.2.0(bufferutil@4.0.8)
+      react-refresh: 0.14.2
+      react-shallow-renderer: 16.15.0(react@18.3.1)
+      regenerator-runtime: 0.13.11
+      scheduler: 0.24.0-canary-efb381bbf-20230505
+      stacktrace-parser: 0.1.10
+      whatwg-fetch: 3.6.20
+      ws: 6.2.2(bufferutil@4.0.8)
+      yargs: 17.7.2
+    optionalDependencies:
+      '@types/react': 18.3.3
+    transitivePeerDependencies:
+      - '@babel/core'
+      - '@babel/preset-env'
+      - bufferutil
+      - encoding
+      - supports-color
+      - utf-8-validate
+    optional: true
+
   react-refresh@0.14.2: {}
 
   react-remove-scroll-bar@2.3.6(@types/react@18.3.3)(react@18.3.1):
@@ -15034,15 +15092,15 @@ snapshots:
       - utf-8-validate
       - zod
 
-  vite-plugin-static-copy@1.0.5(vite@5.3.1(@types/node@20.14.2)):
+  vite-plugin-static-copy@1.0.5(vite@5.3.1(@types/node@20.14.2)(terser@5.31.1)):
     dependencies:
       chokidar: 3.6.0
       fast-glob: 3.3.2
       fs-extra: 11.2.0
       picocolors: 1.0.1
-      vite: 5.3.1(@types/node@20.14.2)
+      vite: 5.3.1(@types/node@20.14.2)(terser@5.31.1)
 
-  vite@5.3.1(@types/node@20.14.2):
+  vite@5.3.1(@types/node@20.14.2)(terser@5.31.1):
     dependencies:
       esbuild: 0.21.5
       postcss: 8.4.38
@@ -15050,6 +15108,7 @@ snapshots:
     optionalDependencies:
       '@types/node': 20.14.2
       fsevents: 2.3.3
+      terser: 5.31.1
 
   vlq@1.0.1: {}
 
@@ -15170,7 +15229,9 @@ snapshots:
     optionalDependencies:
       bufferutil: 4.0.8
 
-  ws@8.5.0: {}
+  ws@8.5.0(bufferutil@4.0.8):
+    optionalDependencies:
+      bufferutil: 4.0.8
 
   xmlhttprequest-ssl@2.0.0: {}
 
