@@ -1,8 +1,7 @@
 use crate::utils::{
-    interface::{burn, constructor, mint, pause, total_assets, total_supply},
+    interface::{constructor, mint, pause, total_assets, total_supply},
     setup::{defaults, get_wallet_balance, setup},
 };
-use fuels::types::Bits256;
 
 mod success {
 
