@@ -11,7 +11,7 @@ export default function Home() {
       <Grid container spacing={2}>
         {nftData?.map((nftDatum) => {
           return (
-            <Grid>
+            <Grid item>
               <NFTCard
                 cid={nftDatum.ipfs_pin_hash}
                 fileCid={nftDatum.metadata?.name || ""}

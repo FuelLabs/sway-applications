@@ -1,9 +1,6 @@
 import toast from "react-hot-toast";
 import { useActiveWallet } from "@/hooks/useActiveWallet";
-
-const getTruncatedAddress = (address: string) => {
-  return address.slice(0, 6) + "..." + address.slice(-4);
-};
+import { getTruncatedAddress } from "@/utils/address";
 
 const copyToClipboard = (text: string) => {
   navigator.clipboard.writeText(text);
@@ -11,7 +8,7 @@ const copyToClipboard = (text: string) => {
 };
 
 export const WalletDisplay = () => {
-  const { wallet, walletBalance, isConnected } = useActiveWallet();
+  const { wallet, walletBalance } = useActiveWallet();
 
   return (
     wallet && (

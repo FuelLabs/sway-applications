@@ -1,17 +1,19 @@
 import { NFTCard } from "@/components/NFTCard";
 import { useActiveWallet } from "@/hooks/useActiveWallet";
 import { useGetNFTData } from "@/hooks/useGetNFTData";
+import { getTruncatedAddress } from "@/utils/address";
 import { Grid, Stack, Typography } from "@mui/material";
+import { useRouter } from "next/router";
 
-export default function Home() {
-  const { isConnected, wallet } = useActiveWallet();
+export default function Address() {
+  const router = useRouter();
 
   // The filter expects a value so we pass in an impossible wallet address
   // in the case the user is disconnected
   const { nftData } = useGetNFTData({
     keyvalues: {
       minter: {
-        value: wallet?.address.toB256() || "dud",
+        value: router.query.address as string,
         op: "eq",
       },
     },
@@ -21,11 +23,13 @@ export default function Home() {
     <>
       {nftData.length ? (
         <Stack spacing={2}>
-          <Typography variant="h5" className="text-white font-sans">Your NFTs</Typography>
+          <Typography variant="h5" className="text-white font-sans">
+            {getTruncatedAddress(router.query.address as string)} NFTs
+          </Typography>
           <Grid container spacing={2}>
             {nftData.map((nftDatum) => {
               return (
-                <Grid>
+                <Grid item>
                   <NFTCard
                     cid={nftDatum.ipfs_pin_hash}
                     fileCid={nftDatum.metadata?.name || ""}
@@ -41,10 +45,8 @@ export default function Home() {
             })}
           </Grid>
         </Stack>
-      ) : isConnected ? (
-        <Typography className="text-white font-sans">No NFTs found</Typography>
       ) : (
-        <Typography className="text-white font-sans">Please connect your wallet to view your NFTs.</Typography>
+        <Typography className="text-white font-sans">No NFTs found</Typography>
       )}
     </>
   );

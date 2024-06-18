@@ -8,6 +8,9 @@ import { useTotalSupply } from "@/hooks/useTotalSupply";
 import clsx from "clsx";
 import { NFTImage } from "@/components/NFTImage";
 import { useActiveWallet } from "@/hooks/useActiveWallet";
+import { useGetNFTData } from "@/hooks/useGetNFTData";
+import { Link } from "@/components/Link";
+import { getTruncatedAddress } from "@/utils/address";
 
 export default function Mint() {
   const router = useRouter();
@@ -18,6 +21,20 @@ export default function Mint() {
 
   const { totalSupply } = useTotalSupply(subId);
   const { isConnected } = useActiveWallet();
+
+
+  const { nftData } = useGetNFTData({
+    keyvalues: {
+      nftSubId: {
+        value: subId,
+        op: "eq",
+      },
+    },
+  });
+  let minterAddress = "";
+  if (nftData.length) {
+    minterAddress = nftData[0].metadata.keyvalues.minter as string;
+  }
 
   const mint = useMint();
 
@@ -35,10 +52,12 @@ export default function Mint() {
         "from-zinc-900",
         "to-zinc-950/80",
         "px-2",
-        "py-8",
+        "py-8"
       )}
     >
-      <NFTImage src={`${GATEWAY_URL}/ipfs/${router.query.id}/${router.query.fileId}`} />
+      <NFTImage
+        src={`${GATEWAY_URL}/ipfs/${router.query.id}/${router.query.fileId}`}
+      />
       <Stack width="200px" spacing={2}>
         <Typography className="text-white font-sans" variant="h5">
           {nftName}
@@ -63,10 +82,15 @@ export default function Mint() {
           >
             Mint
           </Button>
-        ) : (
+        ) : nftData.length ? (
           <Typography className="text-white font-sans">
-            NFT already minted
+            NFT minted by{" "}
+            <Link href={`/nft/collection/${minterAddress}`}>
+              {getTruncatedAddress(nftData[0].metadata.keyvalues.minter as string)}
+            </Link>
           </Typography>
+        ) : (
+          <Typography className="text-white font-sans">Loading...</Typography>
         )}
       </Stack>
     </Box>
