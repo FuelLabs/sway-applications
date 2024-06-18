@@ -1,7 +1,6 @@
 import { ChangeEvent, useRef } from "react";
 import type { Dispatch, SetStateAction } from "react";
 import { Button } from "./Button";
-import clsx from "clsx"
 
 type UploadButtonProps = {
   setFile: Dispatch<SetStateAction<File | undefined>>;
@@ -21,7 +20,7 @@ export const UploadButton = ({ setFile }: UploadButtonProps) => {
       <input
         type="file"
         id="file"
-        accept=".jpg,.png,.gif"
+        accept=".jpg,.jpeg,.png,.gif"
         ref={inputFile}
         onChange={handleChange}
         style={{ display: "none" }}

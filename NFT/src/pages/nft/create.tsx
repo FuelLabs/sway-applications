@@ -9,6 +9,7 @@ import clsx from "clsx";
 import { Button } from "@/components/Button";
 import { Input } from "@/components/Input";
 import { useActiveWallet } from "@/hooks/useActiveWallet";
+import { NFTImage } from "@/components/NFTImage";
 
 export default function Create() {
   const [file, setFile] = useState<File>();
@@ -84,7 +85,7 @@ export default function Create() {
                     >
                       <CloseIcon />
                     </IconButton>
-                    <img src={URL.createObjectURL(file)} />
+                    <NFTImage src={URL.createObjectURL(file)} />
                   </>
                 ) : (
                   <Stack spacing={2}>

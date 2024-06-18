@@ -55,7 +55,7 @@ export const useCreateNFT = () => {
         },
       });
       toast.success("NFT successfully created.");
-      router.push("/");
+      router.push("/nft");
     },
     onError: (err, { cid }) => {
       unpin.mutate({ ipfsHash: cid });

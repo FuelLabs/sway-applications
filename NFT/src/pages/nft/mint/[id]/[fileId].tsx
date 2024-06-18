@@ -6,6 +6,7 @@ import { Button } from "@/components/Button";
 import { useMint } from "@/hooks/useMint";
 import { useTotalSupply } from "@/hooks/useTotalSupply";
 import clsx from "clsx";
+import { NFTImage } from "@/components/NFTImage";
 
 export default function Mint() {
   const router = useRouter();
@@ -15,7 +16,6 @@ export default function Mint() {
   const nftDescription = router.query.nftDescription as string;
 
   const { totalSupply } = useTotalSupply(subId);
-  console.log(`totalSupply.toString()`, totalSupply?.toString());
 
   const mint = useMint();
 
@@ -36,9 +36,7 @@ export default function Mint() {
         "py-8",
       )}
     >
-      <img
-        src={`${GATEWAY_URL}/ipfs/${router.query.id}/${router.query.fileId}`}
-      />
+      <NFTImage src={`${GATEWAY_URL}/ipfs/${router.query.id}/${router.query.fileId}`} />
       <Stack width="200px" spacing={2}>
         <Typography className="text-white font-sans" variant="h5">
           {nftName}

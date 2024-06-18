@@ -1,6 +1,7 @@
 import { Card, CardContent, Typography, CardActionArea } from "@mui/material";
 import { useRouter } from "next/router";
 import { GATEWAY_URL } from "@/lib";
+import { NFTImage } from "./NFTImage";
 
 type NFTCardProps = {
   cid: string;
@@ -25,10 +26,10 @@ export const NFTCard = ({
     <Card variant="outlined" sx={{ padding: "18px", backgroundColor: "black", borderColor: "#1e1e1e", borderWidth: "3px" }}>
       <CardActionArea
         onClick={() => {
-          router.push(`/mint/${cid}/${fileCid}?nftName=${nftName}&nftDescription=${nftDescription}&nftSubId=${nftSubId}`);
+          router.push(`/nft/mint/${cid}/${fileCid}?nftName=${nftName}&nftDescription=${nftDescription}&nftSubId=${nftSubId}`);
         }}
       >
-        <img src={`${GATEWAY_URL}/ipfs/${cid}/${fileCid}`} width="350px" height="350px" />
+        <NFTImage src={`${GATEWAY_URL}/ipfs/${cid}/${fileCid}`} />
         <CardContent sx={{ paddingBottom: "0px" }}>
           <Typography color="white" variant="h5" className="font-sans">{nftName}</Typography>
           {showDescription && <Typography className="text-white font-sans">{nftDescription}</Typography>}

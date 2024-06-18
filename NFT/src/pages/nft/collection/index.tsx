@@ -2,7 +2,6 @@ import { NFTCard } from "@/components/NFTCard";
 import { useActiveWallet } from "@/hooks/useActiveWallet";
 import { useGetNFTData } from "@/hooks/useGetNFTData";
 import { Grid, Stack, Typography } from "@mui/material";
-import { useRouter } from "next/router";
 
 export default function Home() {
   const { isConnected, wallet } = useActiveWallet();
