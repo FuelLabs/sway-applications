@@ -7,6 +7,7 @@ import { useMint } from "@/hooks/useMint";
 import { useTotalSupply } from "@/hooks/useTotalSupply";
 import clsx from "clsx";
 import { NFTImage } from "@/components/NFTImage";
+import { useActiveWallet } from "@/hooks/useActiveWallet";
 
 export default function Mint() {
   const router = useRouter();
@@ -16,6 +17,7 @@ export default function Mint() {
   const nftDescription = router.query.nftDescription as string;
 
   const { totalSupply } = useTotalSupply(subId);
+  const { isConnected } = useActiveWallet();
 
   const mint = useMint();
 
@@ -57,6 +59,7 @@ export default function Mint() {
               });
             }}
             className="w-48"
+            disabled={!isConnected}
           >
             Mint
           </Button>
