@@ -1,9 +1,10 @@
 import { NFTCard } from "@/components/NFTCard";
-import { useActiveWallet } from "@/hooks/useActiveWallet";
 import { useGetNFTData } from "@/hooks/useGetNFTData";
 import { getTruncatedAddress } from "@/utils/address";
-import { Grid, Stack, Typography } from "@mui/material";
+import { Grid, Stack } from "@mui/material";
 import { useRouter } from "next/router";
+
+import { Text } from "@/components/Text";
 
 export default function Address() {
   const router = useRouter();
@@ -23,9 +24,9 @@ export default function Address() {
     <>
       {nftData.length ? (
         <Stack spacing={2}>
-          <Typography variant="h5" className="text-white font-sans">
+          <Text variant="h5">
             {getTruncatedAddress(router.query.address as string)} NFTs
-          </Typography>
+          </Text>
           <Grid container spacing={2}>
             {nftData.map((nftDatum) => {
               return (
@@ -46,7 +47,7 @@ export default function Address() {
           </Grid>
         </Stack>
       ) : (
-        <Typography className="text-white font-sans">No NFTs found</Typography>
+        <Text>No NFTs found</Text>
       )}
     </>
   );

@@ -1,4 +1,5 @@
-import { Card, CardActionArea, CardContent, Typography } from "@mui/material";
+import { Card, CardActionArea, CardContent } from "@mui/material";
+import { Text } from "./Text";
 import { useRouter } from "next/router";
 
 type HomeCardProps = {
@@ -30,10 +31,10 @@ export const HomeCard = ({ href, title, children }: HomeCardProps) => {
         sx={{ height: "stretch" }}
       >
         <CardContent>
-          <Typography className="text-white font-sans text-4xl mb-4">{title}</Typography>
-          <Typography className="text-white font-sans text-base">
+          <Text className="text-4xl mb-4">{title}</Text>
+          <Text className="text-base">
             {children}
-          </Typography>
+          </Text>
         </CardContent>
       </CardActionArea>
     </Card>

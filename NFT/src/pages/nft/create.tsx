@@ -1,8 +1,7 @@
-//import { Input } from "@/components/Input";
 import { UploadButton } from "@/components/UploadButton";
 import { useCreateNFT } from "@/hooks/useCreateNFT";
 import { useUploadFile } from "@/hooks/useUploadFile";
-import { IconButton, Stack, Typography } from "@mui/material";
+import { IconButton, Stack } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import { useState, useEffect } from "react";
 import clsx from "clsx";
@@ -10,13 +9,14 @@ import { Button } from "@/components/Button";
 import { Input } from "@/components/Input";
 import { useActiveWallet } from "@/hooks/useActiveWallet";
 import { NFTImage } from "@/components/NFTImage";
+import { Text } from "@/components/Text";
 
 export default function Create() {
   const [file, setFile] = useState<File>();
   const [name, setName] = useState("");
   const [symbol, setSymbol] = useState("");
   const [description, setDescription] = useState("");
-  const { isConnected } = useActiveWallet();
+  const { isConnected, isPending } = useActiveWallet();
 
   const createNFT = useCreateNFT();
   const uploadFile = useUploadFile();
@@ -34,6 +34,10 @@ export default function Create() {
   }, [uploadFile.data]);
 
   const isCreateButtonDisabled = !name || !symbol;
+
+  if (isPending) {
+    return <Text>Loading...</Text>;
+  }
 
   return (
     <>
@@ -53,14 +57,13 @@ export default function Create() {
                 "py-8"
               )}
             >
-              <Typography
+              <Text
                 variant="h4"
-                className={clsx("text-white")}
                 sx={{ paddingBottom: "28px" }}
               >
                 Create New NFT
-              </Typography>
-              <Typography className="text-white">Upload File</Typography>
+              </Text>
+              <Text>Upload File</Text>
               <Stack
                 alignItems="center"
                 justifyContent="space-around"
@@ -89,29 +92,29 @@ export default function Create() {
                   </>
                 ) : (
                   <Stack spacing={2}>
-                    <Typography className="text-white">
+                    <Text>
                       Recommended size: 350 x 350. File types supported: JPG,
                       PNG, or GIF.
-                    </Typography>
+                    </Text>
                     <UploadButton setFile={setFile} />
                   </Stack>
                 )}
               </Stack>
-              <Typography className="text-white">Name</Typography>
+              <Text>Name</Text>
               <Input
                 value={name}
                 onChange={(event) => setName(event.target.value)}
                 placeholder="Buff Dragons"
               />
-              <Typography className="text-white">Symbol</Typography>
+              <Text>Symbol</Text>
               <Input
                 value={symbol}
                 onChange={(event) => setSymbol(event.target.value)}
                 placeholder="BD"
               />
-              <Typography className="text-white">
+              <Text>
                 Description (Optional)
-              </Typography>
+              </Text>
               <Input
                 value={description}
                 onChange={(event) => setDescription(event.target.value)}
@@ -133,7 +136,9 @@ export default function Create() {
           </div>
         </div>
       ) : (
-        <Typography className="text-white font-sans">Please connect your wallet to create an NFT.</Typography>
+        <Text>
+          Please connect your wallet to create an NFT.
+        </Text>
       )}
     </>
   );

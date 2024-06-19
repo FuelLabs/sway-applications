@@ -1,7 +1,9 @@
 import { NFTCard } from "@/components/NFTCard";
 import { useActiveWallet } from "@/hooks/useActiveWallet";
 import { useGetNFTData } from "@/hooks/useGetNFTData";
-import { Grid, Stack, Typography } from "@mui/material";
+import { Grid, Stack } from "@mui/material";
+
+import { Text } from "@/components/Text";
 
 export default function Home() {
   const { isConnected, wallet } = useActiveWallet();
@@ -21,7 +23,7 @@ export default function Home() {
     <>
       {nftData.length ? (
         <Stack spacing={2}>
-          <Typography variant="h5" className="text-white font-sans">Your NFTs</Typography>
+          <Text variant="h5">Your NFTs</Text>
           <Grid container spacing={2}>
             {nftData.map((nftDatum) => {
               return (
@@ -42,9 +44,9 @@ export default function Home() {
           </Grid>
         </Stack>
       ) : isConnected ? (
-        <Typography className="text-white font-sans">No NFTs found</Typography>
+        <Text>No NFTs found</Text>
       ) : (
-        <Typography className="text-white font-sans">Please connect your wallet to view your NFTs.</Typography>
+        <Text>Please connect your wallet to view your NFTs.</Text>
       )}
     </>
   );

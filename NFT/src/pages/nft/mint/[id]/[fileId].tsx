@@ -1,7 +1,7 @@
 import { useRouter } from "next/router";
 
 import { GATEWAY_URL } from "@/lib";
-import { Box, Stack, Typography } from "@mui/material";
+import { Box, Stack } from "@mui/material";
 import { Button } from "@/components/Button";
 import { useMint } from "@/hooks/useMint";
 import { useTotalSupply } from "@/hooks/useTotalSupply";
@@ -11,6 +11,7 @@ import { useActiveWallet } from "@/hooks/useActiveWallet";
 import { useGetNFTData } from "@/hooks/useGetNFTData";
 import { Link } from "@/components/Link";
 import { getTruncatedAddress } from "@/utils/address";
+import { Text } from "@/components/Text";
 
 export default function Mint() {
   const router = useRouter();
@@ -61,13 +62,13 @@ export default function Mint() {
         src={`${GATEWAY_URL}/ipfs/${router.query.id}/${router.query.fileId}`}
       />
       <Stack width="200px" spacing={2}>
-        <Typography className="text-white font-sans" variant="h5">
+        <Text variant="h5">
           {nftName}
-        </Typography>
+        </Text>
         {router.query.nftDescription && (
-          <Typography className="text-white font-sans">
+          <Text>
             {nftDescription}
-          </Typography>
+          </Text>
         )}
         {!totalSupply ? (
           <Button
@@ -85,16 +86,16 @@ export default function Mint() {
             {mint.isPending ? "Loading..." : "Mint"}
           </Button>
         ) : hasMinter ? (
-          <Typography className="text-white font-sans">
+          <Text>
             NFT minted by{" "}
             <Link href={`/nft/collection/${minterAddress}`}>
               {getTruncatedAddress(
                 nftData[0].metadata.keyvalues.minter as string
               )}
             </Link>
-          </Typography>
+          </Text>
         ) : (
-          <Typography className="text-white font-sans">Loading...</Typography>
+          <Text>Loading...</Text>
         )}
       </Stack>
     </Box>

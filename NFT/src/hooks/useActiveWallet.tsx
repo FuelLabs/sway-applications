@@ -6,16 +6,25 @@ import {
 } from "@fuels/react";
 
 export const useActiveWallet = () => {
-  const { wallet } = useWallet();
-  const { balance, refetch } = useBalance({ address: wallet?.address.toB256() });
-  const { isConnected } = useIsConnected();
-  const { network } = useNetwork();
+  const { wallet, isPending: isWalletPending } = useWallet();
+  const {
+    balance,
+    refetch,
+    isPending: isBalancePending,
+  } = useBalance({ address: wallet?.address.toB256() });
+  const { isConnected, isPending: isConnectedPending } = useIsConnected();
+  const { network, isPending: isNetworkPending } = useNetwork();
 
   return {
     wallet,
     walletBalance: balance,
     refetchBalnce: refetch,
+    isPending:
+      isWalletPending ||
+      isBalancePending ||
+      isConnectedPending ||
+      isNetworkPending,
     isConnected,
-    network
+    network,
   };
 };
