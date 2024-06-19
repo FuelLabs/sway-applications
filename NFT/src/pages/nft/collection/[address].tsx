@@ -11,7 +11,7 @@ export default function Address() {
 
   // The filter expects a value so we pass in an impossible wallet address
   // in the case the user is disconnected
-  const { nftData } = useGetNFTData({
+  const { nftData, isPending } = useGetNFTData({
     keyvalues: {
       minter: {
         value: router.query.address as string,
@@ -19,6 +19,10 @@ export default function Address() {
       },
     },
   });
+
+  if (isPending) {
+    return <Text>Loading...</Text>
+  }
 
   return (
     <>

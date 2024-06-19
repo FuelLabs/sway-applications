@@ -6,11 +6,11 @@ import { Grid, Stack } from "@mui/material";
 import { Text } from "@/components/Text";
 
 export default function Home() {
-  const { isConnected, wallet } = useActiveWallet();
+  const { isConnected, wallet, isPending: isWalletPending } = useActiveWallet();
 
   // The filter expects a value so we pass in an impossible wallet address
   // in the case the user is disconnected
-  const { nftData } = useGetNFTData({
+  const { nftData, isPending: isNFTDataPending } = useGetNFTData({
     keyvalues: {
       minter: {
         value: wallet?.address.toB256() || "dud",
@@ -18,6 +18,12 @@ export default function Home() {
       },
     },
   });
+
+  const isPending = isNFTDataPending || isWalletPending;
+
+  if (isPending) {
+    return <Text>Loading...</Text>
+  }
 
   return (
     <>
