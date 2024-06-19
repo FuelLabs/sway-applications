@@ -29,7 +29,6 @@ export const useMint = () => {
       return result;
     },
     onSuccess: (_, { cid, nftName, nftDescription, nftSubId }) => {
-      queryClient.invalidateQueries();
       // Updating the info overwrites it so we also need to pass in past info
       updateMetadata.mutate({
         ipfsHash: cid,
@@ -42,9 +41,11 @@ export const useMint = () => {
           },
         },
       });
+      queryClient.invalidateQueries({ queryKey: ["totalSupply"]});
       toast.success("Successfully minted nft!");
     },
     onError: (err) => {
+      console.error(err.message);
       toast.error(err.message);
     },
   });

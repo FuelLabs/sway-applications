@@ -22,7 +22,6 @@ export default function Mint() {
   const { totalSupply } = useTotalSupply(subId);
   const { isConnected } = useActiveWallet();
 
-
   const { nftData } = useGetNFTData({
     keyvalues: {
       nftSubId: {
@@ -32,7 +31,10 @@ export default function Mint() {
     },
   });
   let minterAddress = "";
-  if (nftData.length) {
+  const hasMinter = Boolean(
+    nftData.length && nftData[0].metadata.keyvalues.minter
+  );
+  if (hasMinter) {
     minterAddress = nftData[0].metadata.keyvalues.minter as string;
   }
 
@@ -78,15 +80,17 @@ export default function Mint() {
               });
             }}
             className="w-48"
-            disabled={!isConnected}
+            disabled={!isConnected || mint.isPending}
           >
-            Mint
+            {mint.isPending ? "Loading..." : "Mint"}
           </Button>
-        ) : nftData.length ? (
+        ) : hasMinter ? (
           <Typography className="text-white font-sans">
             NFT minted by{" "}
             <Link href={`/nft/collection/${minterAddress}`}>
-              {getTruncatedAddress(nftData[0].metadata.keyvalues.minter as string)}
+              {getTruncatedAddress(
+                nftData[0].metadata.keyvalues.minter as string
+              )}
             </Link>
           </Typography>
         ) : (

@@ -3,7 +3,6 @@ import { useWallet } from "@fuels/react";
 import { useQuery } from "@tanstack/react-query";
 import { CONTRACT_ID } from "@/lib";
 import { createAssetId } from "@/utils/assetId";
-import { hash } from "fuels";
 
 export const useTotalSupply = (subId: string) => {
     const { wallet, isError, isLoading } = useWallet();

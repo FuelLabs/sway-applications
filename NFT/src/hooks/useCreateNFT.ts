@@ -9,6 +9,7 @@ import { useUpdateMetadata } from "./useUpdateMetadata";
 import { useUnpin } from "./useUnpin";
 import { CONTRACT_ID } from "@/lib";
 import { useRouter } from "next/router";
+import { queryClient } from "@/components/Provider";
 
 type CreateNFT = {
   cid: string;
@@ -59,6 +60,7 @@ export const useCreateNFT = () => {
     },
     onError: (err, { cid }) => {
       unpin.mutate({ ipfsHash: cid });
+      console.error(err.message);
       toast.error(err.message);
     },
   });
