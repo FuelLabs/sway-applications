@@ -21,13 +21,11 @@ export default function Home() {
 
   const isPending = isNFTDataPending || isWalletPending;
 
-  if (isPending) {
-    return <Text>Loading...</Text>
-  }
-
   return (
     <>
-      {nftData.length ? (
+      {isPending ? (
+        <Text>Loading...</Text>
+      ) : nftData.length ? (
         <Stack spacing={2}>
           <Text variant="h5">Your NFTs</Text>
           <Grid container spacing={2}>

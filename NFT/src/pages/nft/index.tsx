@@ -4,12 +4,15 @@ import { useGetNFTData } from "@/hooks/useGetNFTData";
 import { Text } from "@/components/Text";
 
 export default function Home() {
-  const { nftData } = useGetNFTData();
+  const { nftData, isPending } = useGetNFTData();
 
   return (
     <Stack alignItems="flex-start" width="stretch" spacing={3}>
       <Text variant="h3">Latest NFTs</Text>
-      <Grid container spacing={2}>
+      {isPending ? (
+        <Text>Loading...</Text>
+      ) : (
+        <Grid container spacing={2}>
         {nftData?.map((nftDatum) => {
           return (
             <Grid item>
@@ -26,6 +29,7 @@ export default function Home() {
           );
         })}
       </Grid>
+      )}
     </Stack>
   );
 }

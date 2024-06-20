@@ -20,13 +20,11 @@ export default function Address() {
     },
   });
 
-  if (isPending) {
-    return <Text>Loading...</Text>
-  }
-
   return (
     <>
-      {nftData.length ? (
+      {isPending ? (
+        <Text>Loading...</Text>
+      ) : nftData.length ? (
         <Stack spacing={2}>
           <Text variant="h5">
             {getTruncatedAddress(router.query.address as string)} NFTs

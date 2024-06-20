@@ -2,7 +2,10 @@ import toast, { Toaster } from "react-hot-toast";
 import { Link } from "./Link";
 import { Button } from "./Button";
 import { CURRENT_ENVIRONMENT, NODE_URL, TESTNET_FAUCET_LINK } from "@/lib";
-import { useConnectUI, useDisconnect } from "@fuels/react";
+import {
+  useConnectUI,
+  useDisconnect,
+} from "@fuels/react";
 import { WalletDisplay } from "./WalletDisplay";
 import { useActiveWallet } from "@/hooks/useActiveWallet";
 import { useFaucet } from "@/hooks/useFaucet";
@@ -14,7 +17,8 @@ export const Layout = ({ children }: { children: React.ReactNode }) => {
   const { connect } = useConnectUI();
   const { disconnect } = useDisconnect();
 
-  const { wallet, network, walletBalance, isConnected, refetchBalnce } = useActiveWallet();
+  const { wallet, network, walletBalance, isConnected, refetchBalnce } =
+    useActiveWallet();
 
   const TOP_UP_AMOUNT = 100_000_000;
 
@@ -72,13 +76,13 @@ export const Layout = ({ children }: { children: React.ReactNode }) => {
 
           <Link href="/nft/create">Create</Link>
 
-          <Link href={`/nft/collection`}>
-            Collection
-          </Link>
+          <Link href={`/nft/collection`}>Collection</Link>
 
           <Link
             href={
-              CURRENT_ENVIRONMENT === "local" ? "/nft/faucet" : TESTNET_FAUCET_LINK
+              CURRENT_ENVIRONMENT === "local"
+                ? "/nft/faucet"
+                : TESTNET_FAUCET_LINK
             }
             target={CURRENT_ENVIRONMENT === "local" ? "_self" : "_blank"}
           >

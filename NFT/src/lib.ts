@@ -37,3 +37,5 @@ export const GATEWAY_URL = process.env.NEXT_PUBLIC_GATEWAY_URL
 export const CONTRACT_ID = IS_PROD
   ? productionContractId["nftContract"]
   : contractId["nftContract"];
+
+export const WC_PROJECT_ID = process.env.NEXT_PUBLIC_APP_WC_PROJECT_ID!;

@@ -4,21 +4,65 @@ import { FuelProvider } from "@fuels/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Provider, type FuelConfig } from "fuels";
 import React, { useCallback, useEffect, useState } from "react";
-import { EVMWalletConnector } from "@fuels/connectors/evm";
+import { coinbaseWallet, walletConnect } from "@wagmi/connectors";
+import { http, createConfig, injected } from "@wagmi/core";
+import { mainnet, sepolia } from "@wagmi/core/chains";
 import {
   FuelWalletConnector,
   FuelWalletDevelopmentConnector,
   FueletWalletConnector,
   BurnerWalletConnector,
+  WalletConnectConnector
 } from "@fuels/connectors";
-import { NODE_URL } from "@/lib";
 import { StyledEngineProvider } from "@mui/material";
+
+import { NODE_URL, WC_PROJECT_ID } from "@/lib";
 
 export const queryClient: QueryClient = new QueryClient();
 
 export const AppProvider = ({ children }: { children: React.ReactNode }) => {
   const [fuelConfig, setFuelConfig] = useState<FuelConfig>({});
   const [currentProvider, setCurrentProvider] = useState<Provider>();
+  const [currentUrl, setCurrentUrl] = useState("");
+
+  useEffect(() => {
+    if (window !== undefined) {
+      setCurrentUrl(window.location.href);
+    }
+  }, []);
+
+  // ============================================================
+  // WalletConnect Connector configurations
+  // https://docs.walletconnect.com/web3modal/javascript/about
+  // ============================================================
+  const METADATA = {
+    name: "NFT App",
+    description: "View and collect NFTs",
+    url: "http://localhost:3000",
+    icons: ["https://connectors.fuel.network/logo_white.png"],
+  };
+  const wagmiConfig = createConfig({
+    chains: [mainnet, sepolia],
+    transports: {
+      [mainnet.id]: http(),
+      [sepolia.id]: http(),
+    },
+    connectors: [
+      injected({ shimDisconnect: false }),
+      walletConnect({
+        projectId: WC_PROJECT_ID,
+        metadata: METADATA,
+        showQrModal: false,
+      }),
+      coinbaseWallet({
+        appName: METADATA.name,
+        appLogoUrl: METADATA.icons[0],
+        darkMode: true,
+        reloadOnDisconnect: true,
+      }),
+    ],
+    ssr: true
+  });
 
   const fetchProvider = useCallback(async () => {
     const provider = await Provider.create(NODE_URL);
@@ -34,13 +78,19 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
       connectors: [
         new FuelWalletConnector(),
         new FueletWalletConnector(),
-        new EVMWalletConnector({ fuelProvider: currentProvider }),
+        new WalletConnectConnector({
+          fuelProvider: currentProvider,
+          wagmiConfig,
+          projectId: WC_PROJECT_ID,
+        }),
         new FuelWalletDevelopmentConnector(),
         new BurnerWalletConnector({ fuelProvider: currentProvider }),
       ],
     };
     setFuelConfig(newFuelConfig);
   }, [currentProvider]);
+
+  console.log(`fuelConfig`, fuelConfig);
 
   return (
     <StyledEngineProvider injectFirst>

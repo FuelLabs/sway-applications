@@ -35,13 +35,11 @@ export default function Create() {
 
   const isCreateButtonDisabled = !name || !symbol;
 
-  if (isPending) {
-    return <Text>Loading...</Text>;
-  }
-
   return (
     <>
-      {isConnected ? (
+      {isPending ? (
+        <Text>Loading...</Text>
+      ) : isConnected ? (
         <div className="gradient-border rounded-2xl">
           <div className="grain rounded-2xl p-1.5 drop-shadow-xl">
             <Stack

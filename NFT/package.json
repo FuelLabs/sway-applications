@@ -19,13 +19,15 @@
   "dependencies": {
     "@emotion/react": "^11.11.4",
     "@emotion/styled": "^11.11.0",
-    "@fuels/connectors": "^0.5.0",
+    "@fuels/connectors": "^0.6.0",
     "@fuels/react": "^0.20.0",
     "@mui/base": "5.0.0-beta.40",
     "@mui/icons-material": "^5.15.12",
     "@mui/material": "^5.15.12",
     "@pinata/sdk": "^2.1.0",
     "@tanstack/react-query": "^5.29.2",
+    "@wagmi/connectors": "^5.0.14",
+    "@wagmi/core": "2.9.1",
     "clsx": "^2.1.1",
     "crypto-browserify": "^3.12.0",
     "dotenv": "^16.4.5",
@@ -36,7 +38,8 @@
     "react": "^18.2",
     "react-dom": "^18.2",
     "react-hot-toast": "^2.4.1",
-    "react-use": "^17.5.0"
+    "react-use": "^17.5.0",
+    "tictactoe": "workspace:*"
   },
   "devDependencies": {
     "@types/formidable": "^3.4.5",

@@ -10,6 +10,8 @@ const copyToClipboard = (text: string) => {
 export const WalletDisplay = () => {
   const { wallet, walletBalance } = useActiveWallet();
 
+  console.log(`wallet`, wallet);
+
   return (
     wallet && (
       <div className="flex gap-4 items-center">
