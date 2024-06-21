@@ -5,6 +5,7 @@ import toast from "react-hot-toast";
 import { useUpdateMetadata } from "./useUpdateMetadata";
 import { CONTRACT_ID } from "@/lib";
 import { queryClient } from "@/components/Provider";
+import { NFTQueryKeys } from "@/queryKeys";
 
 export const useMint = () => {
   const { wallet } = useWallet();
@@ -25,7 +26,9 @@ export const useMint = () => {
 
       const recipient = { Address: { bits: wallet.address.toB256() } };
 
-      const result = await contract.functions.mint(recipient, nftSubId, 1).call();
+      const result = await contract.functions
+        .mint(recipient, nftSubId, 1)
+        .call();
       return result;
     },
     onSuccess: (_, { cid, nftName, nftDescription, nftSubId }) => {
@@ -41,7 +44,7 @@ export const useMint = () => {
           },
         },
       });
-      queryClient.invalidateQueries({ queryKey: ["totalSupply"]});
+      queryClient.invalidateQueries({ queryKey: [NFTQueryKeys.totalSupply] });
       toast.success("Successfully minted nft!");
     },
     onError: (err) => {

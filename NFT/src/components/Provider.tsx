@@ -38,7 +38,7 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
   const METADATA = {
     name: "NFT App",
     description: "View and collect NFTs",
-    url: "http://localhost:3000",
+    url: currentUrl,
     icons: ["https://connectors.fuel.network/logo_white.png"],
   };
   const wagmiConfig = createConfig({
@@ -61,7 +61,6 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
         reloadOnDisconnect: true,
       }),
     ],
-    ssr: true
   });
 
   const fetchProvider = useCallback(async () => {
@@ -89,8 +88,6 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
     };
     setFuelConfig(newFuelConfig);
   }, [currentProvider]);
-
-  console.log(`fuelConfig`, fuelConfig);
 
   return (
     <StyledEngineProvider injectFirst>

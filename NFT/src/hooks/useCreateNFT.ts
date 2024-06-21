@@ -10,6 +10,7 @@ import { useUnpin } from "./useUnpin";
 import { CONTRACT_ID } from "@/lib";
 import { useRouter } from "next/router";
 import { queryClient } from "@/components/Provider";
+import { NFTQueryKeys } from "@/queryKeys";
 
 type CreateNFT = {
   cid: string;

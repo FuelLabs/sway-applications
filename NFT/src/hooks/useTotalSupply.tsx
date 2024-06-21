@@ -3,12 +3,13 @@ import { useWallet } from "@fuels/react";
 import { useQuery } from "@tanstack/react-query";
 import { CONTRACT_ID } from "@/lib";
 import { createAssetId } from "@/utils/assetId";
+import { NFTQueryKeys } from "@/queryKeys";
 
 export const useTotalSupply = (subId: string) => {
     const { wallet, isError, isLoading } = useWallet();
 
     const query = useQuery({
-        queryKey: ["totalSupply", subId],
+        queryKey: [NFTQueryKeys.totalSupply, subId],
         queryFn: async () => {
             if (!wallet) throw new Error(`Cannot get total assets if wallet is ${wallet}`);
 

@@ -1,6 +1,7 @@
 import { useMutation } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import { queryClient } from "@/components/Provider";
+import { NFTQueryKeys } from "@/queryKeys";
 
 // WARNING: although this can take arbitrary metadata
 // it overwrites the past metadata
@@ -19,7 +20,7 @@ export const useUpdateMetadata = () => {
       });
     },
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ["getNFTData"] });
+      await queryClient.invalidateQueries({ queryKey: [NFTQueryKeys.nftData] });
     },
     onError: (err) => {
       toast.error(err.message);
