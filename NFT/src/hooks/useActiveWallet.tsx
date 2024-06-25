@@ -10,10 +10,9 @@ export const useActiveWallet = () => {
   const {
     balance,
     refetch,
-    isPending: isBalancePending,
   } = useBalance({ address: wallet?.address.toB256() });
   const { isConnected, isPending: isConnectedPending } = useIsConnected();
-  const { network, isPending: isNetworkPending } = useNetwork();
+  const { network } = useNetwork();
 
   return {
     wallet,
@@ -21,9 +20,7 @@ export const useActiveWallet = () => {
     refetchBalnce: refetch,
     isPending:
       isWalletPending ||
-      isBalancePending ||
-      isConnectedPending ||
-      isNetworkPending,
+      isConnectedPending,
     isConnected,
     network,
   };

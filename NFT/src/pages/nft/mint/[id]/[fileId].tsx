@@ -12,11 +12,13 @@ import { useGetNFTData } from "@/hooks/useGetNFTData";
 import { Link } from "@/components/Link";
 import { getTruncatedAddress } from "@/utils/address";
 import { Text } from "@/components/Text";
+import { useEffect, useState } from "react";
 
 export default function Mint() {
   const router = useRouter();
+  const [minterAddress, setMinterAddress] = useState("");
 
-  const subId = router.query.nftSubId as string;
+  const subId = (router.query.nftSubId || "dud") as string;
   const nftName = router.query.nftName as string;
   const nftDescription = router.query.nftDescription as string;
 
@@ -31,13 +33,12 @@ export default function Mint() {
       },
     },
   });
-  let minterAddress = "";
-  const hasMinter = Boolean(
-    nftData.length && nftData[0].metadata.keyvalues.minter
-  );
-  if (hasMinter) {
-    minterAddress = nftData[0].metadata.keyvalues.minter as string;
-  }
+
+  useEffect(() => {
+    if (nftData.length && nftData[0].metadata.keyvalues.minter) {
+      setMinterAddress(nftData[0].metadata.keyvalues.minter);
+    }
+  }, [nftData, nftData.length]);
 
   const mint = useMint();
 
@@ -85,7 +86,7 @@ export default function Mint() {
           >
             {mint.isPending ? "Loading..." : "Mint"}
           </Button>
-        ) : hasMinter ? (
+        ) : minterAddress ? (
           <Text>
             NFT minted by{" "}
             <Link href={`/nft/collection/${minterAddress}`}>

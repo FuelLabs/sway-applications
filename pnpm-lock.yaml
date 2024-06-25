@@ -37,8 +37,8 @@ importers:
         specifier: ^11.11.0
         version: 11.11.5(@emotion/react@11.11.4)(@types/react@18.3.3)(react@18.3.1)
       '@fuels/connectors':
-        specifier: ^0.6.0
-        version: 0.6.0(@types/react@18.3.3)(@wagmi/connectors@5.0.15)(fuels@0.89.0)(react-dom@18.3.1)(react@18.3.1)(typescript@5.4.5)
+        specifier: ^0.7.0
+        version: 0.7.0(@types/react@18.3.3)(@wagmi/connectors@5.0.15)(fuels@0.89.0)(react-dom@18.3.1)(react@18.3.1)(typescript@5.4.5)
       '@fuels/react':
         specifier: ^0.20.0
         version: 0.20.0(@tanstack/react-query@5.45.1)(@types/react-dom@18.3.0)(@types/react@18.3.3)(fuels@0.89.0)(react-dom@18.3.1)(react@18.3.1)
@@ -2948,8 +2948,8 @@ packages:
     resolution: {integrity: sha512-3rFZdY2f5/h7e2Rlhv/+WKz1CVsTnydKoxLdVjQfUaNsj7zbMLSfT37bsBSB42AnXKOlPs/vyMbS77LxhN8a2A==}
     dev: false
 
-  /@fuels/connectors@0.6.0(@types/react@18.3.3)(@wagmi/connectors@5.0.15)(fuels@0.89.0)(react-dom@18.3.1)(react@18.3.1)(typescript@5.4.5):
-    resolution: {integrity: sha512-SP45GiBCv/GhLL5JzcMWhxvAPUnf/6d2UitTiz0sJApfo1bqdaesp13wN5dphPq2CUUSFFgc4vUp/KKYneVCiA==}
+  /@fuels/connectors@0.7.0(@types/react@18.3.3)(@wagmi/connectors@5.0.15)(fuels@0.89.0)(react-dom@18.3.1)(react@18.3.1)(typescript@5.4.5):
+    resolution: {integrity: sha512-64wLg+dqfUwJ2zCkOjlPVkRx8eJ1UD4XH8HY7VNSepB3LgaYPPnSBotn14yYjQLPQOurnjjAeicn39QkxDGaxA==}
     peerDependencies:
       fuels: '>=0.88.1'
     dependencies:
