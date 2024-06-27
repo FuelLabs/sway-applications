@@ -1,15 +1,17 @@
 import { UploadButton } from "@/components/UploadButton";
-import { useCreateNFT } from "@/hooks/useCreateNFT";
 import { useUploadFile } from "@/hooks/useUploadFile";
 import { IconButton, Stack } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import clsx from "clsx";
+import { useIsMutating } from "@tanstack/react-query";
+
 import { Button } from "@/components/Button";
 import { Input } from "@/components/Input";
 import { useActiveWallet } from "@/hooks/useActiveWallet";
 import { NFTImage } from "@/components/NFTImage";
 import { Text } from "@/components/Text";
+import { NFTQueryKeys } from "@/queryKeys";
 
 export default function Create() {
   const [file, setFile] = useState<File>();
@@ -18,22 +20,13 @@ export default function Create() {
   const [description, setDescription] = useState("");
   const { isConnected, isPending } = useActiveWallet();
 
-  const createNFT = useCreateNFT();
+  const isCreatingNFT = Boolean(useIsMutating({
+    mutationKey: [NFTQueryKeys.createNFT],
+  }));
   const uploadFile = useUploadFile();
 
-  useEffect(() => {
-    if (uploadFile.data) {
-      const newCid = uploadFile.data;
-      createNFT.mutate({
-        cid: newCid,
-        name,
-        description,
-        symbol,
-      });
-    }
-  }, [uploadFile.data]);
-
-  const isCreateButtonDisabled = !name || !symbol;
+  const isCreateButtonDisabled =
+    !name || !symbol || uploadFile.isPending || isCreatingNFT;
 
   return (
     <>
@@ -55,10 +48,7 @@ export default function Create() {
                 "py-8"
               )}
             >
-              <Text
-                variant="h4"
-                sx={{ paddingBottom: "28px" }}
-              >
+              <Text variant="h4" sx={{ paddingBottom: "28px" }}>
                 Create New NFT
               </Text>
               <Text>Upload File</Text>
@@ -110,9 +100,7 @@ export default function Create() {
                 onChange={(event) => setSymbol(event.target.value)}
                 placeholder="BD"
               />
-              <Text>
-                Description (Optional)
-              </Text>
+              <Text>Description (Optional)</Text>
               <Input
                 value={description}
                 onChange={(event) => setDescription(event.target.value)}
@@ -122,21 +110,26 @@ export default function Create() {
                 disabled={isCreateButtonDisabled}
                 onClick={() => {
                   if (file) {
-                    uploadFile.mutate({
+                    uploadFile.mutateAsync({
                       fileToUpload: file,
+                      name,
+                      description,
+                      symbol,
                     });
                   }
                 }}
               >
-                Create NFT
+                {uploadFile.isPending
+                  ? "Uploading to IPFS..."
+                  : isCreatingNFT
+                    ? "Creating NFT..."
+                    : "Create NFT"}
               </Button>
             </Stack>
           </div>
         </div>
       ) : (
-        <Text>
-          Please connect your wallet to create an NFT.
-        </Text>
+        <Text>Please connect your wallet to create an NFT.</Text>
       )}
     </>
   );

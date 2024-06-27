@@ -20,7 +20,7 @@
     "@emotion/react": "^11.11.4",
     "@emotion/styled": "^11.11.0",
     "@fuels/connectors": "^0.7.0",
-    "@fuels/react": "^0.20.0",
+    "@fuels/react": "^0.21.0",
     "@mui/base": "5.0.0-beta.40",
     "@mui/icons-material": "^5.15.12",
     "@mui/material": "^5.15.12",
@@ -33,7 +33,7 @@
     "dotenv": "^16.4.5",
     "form-data": "^4.0.0",
     "formidable": "^3.5.1",
-    "fuels": "0.89.0",
+    "fuels": "0.90.0",
     "next": "14.2.2",
     "react": "^18.2",
     "react-dom": "^18.2",
@@ -54,9 +54,5 @@
     "tailwindcss": "^3.3.0",
     "tsx": "^4.11.0",
     "typescript": "^5"
-  },
-  "trustedDependencies": [
-    "@fuel-ts/fuel-core",
-    "@fuel-ts/forc"
-  ]
+  }
 }

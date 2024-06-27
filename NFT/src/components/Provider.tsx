@@ -2,8 +2,8 @@
 
 import { FuelProvider } from "@fuels/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { Provider, type FuelConfig } from "fuels";
-import React, { useCallback, useEffect, useState } from "react";
+import { Provider } from "fuels";
+import React, { useEffect, useState } from "react";
 import { coinbaseWallet, walletConnect } from "@wagmi/connectors";
 import { http, createConfig, injected } from "@wagmi/core";
 import { mainnet, sepolia } from "@wagmi/core/chains";
@@ -12,7 +12,7 @@ import {
   FuelWalletDevelopmentConnector,
   FueletWalletConnector,
   BurnerWalletConnector,
-  WalletConnectConnector
+  WalletConnectConnector,
 } from "@fuels/connectors";
 import { StyledEngineProvider } from "@mui/material";
 
@@ -21,15 +21,16 @@ import { NODE_URL, WC_PROJECT_ID } from "@/lib";
 export const queryClient: QueryClient = new QueryClient();
 
 export const AppProvider = ({ children }: { children: React.ReactNode }) => {
-  const [fuelConfig, setFuelConfig] = useState<FuelConfig>({});
-  const [currentProvider, setCurrentProvider] = useState<Provider>();
   const [currentUrl, setCurrentUrl] = useState("");
+  const [isMounted, setIsMounted] = useState(false);
+
 
   useEffect(() => {
-    if (window !== undefined) {
-      setCurrentUrl(window.location.href);
-    }
+    setIsMounted(true);
+    setCurrentUrl(window.location.href);
   }, []);
+
+  if (!isMounted) return null;
 
   // ============================================================
   // WalletConnect Connector configurations
@@ -63,36 +64,28 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
     ],
   });
 
-  const fetchProvider = useCallback(async () => {
-    const provider = await Provider.create(NODE_URL);
-    setCurrentProvider(provider);
-  }, []);
-
-  useEffect(() => {
-    fetchProvider();
-  }, [fetchProvider]);
-
-  useEffect(() => {
-    const newFuelConfig = {
-      connectors: [
-        new FuelWalletConnector(),
-        new FueletWalletConnector(),
-        new WalletConnectConnector({
-          fuelProvider: currentProvider,
-          wagmiConfig,
-          projectId: WC_PROJECT_ID,
-        }),
-        new FuelWalletDevelopmentConnector(),
-        new BurnerWalletConnector({ fuelProvider: currentProvider }),
-      ],
-    };
-    setFuelConfig(newFuelConfig);
-  }, [currentProvider]);
+  const currentProvider = Provider.create(NODE_URL);
 
   return (
     <StyledEngineProvider injectFirst>
       <QueryClientProvider client={queryClient}>
-        <FuelProvider fuelConfig={fuelConfig}>{children}</FuelProvider>
+        <FuelProvider
+          fuelConfig={{
+            connectors: [
+              new FuelWalletConnector(),
+              new FueletWalletConnector(),
+              new WalletConnectConnector({
+                fuelProvider: currentProvider,
+                wagmiConfig,
+                projectId: WC_PROJECT_ID,
+              }),
+              new FuelWalletDevelopmentConnector(),
+              new BurnerWalletConnector({ fuelProvider: currentProvider }),
+            ],
+          }}
+        >
+          {children}
+        </FuelProvider>
       </QueryClientProvider>
     </StyledEngineProvider>
   );

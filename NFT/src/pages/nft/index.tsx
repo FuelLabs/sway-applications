@@ -13,22 +13,22 @@ export default function Home() {
         <Text>Loading...</Text>
       ) : (
         <Grid container spacing={2}>
-        {nftData?.map((nftDatum) => {
-          return (
-            <Grid item>
-              <NFTCard
-                cid={nftDatum.ipfs_pin_hash}
-                fileCid={nftDatum.metadata?.name || ""}
-                nftName={nftDatum.metadata.keyvalues?.nftName || ""}
-                nftDescription={
-                  nftDatum.metadata.keyvalues?.nftDescription || ""
-                }
-                nftSubId={nftDatum.metadata.keyvalues?.nftSubId || ""}
-              />
-            </Grid>
-          );
-        })}
-      </Grid>
+          {nftData?.map((nftDatum) => {
+            return (
+              <Grid item>
+                <NFTCard
+                  cid={nftDatum.ipfs_pin_hash}
+                  fileCid={nftDatum.metadata?.name || ""}
+                  nftName={nftDatum.metadata.keyvalues?.nftName || ""}
+                  nftDescription={
+                    nftDatum.metadata.keyvalues?.nftDescription || ""
+                  }
+                  nftSubId={nftDatum.metadata.keyvalues?.nftSubId || ""}
+                />
+              </Grid>
+            );
+          })}
+        </Grid>
       )}
     </Stack>
   );

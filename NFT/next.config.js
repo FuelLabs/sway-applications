@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  transpilePackages: ['tictactoe'],
+  transpilePackages: ["tictactoe"],
   experimental: {
     externalDir: true,
   },
@@ -11,8 +11,7 @@ const nextConfig = {
   webpack: (config) => {
     // https://github.com/WalletConnect/walletconnect-monorepo/issues/1908
     // https://docs.walletconnect.com/web3modal/nextjs/about#extra-configuration
-    config.externals.push('pino-pretty', 'lokijs', 'encoding');
-
+    config.externals.push("pino-pretty", "lokijs", "encoding");
     return config;
   },
 };

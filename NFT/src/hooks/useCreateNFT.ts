@@ -26,6 +26,7 @@ export const useCreateNFT = () => {
   const router = useRouter();
 
   const mutation = useMutation({
+    mutationKey: [NFTQueryKeys.createNFT],
     mutationFn: async ({ cid, name, symbol }: CreateNFT) => {
       if (!wallet)
         throw new Error(
@@ -46,10 +47,10 @@ export const useCreateNFT = () => {
       return subId;
     },
     onSuccess: (data, { cid, name, description }) => {
-      updateMetadata.mutate({
+      updateMetadata.mutateAsync({
         ipfsHash: cid,
         metadata: {
-         keyvalues: {
+          keyvalues: {
             nftSubId: data,
             nftName: name,
             nftDescription: description,
@@ -60,7 +61,10 @@ export const useCreateNFT = () => {
       router.push("/nft");
     },
     onError: (err, { cid }) => {
+      // TODO: if the ts sdk erroneously throws an error
+      // this will delete the ipfs image
       unpin.mutate({ ipfsHash: cid });
+      queryClient.invalidateQueries({ queryKey: [NFTQueryKeys.nftData] });
       console.error(err.message);
       toast.error(err.message);
     },

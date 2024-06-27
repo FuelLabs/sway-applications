@@ -2,24 +2,23 @@ import toast, { Toaster } from "react-hot-toast";
 import { Link } from "./Link";
 import { Button } from "./Button";
 import { CURRENT_ENVIRONMENT, NODE_URL, TESTNET_FAUCET_LINK } from "@/lib";
-import {
-  useConnectUI,
-  useDisconnect,
-} from "@fuels/react";
 import { WalletDisplay } from "./WalletDisplay";
 import { useActiveWallet } from "@/hooks/useActiveWallet";
 import { useFaucet } from "@/hooks/useFaucet";
 import Head from "next/head";
+import { ConnectButton } from "./ConnectButton";
 
 export const Layout = ({ children }: { children: React.ReactNode }) => {
   const { faucetWallet } = useFaucet();
 
-  const { connect } = useConnectUI();
-  const { disconnect } = useDisconnect();
-
-  const { wallet, network, walletBalance, isConnected, refetchBalnce } =
-    useActiveWallet();
-
+  const {
+    wallet,
+    network,
+    walletBalance,
+    isConnected,
+    refetchBalnce,
+    isPending,
+  } = useActiveWallet();
   const TOP_UP_AMOUNT = 100_000_000;
 
   const topUpWallet = async () => {
@@ -71,28 +70,11 @@ export const Layout = ({ children }: { children: React.ReactNode }) => {
             from-zinc-900
             to-zinc-950/80"
         >
-          <Link href="/">Home</Link>
           <Link href="/nft">Explore</Link>
 
           <Link href="/nft/create">Create</Link>
 
           <Link href={`/nft/collection`}>Collection</Link>
-
-          <Link
-            href={
-              CURRENT_ENVIRONMENT === "local"
-                ? "/nft/faucet"
-                : TESTNET_FAUCET_LINK
-            }
-            target={CURRENT_ENVIRONMENT === "local" ? "_self" : "_blank"}
-          >
-            Faucet
-          </Link>
-
-          {isConnected && (
-            <Button onClick={disconnect}>Disconnect Wallet</Button>
-          )}
-          {!isConnected && <Button onClick={connect}>Connect Wallet</Button>}
 
           {showAddNetworkButton && (
             <Button onClick={tryToAddNetwork} className="bg-red-500 text-white">
@@ -105,8 +87,10 @@ export const Layout = ({ children }: { children: React.ReactNode }) => {
           </div>
 
           {showTopUpButton && (
-            <Button onClick={() => topUpWallet()}>Top-up Wallet</Button>
+            <Button onClick={() => topUpWallet()}>Faucet</Button>
           )}
+
+          <ConnectButton isLoading={isPending} isConnected={isConnected} />
         </nav>
 
         <div className="min-h-screen items-center p-24 flex flex-col gap-6">

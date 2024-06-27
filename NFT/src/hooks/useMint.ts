@@ -48,6 +48,9 @@ export const useMint = () => {
       toast.success("Successfully minted nft!");
     },
     onError: (err) => {
+      // TODO: we need this in case the ts sdk
+      // erroneously throws an error
+      queryClient.invalidateQueries({ queryKey: [NFTQueryKeys.totalSupply] });
       console.error(err.message);
       toast.error(err.message);
     },

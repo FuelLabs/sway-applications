@@ -1,15 +1,20 @@
 import { useMutation } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 
-// TODO: we should save the file locally
-// and only pin to ipfs if user deploys nft contract
+import { useCreateNFT } from "./useCreateNFT";
+
+type UploadFileParams = {
+  fileToUpload: File;
+  name: string;
+  description: string;
+  symbol: string;
+};
+
 export const useUploadFile = () => {
+  const createNFT = useCreateNFT();
+
   const mutation = useMutation({
-    mutationFn: async ({
-      fileToUpload,
-    }: {
-      fileToUpload: File;
-    }) => {
+    mutationFn: async ({ fileToUpload }: UploadFileParams) => {
       const formData = new FormData();
       formData.append("file", fileToUpload);
       const res = await fetch("/api/files", {
@@ -18,6 +23,15 @@ export const useUploadFile = () => {
       });
       const ipfsHash = await res.text();
       return ipfsHash;
+    },
+    onSuccess: (data, { name, description, symbol }) => {
+      const newCid = data;
+      createNFT.mutateAsync({
+        cid: newCid,
+        name,
+        description,
+        symbol,
+      });
     },
     onError: (err) => {
       toast.error(err.message);
