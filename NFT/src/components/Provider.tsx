@@ -22,6 +22,7 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
   });
   const [currentUrl, setCurrentUrl] = useState("");
   const [isMounted, setIsMounted] = useState(false);
+  const [currentProvider] = useState(Provider.create(NODE_URL));
 
   useEffect(() => {
     setIsMounted(true);
@@ -66,8 +67,6 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
       }),
     ],
   });
-
-  const currentProvider = Provider.create(NODE_URL);
 
   return (
     <StyledEngineProvider injectFirst>

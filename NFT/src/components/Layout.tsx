@@ -47,7 +47,6 @@ export const Layout = ({ children }: { children: React.ReactNode }) => {
   };
 
   const showTopUpButton = walletBalance?.lt(TOP_UP_AMOUNT);
-
   const showAddNetworkButton = wallet && network && network?.url !== NODE_URL;
 
   const tryToAddNetwork = () => {
