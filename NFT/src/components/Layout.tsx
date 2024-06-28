@@ -7,10 +7,10 @@ import { useActiveWallet } from "@/hooks/useActiveWallet";
 import { useFaucet } from "@/hooks/useFaucet";
 import Head from "next/head";
 import { ConnectButton } from "./ConnectButton";
+import { useRouter } from "next/router";
 
 export const Layout = ({ children }: { children: React.ReactNode }) => {
   const { faucetWallet } = useFaucet();
-
   const {
     wallet,
     network,
@@ -19,6 +19,8 @@ export const Layout = ({ children }: { children: React.ReactNode }) => {
     refetchBalnce,
     isPending,
   } = useActiveWallet();
+  const router = useRouter();
+
   const TOP_UP_AMOUNT = 100_000_000;
 
   const topUpWallet = async () => {
@@ -38,10 +40,11 @@ export const Layout = ({ children }: { children: React.ReactNode }) => {
     }
 
     if (CURRENT_ENVIRONMENT === "testnet") {
-      return window.open(
-        `${TESTNET_FAUCET_LINK}?address=${wallet.address.toAddress()}`,
-        "_blank"
-      );
+      router.push("/nft/faucet");
+      // return window.open(
+      //   `${TESTNET_FAUCET_LINK}?address=${wallet.address.toAddress()}`,
+      //   "_blank"
+      // );
     }
     await refetchBalnce();
   };
