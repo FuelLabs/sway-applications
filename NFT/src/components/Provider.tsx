@@ -1,5 +1,3 @@
-"use client";
-
 import { FuelProvider } from "@fuels/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Provider } from "fuels";
@@ -18,18 +16,20 @@ import { StyledEngineProvider } from "@mui/material";
 
 import { NODE_URL, WC_PROJECT_ID } from "@/lib";
 
-export const queryClient: QueryClient = new QueryClient();
-
 export const AppProvider = ({ children }: { children: React.ReactNode }) => {
+  const [queryClient] = useState(() => {
+    return new QueryClient({});
+  });
   const [currentUrl, setCurrentUrl] = useState("");
   const [isMounted, setIsMounted] = useState(false);
-
 
   useEffect(() => {
     setIsMounted(true);
     setCurrentUrl(window.location.href);
   }, []);
 
+  // NOTE: If the component is not rendered in the client
+  // the BurnerWalletConnector will throw an error
   if (!isMounted) return null;
 
   // ============================================================
@@ -42,6 +42,9 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
     url: currentUrl,
     icons: ["https://connectors.fuel.network/logo_white.png"],
   };
+  // NOTE: we do not have ssr: true
+  // Bc there is a bug in the connector
+  // https://github.com/FuelLabs/fuel-connectors/issues/134
   const wagmiConfig = createConfig({
     chains: [mainnet, sepolia],
     transports: {

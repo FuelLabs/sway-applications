@@ -1,11 +1,12 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
-import { queryClient } from "@/components/Provider";
 import { NFTQueryKeys } from "@/queryKeys";
 
 // WARNING: although this can take arbitrary metadata
 // it overwrites the past metadata
 export const useUpdateMetadata = () => {
+  const queryClient = useQueryClient();
+
   const mutation = useMutation({
     mutationFn: async ({
       metadata,

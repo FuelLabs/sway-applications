@@ -1,5 +1,5 @@
 import { useWallet } from "@fuels/react";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import { getRandomB256 } from "fuels";
 import { NFTContractAbi__factory } from "@/contract-types";
@@ -9,7 +9,6 @@ import { useUpdateMetadata } from "./useUpdateMetadata";
 import { useUnpin } from "./useUnpin";
 import { CONTRACT_ID } from "@/lib";
 import { useRouter } from "next/router";
-import { queryClient } from "@/components/Provider";
 import { NFTQueryKeys } from "@/queryKeys";
 
 type CreateNFT = {
@@ -24,6 +23,7 @@ export const useCreateNFT = () => {
   const updateMetadata = useUpdateMetadata();
   const unpin = useUnpin();
   const router = useRouter();
+  const queryClient = useQueryClient();
 
   const mutation = useMutation({
     mutationKey: [NFTQueryKeys.createNFT],

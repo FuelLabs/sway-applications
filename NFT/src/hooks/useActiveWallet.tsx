@@ -8,7 +8,6 @@ import {
 export const useActiveWallet = () => {
   const {
     wallet,
-    isFetching: isWalletFetching,
     isLoading: isWalletLoading,
   } = useWallet();
   const { balance, refetch } = useBalance({
@@ -16,7 +15,6 @@ export const useActiveWallet = () => {
   });
   const {
     isConnected,
-    isFetching: isConnectedFetching,
     isLoading: isConnectedLoading,
   } = useIsConnected();
   const { network } = useNetwork();
@@ -27,9 +25,7 @@ export const useActiveWallet = () => {
     refetchBalnce: refetch,
     isPending:
       isWalletLoading ||
-      isConnectedLoading ||
-      isWalletFetching ||
-      isConnectedFetching,
+      isConnectedLoading,
     isConnected,
     network,
   };

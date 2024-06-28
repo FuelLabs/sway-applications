@@ -1,15 +1,15 @@
 import { NFTContractAbi__factory } from "@/contract-types";
 import { useWallet } from "@fuels/react";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import { useUpdateMetadata } from "./useUpdateMetadata";
 import { CONTRACT_ID } from "@/lib";
-import { queryClient } from "@/components/Provider";
 import { NFTQueryKeys } from "@/queryKeys";
 
 export const useMint = () => {
   const { wallet } = useWallet();
   const updateMetadata = useUpdateMetadata();
+  const queryClient = useQueryClient();
 
   const mutation = useMutation({
     mutationFn: async ({
@@ -45,6 +45,7 @@ export const useMint = () => {
         },
       });
       queryClient.invalidateQueries({ queryKey: [NFTQueryKeys.totalSupply] });
+      queryClient.invalidateQueries({ queryKey: [NFTQueryKeys.nftData] });
       toast.success("Successfully minted nft!");
     },
     onError: (err) => {

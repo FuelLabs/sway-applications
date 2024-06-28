@@ -74,7 +74,7 @@ export const Layout = ({ children }: { children: React.ReactNode }) => {
 
           <Link href="/nft/create">Create</Link>
 
-          <Link href={`/nft/collection`}>Collection</Link>
+          <Link href="/nft/collection">Collection</Link>
 
           {showAddNetworkButton && (
             <Button onClick={tryToAddNetwork} className="bg-red-500 text-white">
