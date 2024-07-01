@@ -55,12 +55,12 @@ export default function Create() {
               <Stack
                 alignItems="center"
                 justifyContent="space-around"
-                padding={5}
                 sx={{
                   border: "1px dashed",
                   borderColor: "#434343",
                   borderRadius: "15px",
                 }}
+                className="px-8 pb-8 pt-6"
               >
                 {file ? (
                   <>
@@ -76,7 +76,7 @@ export default function Create() {
                     >
                       <CloseIcon />
                     </IconButton>
-                    <NFTImage src={URL.createObjectURL(file)} />
+                    <NFTImage src={URL.createObjectURL(file)} className="w-64 h-64 md:w-80 md:h-80 lg:w-96 lg:h-96" />
                   </>
                 ) : (
                   <Stack spacing={2}>

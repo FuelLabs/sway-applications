@@ -21,7 +21,7 @@ export const Layout = ({ children }: { children: React.ReactNode }) => {
     refetchBalnce,
   } = useActiveWallet();
   const router = useRouter();
-  const isMobile = useMedia("(max-width: 428px)", false);
+  const isMobile = useMedia("(max-width: 640px)", false);
 
   const TOP_UP_AMOUNT = 100_000_000;
 

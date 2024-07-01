@@ -10,7 +10,10 @@ export const NFTImage = ({
   return (
     <img
       src={src}
-      className={className ?? "w-80 h-80 lg:w-72 lg:h-72"}
+      className={
+        className ??
+        "w-80 h-80 sm:w-64 sm:h-64 md:w-72 md:h-72 lg:w-60 lg:h-60 xl:w-80 xl:h-80"
+      }
     />
   );
 };

@@ -26,12 +26,12 @@ export default function Home() {
       {isPending ? (
         <Text>Loading...</Text>
       ) : nftData.length ? (
-        <Stack spacing={2}>
+        <Stack spacing={2} className="w-full">
           <Text variant="h5">Your NFTs</Text>
-          <Grid container spacing={2}>
+          <Grid container spacing={2} className="-ml-4">
             {nftData.map((nftDatum) => {
               return (
-                <Grid>
+                <Grid item xs={12} sm={6} md={4}>
                   <NFTCard
                     cid={nftDatum.ipfs_pin_hash}
                     fileCid={nftDatum.metadata?.name || ""}
@@ -40,7 +40,6 @@ export default function Home() {
                       nftDatum.metadata.keyvalues?.nftDescription || ""
                     }
                     nftSubId={nftDatum.metadata.keyvalues?.nftSubId || ""}
-                    showDescription
                   />
                 </Grid>
               );

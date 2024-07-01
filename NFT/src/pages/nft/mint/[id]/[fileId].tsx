@@ -55,8 +55,8 @@ export default function Mint() {
         "to-zinc-950/80",
         "px-2",
         "py-8",
-        "w-full",
-        "lg:w-1/2"
+        "sm:w-3/4",
+        "md:w-1/2"
       )}
     >
       <Box display="flex" alignSelf="center">
