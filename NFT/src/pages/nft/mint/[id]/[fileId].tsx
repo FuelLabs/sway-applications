@@ -43,11 +43,9 @@ export default function Mint() {
   const mint = useMint();
 
   return (
-    <Box
-      display="flex"
-      alignItems="center"
-      justifyContent="space-around"
-      width="40rem"
+    <Stack
+      justifyContent="center"
+      spacing={3}
       className={clsx(
         "gradient-border",
         "h-full",
@@ -56,21 +54,20 @@ export default function Mint() {
         "from-zinc-900",
         "to-zinc-950/80",
         "px-2",
-        "py-8"
+        "py-8",
+        "w-full",
+        "lg:w-1/2"
       )}
     >
-      <NFTImage
-        src={`${GATEWAY_URL}/ipfs/${router.query.id}/${router.query.fileId}`}
-      />
-      <Stack width="200px" spacing={2}>
-        <Text variant="h5">
-          {nftName}
-        </Text>
-        {router.query.nftDescription && (
-          <Text>
-            {nftDescription}
-          </Text>
-        )}
+      <Box display="flex" alignSelf="center">
+        <NFTImage
+          src={`${GATEWAY_URL}/ipfs/${router.query.id}/${router.query.fileId}`}
+          className="w-80 h-80 lg:w-96 lg:h-96"
+        />
+      </Box>
+      <Stack className="px-4" spacing={2}>
+        <Text variant="h5">{nftName}</Text>
+        {router.query.nftDescription && <Text>{nftDescription}</Text>}
         {!totalSupply ? (
           <Button
             onClick={() => {
@@ -99,6 +96,6 @@ export default function Mint() {
           <Text>Loading...</Text>
         )}
       </Stack>
-    </Box>
+    </Stack>
   );
 }

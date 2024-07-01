@@ -1,13 +1,16 @@
 import toast, { Toaster } from "react-hot-toast";
 import { Link } from "./Link";
 import { Button } from "./Button";
-import { CURRENT_ENVIRONMENT, NODE_URL, TESTNET_FAUCET_LINK } from "@/lib";
+import { CURRENT_ENVIRONMENT, NODE_URL } from "@/lib";
 import { WalletDisplay } from "./WalletDisplay";
 import { useActiveWallet } from "@/hooks/useActiveWallet";
 import { useFaucet } from "@/hooks/useFaucet";
 import Head from "next/head";
 import { ConnectButton } from "./ConnectButton";
 import { useRouter } from "next/router";
+import { useMedia } from "react-use";
+import { NavMenu } from "./NavMenu";
+import { NFTRoutes } from "@/routes";
 
 export const Layout = ({ children }: { children: React.ReactNode }) => {
   const { faucetWallet } = useFaucet();
@@ -15,11 +18,10 @@ export const Layout = ({ children }: { children: React.ReactNode }) => {
     wallet,
     network,
     walletBalance,
-    isConnected,
     refetchBalnce,
-    isPending,
   } = useActiveWallet();
   const router = useRouter();
+  const isMobile = useMedia("(max-width: 428px)", false);
 
   const TOP_UP_AMOUNT = 100_000_000;
 
@@ -40,11 +42,7 @@ export const Layout = ({ children }: { children: React.ReactNode }) => {
     }
 
     if (CURRENT_ENVIRONMENT === "testnet") {
-      router.push("/nft/faucet");
-      // return window.open(
-      //   `${TESTNET_FAUCET_LINK}?address=${wallet.address.toAddress()}`,
-      //   "_blank"
-      // );
+      router.push(NFTRoutes.faucet);
     }
     await refetchBalnce();
   };
@@ -67,16 +65,20 @@ export const Layout = ({ children }: { children: React.ReactNode }) => {
       <Toaster />
       <div className="flex flex-col">
         <nav
-          className="flex justify-between items-center p-4 bg-black text-white gap-6 gradient-border
+          className="flex justify-between items-center p-4 bg-black text-white gap-2 lg:gap-6 gradient-border
             bg-gradient-to-b
             from-zinc-900
             to-zinc-950/80"
         >
-          <Link href="/nft">Explore</Link>
+          {!isMobile && (
+            <>
+              <Link href={NFTRoutes.explore}>Explore</Link>
 
-          <Link href="/nft/create">Create</Link>
+              <Link href={NFTRoutes.create}>Create</Link>
 
-          <Link href="/nft/collection">Collection</Link>
+              <Link href={NFTRoutes.collection}>Collection</Link>
+            </>
+          )}
 
           {showAddNetworkButton && (
             <Button onClick={tryToAddNetwork} className="bg-red-500 text-white">
@@ -88,14 +90,20 @@ export const Layout = ({ children }: { children: React.ReactNode }) => {
             <WalletDisplay />
           </div>
 
-          {showTopUpButton && (
-            <Button onClick={() => topUpWallet()}>Faucet</Button>
-          )}
+          {!isMobile ? (
+            <>
+              {showTopUpButton && (
+                <Button onClick={() => topUpWallet()}>Faucet</Button>
+              )}
 
-          <ConnectButton isLoading={isPending} isConnected={isConnected} />
+              <ConnectButton />
+            </>
+          ) : (
+            <NavMenu />
+          )}
         </nav>
 
-        <div className="min-h-screen items-center p-24 flex flex-col gap-6">
+        <div className="min-h-screen items-center p-8 lg:p-24 flex flex-col gap-6">
           {children}
         </div>
       </div>

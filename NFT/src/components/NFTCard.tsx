@@ -1,4 +1,4 @@
-import { Card, CardContent, CardActionArea } from "@mui/material";
+import { Card, CardContent, CardActionArea, Box } from "@mui/material";
 import { useRouter } from "next/router";
 import { GATEWAY_URL } from "@/lib";
 import { NFTImage } from "./NFTImage";
@@ -31,7 +31,6 @@ export const NFTCard = ({
         backgroundColor: "black",
         borderColor: "#1e1e1e",
         borderWidth: "3px",
-        height: "420px",
       }}
     >
       <CardActionArea
@@ -41,9 +40,9 @@ export const NFTCard = ({
           );
         }}
       >
-        <NFTImage src={`${GATEWAY_URL}/ipfs/${cid}/${fileCid}`} />
-        <CardContent sx={{ paddingBottom: "0px" }}>
-          <Text variant="h5">
+        <Box display="flex" justifyContent="center"><NFTImage src={`${GATEWAY_URL}/ipfs/${cid}/${fileCid}`} /></Box>
+        <CardContent sx={{ paddingBottom: "0px", paddingLeft: "0px" }}>
+          <Text className="text-2xl">
             {nftName}
           </Text>
           {showDescription && (

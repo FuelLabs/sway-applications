@@ -29,10 +29,10 @@ export default function Address() {
           <Text variant="h5">
             {getTruncatedAddress(router.query.address as string)} NFTs
           </Text>
-          <Grid container spacing={2}>
+          <Grid container spacing={2} className="-ml-4">
             {nftData.map((nftDatum) => {
               return (
-                <Grid item>
+                <Grid item xs={12} sm={4}>
                   <NFTCard
                     cid={nftDatum.ipfs_pin_hash}
                     fileCid={nftDatum.metadata?.name || ""}

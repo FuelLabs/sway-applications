@@ -27,15 +27,15 @@ export default function Home() {
   const { nftData, isPending } = useGetNFTData();
 
   return (
-    <Stack alignItems="flex-start" width="stretch" spacing={3}>
+    <Stack alignItems="flex-start" width="stretch" spacing={2}>
       <Text variant="h3">Latest NFTs</Text>
       {isPending ? (
         <Text>Loading...</Text>
       ) : (
-        <Grid container spacing={2}>
+        <Grid container spacing={2} className="-ml-4">
           {nftData?.map((nftDatum) => {
             return (
-              <Grid item>
+              <Grid item xs={12} sm={4}>
                 <NFTCard
                   cid={nftDatum.ipfs_pin_hash}
                   fileCid={nftDatum.metadata?.name || ""}

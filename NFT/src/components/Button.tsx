@@ -1,18 +1,17 @@
-import { Button as BaseButton } from "@mui/material";
+import { Button as BaseButton, ButtonProps } from "@mui/material";
 import clsx from "clsx";
 
-export const Button: React.FC<{
-  children: React.ReactNode;
-  disabled?: boolean;
-  onClick?: () => void;
-  className?: string;
-}> = ({ disabled, children, onClick, className }) => {
+export const Button = ({
+  children,
+  className,
+  variant = "contained",
+  ...props
+}: ButtonProps) => {
   return (
     <BaseButton
-      variant="contained"
-      disabled={disabled}
+      {...props}
+      variant={variant}
       className={clsx("btn", "btn-primary", className)}
-      onClick={onClick}
     >
       {children}
     </BaseButton>

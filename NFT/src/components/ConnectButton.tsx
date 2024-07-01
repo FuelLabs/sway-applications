@@ -1,19 +1,12 @@
 import { useConnectUI, useDisconnect } from "@fuels/react";
 import { Button } from "./Button";
+import { useActiveWallet } from "@/hooks/useActiveWallet";
 
-type ConnectButtonProps = {
-  isLoading?: boolean;
-  isConnected: boolean;
-};
-
-export const ConnectButton = ({
-  isLoading,
-  isConnected,
-}: ConnectButtonProps) => {
+export const ConnectButton = () => {
+  const { isPending: isLoading, isConnected } = useActiveWallet();
   const { connect } = useConnectUI();
   const { disconnect } = useDisconnect();
 
-  // TODO: connect button blinks
   const buttonText = isLoading
     ? "Loading..."
     : isConnected
@@ -23,7 +16,7 @@ export const ConnectButton = ({
   const onClick = isConnected ? disconnect : connect;
 
   return (
-    <Button disabled={isLoading} onClick={onClick}>
+    <Button disabled={isLoading} onClick={() => onClick()}>
       {buttonText}
     </Button>
   );

@@ -9,7 +9,7 @@ export default function Faucet() {
   useEffect(() => {
     const interval = setInterval(refetchBalnce, 500);
     return () => clearInterval(interval);
-  }, [])
+  }, []);
 
   if (!wallet) return <Text>Please connect wallet to faucet funds.</Text>;
 
