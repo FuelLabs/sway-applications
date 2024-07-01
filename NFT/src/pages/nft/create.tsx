@@ -1,13 +1,13 @@
 import { UploadButton } from "@/components/UploadButton";
 import { useUploadFile } from "@/hooks/useUploadFile";
-import { IconButton, Stack } from "@mui/material";
+import { IconButton, Stack, TextField } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import { useState } from "react";
 import clsx from "clsx";
 import { useIsMutating } from "@tanstack/react-query";
 
 import { Button } from "@/components/Button";
-import { Input } from "@/components/Input";
+import { Input, inputStyle } from "@/components/Input";
 import { useActiveWallet } from "@/hooks/useActiveWallet";
 import { NFTImage } from "@/components/NFTImage";
 import { Text } from "@/components/Text";
@@ -101,10 +101,14 @@ export default function Create() {
                 placeholder="BD"
               />
               <Text>Description (Optional)</Text>
-              <Input
+              <TextField
                 value={description}
                 onChange={(event) => setDescription(event.target.value)}
                 placeholder="Cool dragons that like to lift weights"
+                multiline
+                rows={4}
+                className={clsx([...inputStyle])}
+                inputProps={{ className: "placeholder:text-zinc-400 text-zinc-50" }}
               />
               <Button
                 disabled={isCreateButtonDisabled}
