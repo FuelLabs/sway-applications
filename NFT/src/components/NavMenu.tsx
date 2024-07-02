@@ -48,7 +48,7 @@ export const NavMenu = () => {
           <Link href={NFTRoutes.create}>Create</Link>
         </MenuItem>
         <MenuItem onClick={handleClose}>
-          <Link href={NFTRoutes.collection}>Collection</Link>
+          <Link href={NFTRoutes.collection}>My Account</Link>
         </MenuItem>
         <MenuItem onClick={handleClose}>
           <Link href={NFTRoutes.faucet}>Faucet</Link>

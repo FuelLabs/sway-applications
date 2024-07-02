@@ -5,7 +5,7 @@ import { NFTQueryKeys } from "@/queryKeys";
 
 // We need this custom type bc pinata does not return the same type
 // as the type they have defined in ts
-type NFTData = Omit<PinataPin, "metadata"> & {
+export type NFTData = Omit<PinataPin, "metadata"> & {
   metadata: { name?: string; keyvalues: { [key: string]: string | undefined } };
 };
 

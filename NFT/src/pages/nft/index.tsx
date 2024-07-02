@@ -5,6 +5,7 @@ import { Text } from "@/components/Text";
 import { QueryClient, dehydrate } from "@tanstack/react-query";
 import { NFTQueryKeys } from "@/queryKeys";
 import { getNFTMetadata } from "../api/files/[filter]";
+import { NFTGrid } from "@/components/NFTGrid";
 
 export async function getStaticProps() {
   const queryClient = new QueryClient();
@@ -24,32 +25,13 @@ export async function getStaticProps() {
 }
 
 export default function Home() {
-  const { nftData, isPending } = useGetNFTData();
+  const { nftData, isLoading } = useGetNFTData();
 
   return (
-    <Stack alignItems="flex-start" width="stretch" spacing={2}>
-      <Text variant="h3">Latest NFTs</Text>
-      {isPending ? (
-        <Text>Loading...</Text>
-      ) : (
-        <Grid container spacing={2} className="-ml-4">
-          {nftData?.map((nftDatum) => {
-            return (
-              <Grid item xs={12} sm={6} md={4}>
-                <NFTCard
-                  cid={nftDatum.ipfs_pin_hash}
-                  fileCid={nftDatum.metadata?.name || ""}
-                  nftName={nftDatum.metadata.keyvalues?.nftName || ""}
-                  nftDescription={
-                    nftDatum.metadata.keyvalues?.nftDescription || ""
-                  }
-                  nftSubId={nftDatum.metadata.keyvalues?.nftSubId || ""}
-                />
-              </Grid>
-            );
-          })}
-        </Grid>
-      )}
-    </Stack>
+    <NFTGrid
+      isLoading={isLoading}
+      nftData={nftData}
+      title={<Text variant="h3">Latest NFTs</Text>}
+    />
   );
 }

@@ -81,7 +81,7 @@ export default function Mint() {
             className="w-48"
             disabled={!isConnected || mint.isPending}
           >
-            {mint.isPending ? "Loading..." : "Mint"}
+            {mint.isPending ? "Minting..." : "Mint"}
           </Button>
         ) : minterAddress ? (
           <Text>

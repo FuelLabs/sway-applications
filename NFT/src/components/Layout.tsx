@@ -76,7 +76,7 @@ export const Layout = ({ children }: { children: React.ReactNode }) => {
 
               <Link href={NFTRoutes.create}>Create</Link>
 
-              <Link href={NFTRoutes.collection}>Collection</Link>
+              <Link href={NFTRoutes.collection}>My Account</Link>
             </>
           )}
 
