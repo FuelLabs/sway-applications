@@ -14,6 +14,35 @@ import { getTruncatedAddress } from "@/utils/address";
 import { Text } from "@/components/Text";
 import { useEffect, useState } from "react";
 
+const MAX_INITIAL_DESCRIPTION = 256;
+
+const NFTDescription = ({ nftDescription }: { nftDescription: string }) => {
+  const [isExpanded, setIsExpanded] = useState(false);
+  const showReadMore = nftDescription.length > MAX_INITIAL_DESCRIPTION;
+
+  return (
+    <>
+      {showReadMore ? (
+        <Stack spacing={2}>
+          {isExpanded ? (
+            <>
+              <Text>{nftDescription}</Text>
+              <Button onClick={() => setIsExpanded(false)}>Show less</Button>
+            </>
+          ) : (
+            <>
+              <Text>{nftDescription.slice(0, MAX_INITIAL_DESCRIPTION)}...</Text>
+              <Button onClick={() => setIsExpanded(true)}>Show more</Button>
+            </>
+          )}
+        </Stack>
+      ) : (
+        <Text>{nftDescription}</Text>
+      )}
+    </>
+  );
+};
+
 export default function Mint() {
   const router = useRouter();
   const [minterAddress, setMinterAddress] = useState("");
@@ -67,7 +96,6 @@ export default function Mint() {
       </Box>
       <Stack className="px-4" spacing={2}>
         <Text variant="h5">{nftName}</Text>
-        {router.query.nftDescription && <Text>{nftDescription}</Text>}
         {!totalSupply ? (
           <Button
             onClick={() => {
@@ -94,6 +122,9 @@ export default function Mint() {
           </Text>
         ) : (
           <Text>Loading...</Text>
+        )}
+        {router.query.nftDescription && (
+          <NFTDescription nftDescription={nftDescription} />
         )}
       </Stack>
     </Stack>
