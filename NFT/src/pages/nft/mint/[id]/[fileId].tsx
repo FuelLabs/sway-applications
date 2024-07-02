@@ -77,7 +77,6 @@ export default function Mint() {
       spacing={3}
       className={clsx(
         "gradient-border",
-        "h-full",
         "rounded-xl",
         "bg-gradient-to-b",
         "from-zinc-900",

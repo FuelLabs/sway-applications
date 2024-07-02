@@ -14,13 +14,13 @@ export const WalletDisplay = () => {
     wallet && (
       <div className="flex gap-4 items-center">
         <span className="text-base text-gray-400 font-sans">
-          {getTruncatedAddress(wallet.address.toB256() as string)}
+          {getTruncatedAddress(wallet.address.toAddress() as string)}
         </span>
         <img
           src="/copy.svg"
           alt="copy"
           className="cursor-pointer h-5 hover:opacity-80 active:scale-[90%]"
-          onClick={() => copyToClipboard(wallet.address.toB256() as string)}
+          onClick={() => copyToClipboard(wallet.address.toAddress() as string)}
         />
         <span className="text-base text-gray-400 font-sans">
           Balance: {walletBalance?.format()} ETH
