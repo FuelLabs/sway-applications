@@ -4,7 +4,7 @@ mod errors;
 mod interface;
 
 use errors::{MintError, SetError};
-use interface::Constructor;
+use interface::{Constructor, MaxSupply};
 use standards::{src20::SRC20, src3::SRC3, src5::{SRC5, State}, src7::{Metadata, SRC7},};
 use sway_libs::{
     asset::{
@@ -62,11 +62,6 @@ storage {
     /// In this NFT contract, there is no metadata provided at compile time. All metadata
     /// is added by users and stored into storage.
     metadata: StorageMetadata = StorageMetadata {},
-}
-
-configurable {
-    /// The maximum number of NFTs that may be minted.
-    MAX_SUPPLY: u64 = 3,
 }
 
 impl SRC20 for Contract {
@@ -272,13 +267,6 @@ impl SRC3 for Contract {
                 .is_none(),
             MintError::NFTAlreadyMinted,
         );
-        require(
-            storage
-                .total_assets
-                .try_read()
-                .unwrap_or(0) + amount <= MAX_SUPPLY,
-            MintError::MaxNFTsMinted,
-        );
 
         // Mint the NFT
         let _ = _mint(
@@ -437,7 +425,6 @@ impl SetAssetAttributes for Contract {
     /// ```
     #[storage(write)]
     fn set_name(asset: AssetId, name: String) {
-        only_owner();
         require(
             storage
                 .name
@@ -483,7 +470,6 @@ impl SetAssetAttributes for Contract {
     /// ```
     #[storage(write)]
     fn set_symbol(asset: AssetId, symbol: String) {
-        only_owner();
         require(
             storage
                 .symbol

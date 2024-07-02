@@ -1,16 +1,14 @@
 {
-  "name": "frontend-app",
+  "name": "tictactoe",
   "private": true,
   "version": "0.0.0",
-  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
   "scripts": {
-    "dev": "vite",
-    "build:all": "NODE_ENV=production run-s build",
-    "build": "tsc && vite build",
+    "ts:check": "pnpm tsc",
     "lint": "run-s lint:check prettier:check",
     "lint:check": "eslint . --ext .ts,.tsx,.js,.jsx",
     "lint:fix": "pnpm lint:check --fix",
-    "preview": "vite preview",
     "contracts-setup": "fuels dev",
     "prettier:write": "prettier --write .",
     "project-setup": "run-p contracts-setup dev"

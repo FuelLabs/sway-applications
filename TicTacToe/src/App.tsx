@@ -28,15 +28,15 @@ function App() {
             flexWrap="wrap"
           >
             <Box width="300px"></Box>
-            <Typography align="center" variant="h3">
+            <Typography align="center" variant="h3" className='text-white font-sans'>
               TicTacToe
             </Typography>
             <ConnectionInfo />
           </Box>
           {isConnected === false && !isConnectedLoading ? (
-            <Typography fontSize="20px">{`Your wallet is not connected to the app.  Please press the connect button and connect your wallet.`}</Typography>
+            <Typography fontSize="20px" className='text-white font-sans'>{`Your wallet is not connected to the app.  Please press the connect button and connect your wallet.`}</Typography>
           ) : showProviderError ? (
-            <Typography fontSize="20px">{`Your wallet is not connected to the correct network.  Please connect to ${PROVIDER_URL}`}</Typography>
+            <Typography fontSize="20px" className='text-white font-sans'>{`Your wallet is not connected to the correct network.  Please connect to ${PROVIDER_URL}`}</Typography>
           ) : null}
           {gameState === 'Ended' && <NewGameButton />}
           {(appContext?.appContextData.showGameBoard ||

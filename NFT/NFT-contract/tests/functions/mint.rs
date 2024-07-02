@@ -1,8 +1,7 @@
 use crate::utils::{
-    interface::{burn, constructor, mint, pause, total_assets, total_supply},
+    interface::{constructor, mint, pause, total_assets, total_supply},
     setup::{defaults, get_wallet_balance, setup},
 };
-use fuels::types::Bits256;
 
 mod success {
 
@@ -141,53 +140,5 @@ mod revert {
 
         mint(&instance_1, other_identity, sub_id_1, 1).await;
         mint(&instance_1, other_identity, sub_id_1, 1).await;
-    }
-
-    #[tokio::test]
-    #[should_panic(expected = "MaxNFTsMinted")]
-    async fn when_max_supplt_reached() {
-        let (owner_wallet, other_wallet, id, instance_1, _instance_2) = setup().await;
-        let (
-            _asset_id_1,
-            _asset_id_2,
-            _asset_id_3,
-            sub_id_1,
-            sub_id_2,
-            sub_id_3,
-            owner_identity,
-            other_identity,
-        ) = defaults(id, owner_wallet, other_wallet);
-
-        constructor(&instance_1, owner_identity).await;
-
-        mint(&instance_1, other_identity, sub_id_1, 1).await;
-        mint(&instance_1, other_identity, sub_id_2, 1).await;
-        mint(&instance_1, other_identity, sub_id_3, 1).await;
-        mint(&instance_1, other_identity, Bits256([4u8; 32]), 1).await;
-    }
-
-    #[tokio::test]
-    #[should_panic(expected = "MaxNFTsMinted")]
-    async fn when_minting_max_supply_after_burn() {
-        let (owner_wallet, other_wallet, id, instance_1, instance_2) = setup().await;
-        let (
-            asset_id_1,
-            _asset_id_2,
-            _asset_id_3,
-            sub_id_1,
-            sub_id_2,
-            sub_id_3,
-            owner_identity,
-            other_identity,
-        ) = defaults(id, owner_wallet, other_wallet);
-
-        constructor(&instance_1, owner_identity).await;
-        mint(&instance_1, other_identity, sub_id_1, 1).await;
-        mint(&instance_1, other_identity, sub_id_2, 1).await;
-        mint(&instance_1, other_identity, sub_id_3, 1).await;
-
-        burn(&instance_2, asset_id_1, sub_id_1, 1).await;
-
-        mint(&instance_1, other_identity, Bits256([4u8; 32]), 1).await;
     }
 }
