@@ -85,7 +85,7 @@ The below apps are updated to the latest version, but may have broken tests or b
 
 ## Running a project
 
-If you wish to run any of the projects then clone this repository and go through the general [installation](https://fuellabs.github.io/sway/) steps required to use our tools.
+If you wish to run any of the projects then clone this repository and go through the general [installation](https://fuellabs.github.io/sway/v0.66.4/book/lsp/installation.html) steps required to use our tools.
 
 Any instructions related to running a specific project will be found within the README.md in the root of that project.
 
