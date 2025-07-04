@@ -8,14 +8,14 @@ use fuels::{
 pub(crate) async fn deposit(
     contract: &F_NFT<WalletUnlocked>,
     nft: AssetId,
-    reciever: Identity,
+    receiver: Identity,
     vault_sub_id: Bytes32,
 ) -> FuelCallResponse<u64> {
     let call_params = CallParameters::new(1, nft, 1_000_000);
 
     contract
         .methods()
-        .deposit(reciever, Bits256(*vault_sub_id))
+        .deposit(receiver, Bits256(*vault_sub_id))
         .with_tx_policies(TxPolicies::default().with_script_gas_limit(2_000_000))
         .call_params(call_params)
         .unwrap()
@@ -29,7 +29,7 @@ pub(crate) async fn withdraw(
     contract: &F_NFT<WalletUnlocked>,
     share_asset: AssetId,
     amount: u64,
-    reciever: Identity,
+    receiver: Identity,
     underlying_asset: AssetId,
     vault_sub_id: Bytes32,
 ) -> FuelCallResponse<u64> {
@@ -37,7 +37,7 @@ pub(crate) async fn withdraw(
 
     contract
         .methods()
-        .withdraw(reciever, underlying_asset, Bits256(*vault_sub_id))
+        .withdraw(receiver, underlying_asset, Bits256(*vault_sub_id))
         .with_tx_policies(TxPolicies::default().with_script_gas_limit(2_000_000))
         .call_params(call_params)
         .unwrap()
@@ -63,13 +63,13 @@ pub(crate) async fn managed_assets(
 
 pub(crate) async fn max_depositable(
     contract: &F_NFT<WalletUnlocked>,
-    reciever: Identity,
+    receiver: Identity,
     underlying_asset: AssetId,
     vault_sub_id: Bytes32,
 ) -> Option<u64> {
     contract
         .methods()
-        .max_depositable(reciever, underlying_asset, Bits256(*vault_sub_id))
+        .max_depositable(receiver, underlying_asset, Bits256(*vault_sub_id))
         .call()
         .await
         .unwrap()
