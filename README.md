@@ -26,8 +26,13 @@ The purpose of this repository is to contain end-to-end applications that are wr
 
 This means that a project will generally consist of a Sway contract and a user interface in order to interact with the contract however that is not a hard rule.
 
-> **Note**
-> Sway is a language under heavy development therefore the applications may not be the most ergonomic. Over time they should receive updates / improvements in order to demonstrate how Sway can be used in real use cases.
+> [!WARNING]
+> **Legacy, version-pinned examples:** These applications have not been
+> updated for current Sway releases or Fuel network toolchains. Most pins were
+> last updated in May 2024. Preserve them as historical examples, but do not
+> treat their syntax, SDK usage, transaction construction, or security patterns
+> as current guidance without revalidating them against your selected compiler,
+> SDK, node, and network.
 
 ## Repository Structure
 
@@ -79,17 +84,52 @@ sway-applications/
 
 - [TicTacToe](./TicTacToe) is a game where two players compete to align three markers in a row.
 
-#### Low maintenance
-The below apps are updated to the latest version, but may have broken tests or broken functionality. Use at your own discretion.
-- [Automated Market Maker (AMM)](./AMM) is a decentralized exchange protocol that manages liquidity pools supplied by its users and determines prices algorithmically while exchanging assets.
+#### Legacy low-maintenance application
+
+- [Automated Market Maker (AMM)](./AMM) is a decentralized exchange protocol that manages liquidity pools supplied by its users and determines prices algorithmically while exchanging assets. Its tests and functionality are not currently verified.
+
+## Project status and toolchains
+
+Every project is a legacy snapshot. The versions below come from each
+committed `fuel-toolchain.toml`; the date is the last commit that changed that
+file. It is not a claim that the combination still installs or passes today.
+GitHub no longer exposes a retained successful CI run for this repository, so a
+durable per-application “last passing” date cannot be recovered from public
+workflow history.
+
+| Application | Recorded channel | Forc | Fuel Core | Toolchain file last updated | Status |
+| --- | --- | --- | --- | --- | --- |
+| [Airdrop](./airdrop/) | `nightly-2024-05-28` | `0.60.0` | `0.26.0` | 2024-05-28 | Legacy; not verified on current releases |
+| [AMM](./AMM) | `nightly-2024-05-28` | `0.60.0+nightly.20240528.4fe6f1ed51` | `0.26.0` | 2024-05-28 | Legacy; tests and functionality unverified |
+| [DAO](./DAO) | `nightly-2024-05-28` | `0.60.0` | `0.26.0` | 2024-05-28 | Legacy; not verified on current releases |
+| [English Auction](./english-auction) | `nightly-2024-05-28` | `0.60.0` | `0.26.0` | 2024-05-28 | Legacy; not verified on current releases |
+| [Escrow](./escrow) | `nightly-2024-05-28` | `0.59.0` | `0.26.0` | 2024-05-28 | Legacy; not verified on current releases |
+| [Fractional NFT](./fractional-NFT) | `nightly-2024-05-28` | `0.60.0` | `0.26.0` | 2024-05-28 | Legacy; not verified on current releases |
+| [Fundraiser](./fundraiser/) | `nightly-2024-05-28` | `0.60.0` | `0.26.0` | 2024-05-28 | Legacy; not verified on current releases |
+| [Multisig Wallet](./multisig-wallet) | `nightly-2024-01-24` | `0.49.1` | `0.22.0` | 2024-03-29 | Legacy; not verified on current releases |
+| [Name Registry](./name-registry/) | `nightly-2024-05-28` | `0.60.0` | `0.26.0` | 2024-05-28 | Legacy; not verified on current releases |
+| [Native Asset](./native-asset) | `nightly-2024-05-28` | `0.60.0` | `0.26.0` | 2024-05-28 | Legacy; not verified on current releases |
+| [NFT](./NFT) | `nightly-2024-05-28` | `0.60.0` | `0.26.0` | 2024-05-28 | Legacy; not verified on current releases |
+| [Oracle](./oracle) | `nightly-2024-05-28` | `0.60.0` | `0.26.0` | 2024-05-28 | Legacy; not verified on current releases |
+| [OTC Swap Predicate](./OTC-swap-predicate) | `nightly-2024-05-28` | `0.60.0` | `0.26.0` | 2024-05-28 | Legacy; not verified on current releases |
+| [TicTacToe](./TicTacToe) | `nightly-2024-05-28` | `0.60.0` | `0.26.0` | 2024-05-28 | Legacy; not verified on current releases |
+| [Timelock](./timelock) | `nightly-2024-05-28` | `0.60.0` | `0.26.0` | 2024-05-28 | Legacy; not verified on current releases |
+| [Counter Script](./counter-script/) | `nightly-2024-05-28` | `0.60.0` | `0.26.0` | 2024-05-28 | Legacy; not verified on current releases |
 
 ## Running a project
 
-If you wish to run any of the projects then clone this repository and go through the general [installation](https://fuellabs.github.io/sway/) steps required to use our tools.
+If you wish to run a project, clone this repository and install
+[`fuelup`](https://install.fuel.network/). Fuelup reads the project's
+`fuel-toolchain.toml`, but these old dated nightly distributions may no longer
+restore completely. Do not replace the pin with `latest`: in Fuelup, `latest`
+is an alias for the mainnet-compatible distribution, not the newest upstream
+Sway compiler.
 
 Any instructions related to running a specific project will be found within the README.md in the root of that project.
 
-The projects are pinned to specific versions which can be seen at the top of the README.md inside the `/<app>/project` directory and inside the `fuel-toolchain.toml`.
+Before changing a pin, record the old bytecode and contract IDs, migrate from
+the latest patch of the old Sway minor where possible, and rerun the Sway,
+Rust, and end-to-end tests against an explicitly selected target toolchain.
 
 ## Contributing
 
