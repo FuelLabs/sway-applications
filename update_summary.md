@@ -18,8 +18,9 @@ construction, or security patterns for current guidance.
   toolchain-file update date, and verification status.
 - Explained that public workflow history no longer provides a durable
   per-application last-passing date.
-- Added cautions about restoring old dated nightlies and about replacing them
-  with Fuelup's `latest` mainnet alias.
+- Added cautions about restoring old dated nightlies and about replacing
+  pins with Fuelup's `latest` alias, whose target distribution is resolved
+  live rather than fixed.
 - Added migration guidance to preserve bytecode and contract IDs and retest
   against an explicitly selected target stack.
 - Corrected the contributing guide so it no longer presents the historical

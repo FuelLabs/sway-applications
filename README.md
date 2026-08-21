@@ -122,8 +122,10 @@ If you wish to run a project, clone this repository and install
 [`fuelup`](https://install.fuel.network/). Fuelup reads the project's
 `fuel-toolchain.toml`, but these old dated nightly distributions may no longer
 restore completely. Do not replace the pin with `latest`: in Fuelup, `latest`
-is an alias for the mainnet-compatible distribution, not the newest upstream
-Sway compiler.
+is an alias whose meaning is resolved from the live channel manifests, not a
+pointer to the newest upstream Sway compiler (at the time of writing it tracked
+the mainnet-compatible distribution). Run `fuelup show` after installing to see
+what it currently resolves to.
 
 Any instructions related to running a specific project will be found within the README.md in the root of that project.
 
