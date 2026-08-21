@@ -1,11 +1,6 @@
 # Testing
 
-The [Sway Applications repository](https://github.com/FuelLabs/sway-applications)
-contains legacy, version-pinned examples of testing with the
-[Rust SDK](https://github.com/FuelLabs/fuels-rs). Its structure reflects the
-toolchains recorded in each application's `fuel-toolchain.toml`; it is not a
-current Rust SDK testing template. Consult the repository's project status
-matrix and the documentation for your selected SDK release before reusing it.
+The [Sway Applications repository](https://github.com/FuelLabs/sway-applications) contains legacy, version-pinned examples of testing with the [Rust SDK](https://github.com/FuelLabs/fuels-rs). Its structure reflects the toolchains recorded in each application's `fuel-toolchain.toml`; it is not a current Rust SDK testing template. Consult the repository's project status matrix and the documentation for your selected SDK release before reusing it.
 
 ```
 tests/

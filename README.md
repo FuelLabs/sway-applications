@@ -27,12 +27,7 @@ The purpose of this repository is to contain end-to-end applications that are wr
 This means that a project will generally consist of a Sway contract and a user interface in order to interact with the contract however that is not a hard rule.
 
 > [!WARNING]
-> **Legacy, version-pinned examples:** These applications have not been
-> updated for current Sway releases or Fuel network toolchains. Most pins were
-> last updated in May 2024. Preserve them as historical examples, but do not
-> treat their syntax, SDK usage, transaction construction, or security patterns
-> as current guidance without revalidating them against your selected compiler,
-> SDK, node, and network.
+> **Legacy, version-pinned examples:** These applications have not been updated for current Sway releases or Fuel network toolchains. Most pins were last updated in May 2024. Preserve them as historical examples, but do not treat their syntax, SDK usage, transaction construction, or security patterns as current guidance without revalidating them against your selected compiler, SDK, node, and network.
 
 ## Repository Structure
 
@@ -90,12 +85,7 @@ sway-applications/
 
 ## Project status and toolchains
 
-Every project is a legacy snapshot. The versions below come from each
-committed `fuel-toolchain.toml`; the date is the last commit that changed that
-file. It is not a claim that the combination still installs or passes today.
-GitHub no longer exposes a retained successful CI run for this repository, so a
-durable per-application “last passing” date cannot be recovered from public
-workflow history.
+Every project is a legacy snapshot. The versions below come from each committed `fuel-toolchain.toml`; the date is the last commit that changed that file. It is not a claim that the combination still installs or passes today. GitHub no longer exposes a retained successful CI run for this repository, so a durable per-application “last passing” date cannot be recovered from public workflow history.
 
 | Application | Recorded channel | Forc | Fuel Core | Toolchain file last updated | Status |
 | --- | --- | --- | --- | --- | --- |
@@ -118,20 +108,11 @@ workflow history.
 
 ## Running a project
 
-If you wish to run a project, clone this repository and install
-[`fuelup`](https://install.fuel.network/). Fuelup reads the project's
-`fuel-toolchain.toml`, but these old dated nightly distributions may no longer
-restore completely. Do not replace the pin with `latest`: in Fuelup, `latest`
-is an alias whose meaning is resolved from the live channel manifests, not a
-pointer to the newest upstream Sway compiler (at the time of writing it tracked
-the mainnet-compatible distribution). Run `fuelup show` after installing to see
-what it currently resolves to.
+If you wish to run a project, clone this repository and install [`fuelup`](https://install.fuel.network/). Fuelup reads the project's `fuel-toolchain.toml`, but these old dated nightly distributions may no longer restore completely. Do not replace the pin with `latest`: in Fuelup, `latest` is an alias whose meaning is resolved from the live channel manifests, not a pointer to the newest upstream Sway compiler (at the time of writing it tracked the mainnet-compatible distribution). Run `fuelup show` after installing to see what it currently resolves to.
 
 Any instructions related to running a specific project will be found within the README.md in the root of that project.
 
-Before changing a pin, record the old bytecode and contract IDs, migrate from
-the latest patch of the old Sway minor where possible, and rerun the Sway,
-Rust, and end-to-end tests against an explicitly selected target toolchain.
+Before changing a pin, record the old bytecode and contract IDs, migrate from the latest patch of the old Sway minor where possible, and rerun the Sway, Rust, and end-to-end tests against an explicitly selected target toolchain.
 
 ## Contributing
 
