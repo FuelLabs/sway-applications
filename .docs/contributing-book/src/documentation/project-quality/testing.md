@@ -1,6 +1,6 @@
 # Testing
 
-The [Sway Applications repository](https://github.com/FuelLabs/sway-applications) generally follows the current file structure when testing using the [Rust SDK](https://github.com/FuelLabs/fuels-rs).
+The [Sway Applications repository](https://github.com/FuelLabs/sway-applications) contains legacy, version-pinned examples of testing with the [Rust SDK](https://github.com/FuelLabs/fuels-rs). Its structure reflects the toolchains recorded in each application's `fuel-toolchain.toml`; it is not a current Rust SDK testing template. Consult the repository's project status matrix and the documentation for your selected SDK release before reusing it.
 
 ```
 tests/
@@ -46,5 +46,4 @@ The `setup.rs` file contains code that generates the contracts/scripts/predicate
 ## `harness.rs`
 
 The `harness` file is the entry point for the tests, and thus it contains the `functions` and `utils` modules. This is what is executed when `cargo test` is run.
-
 
