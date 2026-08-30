@@ -1,4 +1,4 @@
-import { useWallet } from '@fuels/react';
+import { useAccount, useWallet } from '@fuels/react';
 import { useQuery } from '@tanstack/react-query';
 
 import { CONTRACT_ID } from '../config';
@@ -6,7 +6,8 @@ import { TictactoeContractAbi__factory } from '../contract-types';
 import { TicTacToeQueryKeys } from '../queryKeys';
 
 export const useGetCurrentPlayer = () => {
-  const { wallet, isError, isLoading } = useWallet();
+  const { account  } = useAccount();
+  const { wallet, isError, isLoading } = useWallet(account);
 
   const query = useQuery({
     queryKey: [TicTacToeQueryKeys.currentPlayer, wallet?.provider.url],

@@ -1,11 +1,11 @@
-import { useIsConnected, useConnect, useDisconnect } from '@fuels/react';
+import { useIsConnected, useConnectUI, useDisconnect } from '@fuels/react';
 import { Button } from '@mui/material';
 
 import { useAppContext } from '.';
 
 export const ConnectButton = () => {
   const { isConnected } = useIsConnected();
-  const { connect, isLoading: isConnectLoading } = useConnect();
+  const { connect, isLoading: isConnectLoading } = useConnectUI();
   const { disconnect, isLoading: isDisconnectLoading } = useDisconnect();
   const appContext = useAppContext();
 

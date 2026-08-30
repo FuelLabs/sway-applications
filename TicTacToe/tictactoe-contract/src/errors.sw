@@ -21,3 +21,7 @@ pub enum PositionError {
     /// The cell is out of bounds.
     InvalidPosition: (),
 }
+
+pub enum GameIDError {
+    InvalidGameID: (),
+}
