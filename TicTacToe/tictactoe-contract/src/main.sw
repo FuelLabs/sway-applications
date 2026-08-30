@@ -105,7 +105,7 @@ impl Game for Contract {
             storage.player_turn.write(Some(player_one));
         }
 
-        // Detemine if there is a winner or if it is a draw
+        // Determine if there is a winner or if it is a draw
         if (current_move_counter > 4) {
             let mut board = storage.board.load_vec();
 

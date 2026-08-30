@@ -1,6 +1,6 @@
 use crate::utils::{interface::info::user_votes, setup::setup};
 
-mod sucess {
+mod success {
     use super::*;
     use crate::utils::{
         interface::core::{constructor, create_proposal, deposit, vote},

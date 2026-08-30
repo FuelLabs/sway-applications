@@ -13,7 +13,7 @@ mod success {
     };
 
     #[tokio::test]
-    async fn initalizes() {
+    async fn initializes() {
         let (deploy_wallet, wallet1, wallet2, wallet3, asset_id) = setup().await;
         let (_, _, _, admin, _, num_leaves, asset_supply, _, claim_time, _, _) =
             defaults(&deploy_wallet, &wallet1, &wallet2, &wallet3).await;

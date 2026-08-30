@@ -34,7 +34,7 @@ walk(e){return this.constructor._walk(e,this.rootNode)}static _walk(e,t){
 return"string"==typeof t?e.addText(t):t.children&&(e.openNode(t),
 t.children.forEach((t=>this._walk(e,t))),e.closeNode(t)),e}static _collapse(e){
 "string"!=typeof e&&e.children&&(e.children.every((e=>"string"==typeof e))?e.children=[e.children.join("")]:e.children.forEach((e=>{
-l._collapse(e)})))}}class c extends l{constructor(e){super(),this.options=e}
+l._collapse(e)})))}}class CodeHighlighter extends l{constructor(e){super(),this.options=e}
 addKeyword(e,t){""!==e&&(this.openNode(t),this.addText(e),this.closeNode())}
 addText(e){""!==e&&this.add(e)}addSublanguage(e,t){const n=e.root
 ;n.kind=t,n.sublanguage=!0,this.add(n)}toHTML(){
@@ -193,7 +193,10 @@ const n=y.classNameAliases[e]||e;S.addKeyword(t[0],n)}}else n+=t[0]
 ;e=v.keywordPatternRe.lastIndex,t=v.keywordPatternRe.exec(R)}var s
 ;n+=R.substr(e),S.addText(n)}function u(){null!=v.subLanguage?(()=>{
 if(""===R)return;let e=null;if("string"==typeof v.subLanguage){
-if(!t[v.subLanguage])return void S.addText(R)
+if (!t[v.subLanguage]) {
+  S.addText(R);
+  return;
+}
 ;e=E(v.subLanguage,R,!0,O[v.subLanguage]),O[v.subLanguage]=e._top
 }else e=_(R,v.subLanguage.length?v.subLanguage:null)
 ;v.relevance>0&&(M+=e.relevance),S.addSublanguage(e._emitter,e.language)
