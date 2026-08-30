@@ -17,7 +17,7 @@ Description of the upcoming release here.
 ### Changed
 
 - [#809](https://github.com/FuelLabs/sway-applications/issues/809) Set Devrel team as codeowners
-- Something changed here 2
+- [#811](https://github.com/FuelLabs/sway-applications/pull/811) Updates the NFT, Fractional NFT, and Native Asset apps to the latest SRC-20 and SRC-3 specs.
 
 ### Fixed
 

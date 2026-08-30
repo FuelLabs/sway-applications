@@ -3,7 +3,20 @@ contract;
 mod errors;
 
 use errors::{DepositError, SubIdError, WithdrawError};
-use standards::{src20::SRC20, src6::{Deposit, SRC6, Withdraw}};
+use standards::{
+    src20::{
+        SetDecimalsEvent,
+        SetNameEvent,
+        SetSymbolEvent,
+        SRC20,
+        TotalSupplyEvent,
+    },
+    src6::{
+        Deposit,
+        SRC6,
+        Withdraw,
+    },
+};
 use std::{
     asset::{
         burn,
@@ -89,19 +102,21 @@ impl SRC6 for Contract {
     #[payable]
     #[storage(read, write)]
     fn deposit(receiver: Identity, vault_sub_id: SubId) -> u64 {
-        require(vault_sub_id == ZERO_B256, SubIdError::InvalidSubId);
+        require(vault_sub_id == SubId::zero(), SubIdError::InvalidSubId);
         require(msg_amount() == 1, DepositError::InvalidSRC20NFT);
 
         let nft = msg_asset_id();
         let f_nft_asset_sub_id = sha256((nft, vault_sub_id));
         let f_nft_asset = AssetId::new(ContractId::this(), f_nft_asset_sub_id);
+        let sender = msg_sender().unwrap();
 
         storage.total_assets.write(storage.total_assets.read() + 1);
         storage.vault_asset.insert(f_nft_asset, true);
         mint_to(receiver, f_nft_asset_sub_id, SHARES);
+        TotalSupplyEvent::new(f_nft_asset, SHARES, sender).log();
 
         log(Deposit {
-            caller: msg_sender().unwrap(),
+            caller: sender,
             receiver: receiver,
             underlying_asset: nft,
             vault_sub_id: vault_sub_id,
@@ -159,6 +174,7 @@ impl SRC6 for Contract {
         require(vault_sub_id == ZERO_B256, SubIdError::InvalidSubId);
 
         let sent_amount = msg_amount();
+        let sender = msg_sender().unwrap();
         require(sent_amount == SHARES, WithdrawError::AllSharesNotReturned);
 
         let f_nft_asset_sub_id = sha256((underlying_asset, vault_sub_id));
@@ -166,10 +182,12 @@ impl SRC6 for Contract {
         require(msg_asset_id() == f_nft_asset, WithdrawError::InvalidAsset);
 
         burn(f_nft_asset_sub_id, SHARES);
+        TotalSupplyEvent::new(f_nft_asset, 0, sender).log();
+
         transfer(receiver, underlying_asset, 1);
 
         log(Withdraw {
-            caller: msg_sender().unwrap(),
+            caller: sender,
             receiver,
             underlying_asset,
             vault_sub_id,
@@ -466,5 +484,23 @@ impl SRC20 for Contract {
             Some(_) => Some(DECIMALS),
             None => None,
         }
+    }
+}
+
+abi EmitSRC20Events {
+    fn emit_src20_events(asset: AssetId);
+}
+
+impl EmitSRC20Events for Contract {
+    fn emit_src20_events(asset: AssetId) {
+        // Metadata that is stored as a configurable should only be emitted once.
+        let sender = msg_sender().unwrap();
+        let name = Some(String::from_ascii_str(from_str_array(NAME)));
+        let symbol = Some(String::from_ascii_str(from_str_array(SYMBOL)));
+
+        SetNameEvent::new(asset, name, sender).log();
+        SetSymbolEvent::new(asset, symbol, sender).log();
+        SetDecimalsEvent::new(asset, DECIMALS, sender).log();
+        TotalSupplyEvent::new(asset, SHARES, sender).log();
     }
 }

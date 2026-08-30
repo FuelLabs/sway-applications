@@ -22,15 +22,15 @@ In this barebones NFT example project, there are a maximum of 100,000 NFTs that 
 
 ## Standards Implementations
 
-The project implements and follows the [SRC-20; Native Asset](https://github.com/FuelLabs/sway-standards/blob/master/SRCs/src-20.md), [SRC-3; Mint and Burn](https://github.com/FuelLabs/sway-standards/blob/master/SRCs/src-3.md), and [SRC-7; Metadata](https://github.com/FuelLabs/sway-standards/blob/master/SRCs/src-7.md) standards. It also uses the [Native Asset Library](https://fuellabs.github.io/sway-libs/book/asset/index.html) to implement the basic functionality behind the standards.  
+The project implements and follows the [SRC-20; Native Asset](https://docs.fuel.network/docs/sway-standards/src-20-native-asset/), [SRC-3; Mint and Burn](https://docs.fuel.network/docs/sway-standards/src-3-minting-and-burning/), and [SRC-7; Metadata](https://docs.fuel.network/docs/sway-standards/src-7-asset-metadata/) standards. It also uses the [Native Asset Library](https://docs.fuel.network/docs/sway-libs/asset/) to implement the basic functionality behind the standards.  
 
 ### SRC-20
 
-The [SRC-20](https://github.com/FuelLabs/sway-standards/blob/master/SRCs/src-20.md) standard requires that there is a maximum number of one coin per NFT asset. It also states that the decimals must be `0u8` for any NFT. This project conforms to both these restrictions and thus can be deemed an NFT on the Fuel Network. 
+The [SRC-20](https://docs.fuel.network/docs/sway-standards/src-20-native-asset/) standard requires that there is a maximum number of one coin per NFT asset. It also states that the decimals must be `0u8` for any NFT. This project conforms to both these restrictions and thus can be deemed an NFT on the Fuel Network. 
 
 Set functions for name and symbol have been provided to the user. While traditionally name and symbol are written into the contract rather than storage, this contract is open to mint new types of assets. This means that every NFT minted by this contract may contain a different name and symbol. 
 
-The [SRC-20](https://github.com/FuelLabs/sway-standards/blob/master/SRCs/src-20.md) ABI defined below has also been implemented.
+The [SRC-20](https://docs.fuel.network/docs/sway-standards/src-20-native-asset/) ABI defined below has also been implemented.
 
 ```sway
 abi SRC20 {
@@ -49,7 +49,7 @@ abi SRC20 {
 
 ### SRC-3
 
-The [SRC-3](https://github.com/FuelLabs/sway-standards/blob/master/SRCs/src-3.md) standard defines the ABI for minting and burning. This has been properly implemented.
+The [SRC-3](https://docs.fuel.network/docs/sway-standards/src-3-minting-and-burning/) standard defines the ABI for minting and burning. This has been properly implemented.
 
 ```sway
 abi SRC3 {
@@ -62,7 +62,7 @@ abi SRC3 {
 
 ### SRC-7
 
-The [SRC-7](https://github.com/FuelLabs/sway-standards/blob/master/SRCs/src-7.md) standard defines the ABI for retrieving metadata. This has been properly implemented. 
+The [SRC-7](https://docs.fuel.network/docs/sway-standards/src-7-asset-metadata/) standard defines the ABI for retrieving metadata. This has been properly implemented. 
 
 A set function that uses storage has been provided to allow the user to set their own desired metadata. There is no limit or restrictions to what and the amount of metadata an asset may have.
 

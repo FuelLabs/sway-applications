@@ -6,6 +6,7 @@ pub enum AmountError {
 
 pub enum MintError {
     MaxMinted: (),
+    SubIdNone: (),
 }
 
 pub enum SetError {

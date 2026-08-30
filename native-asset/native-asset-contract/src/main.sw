@@ -221,6 +221,7 @@ impl SRC3 for Contract {
     /// # Reverts
     ///
     /// * When the caller is not the contract owner.
+    /// * When `sub_id` is `None`.
     /// * When more than 100,000,000 coins have been minted.
     ///
     /// # Number of Storage Accesses
@@ -240,10 +241,11 @@ impl SRC3 for Contract {
     /// }
     /// ```
     #[storage(read, write)]
-    fn mint(recipient: Identity, sub_id: SubId, amount: u64) {
+    fn mint(recipient: Identity, sub_id: Option<SubId>, amount: u64) {
         only_owner();
 
-        let asset = AssetId::new(ContractId::this(), sub_id);
+        require(sub_id.is_some(), MintError::SubIdNone);
+        let asset = AssetId::new(ContractId::this(), sub_id.unwrap());
         let cumulative_supply = storage.cumulative_supply.get(asset).try_read().unwrap_or(0);
         require(
             cumulative_supply + amount <= MAX_SUPPLY,
@@ -252,13 +254,16 @@ impl SRC3 for Contract {
         storage
             .cumulative_supply
             .insert(asset, cumulative_supply + amount);
+
+        // NOTE: TotalSupplyEvent is emitted by _mint()
         let _ = _mint(
             storage
                 .total_assets,
             storage
                 .total_supply,
             recipient,
-            sub_id,
+            sub_id
+                .unwrap(),
             amount,
         );
     }
@@ -303,6 +308,7 @@ impl SRC3 for Contract {
     #[storage(read, write)]
     fn burn(sub_id: SubId, amount: u64) {
         require(msg_amount() == amount, AmountError::AmountMismatch);
+        // NOTE: TotalSupplyEvent is emitted by _burn()
         _burn(storage.total_supply, sub_id, amount);
     }
 }
@@ -383,6 +389,7 @@ impl SetAssetAttributes for Contract {
                 .is_none(),
             SetError::ValueAlreadySet,
         );
+        // NOTE: SetNameEvent is emitted by _set_name()
         _set_name(storage.name, asset, name);
     }
 
@@ -430,6 +437,7 @@ impl SetAssetAttributes for Contract {
                 .is_none(),
             SetError::ValueAlreadySet,
         );
+        // NOTE: SetSymbolEvent is emitted by _set_symbol()
         _set_symbol(storage.symbol, asset, symbol);
     }
 
@@ -476,6 +484,7 @@ impl SetAssetAttributes for Contract {
                 .is_none(),
             SetError::ValueAlreadySet,
         );
+        // NOTE: SetDecimalsEvent is emitted by _set_decimals()
         _set_decimals(storage.decimals, asset, decimals);
     }
 }

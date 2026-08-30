@@ -5,7 +5,21 @@ mod interface;
 
 use errors::{MintError, SetError};
 use interface::Constructor;
-use standards::{src20::SRC20, src3::SRC3, src5::{SRC5, State}, src7::{Metadata, SRC7},};
+use standards::{
+    src20::{
+        SetDecimalsEvent,
+        SRC20,
+    },
+    src3::SRC3,
+    src5::{
+        SRC5,
+        State,
+    },
+    src7::{
+        Metadata,
+        SRC7,
+    },
+};
 use sway_libs::{
     asset::{
         base::{
@@ -232,12 +246,13 @@ impl SRC3 for Contract {
     /// # Arguments
     ///
     /// * `recipient`: [Identity] - The user to which the newly minted assets are transferred to.
-    /// * `sub_id`: [SubId] - The sub-identifier of the newly minted asset.
+    /// * `sub_id`: [Option<SubId>] - The sub-identifier of the newly minted asset.
     /// * `amount`: [u64] - The quantity of coins to mint.
     ///
     /// # Reverts
     ///
     /// * When the contract is paused.
+    /// * When the `sub_id` is `None`.
     /// * When amount is greater than one.
     /// * When the asset has already been minted.
     /// * When more than the MAX_SUPPLY NFTs have been minted.
@@ -258,11 +273,12 @@ impl SRC3 for Contract {
     /// }
     /// ```
     #[storage(read, write)]
-    fn mint(recipient: Identity, sub_id: SubId, amount: u64) {
+    fn mint(recipient: Identity, sub_id: Option<SubId>, amount: u64) {
         require_not_paused();
 
         // Checks to ensure this is a valid mint.
-        let asset = AssetId::new(ContractId::this(), sub_id);
+        require(sub_id.is_some(), MintError::SubIdNone);
+        let asset = AssetId::new(ContractId::this(), sub_id.unwrap());
         require(amount == 1, MintError::CannotMintMoreThanOneNFTWithSubId);
         require(
             storage
@@ -281,13 +297,15 @@ impl SRC3 for Contract {
         );
 
         // Mint the NFT
+        // NOTE: TotalSupplyEvent is emitted by _mint()
         let _ = _mint(
             storage
                 .total_assets,
             storage
                 .total_supply,
             recipient,
-            sub_id,
+            sub_id
+                .unwrap(),
             amount,
         );
     }
@@ -331,6 +349,7 @@ impl SRC3 for Contract {
     #[storage(read, write)]
     fn burn(sub_id: SubId, amount: u64) {
         require_not_paused();
+        // NOTE: TotalSupplyEvent is emitted by _burn()
         _burn(storage.total_supply, sub_id, amount);
     }
 }
@@ -446,6 +465,7 @@ impl SetAssetAttributes for Contract {
                 .is_none(),
             SetError::ValueAlreadySet,
         );
+        // NOTE: SetNameEvent is emitted by _set_name()
         _set_name(storage.name, asset, name);
     }
 
@@ -492,6 +512,7 @@ impl SetAssetAttributes for Contract {
                 .is_none(),
             SetError::ValueAlreadySet,
         );
+        // NOTE: SetSymbolEvent is emitted by _set_symbol()
         _set_symbol(storage.symbol, asset, symbol);
     }
 
@@ -552,6 +573,7 @@ impl SetAssetMetadata for Contract {
                 .is_none(),
             SetError::ValueAlreadySet,
         );
+        // NOTE: SetMetadataEvent is emitted by _set_metadata()
         _set_metadata(storage.metadata, asset, key, metadata);
     }
 }
@@ -671,5 +693,18 @@ impl Constructor for Contract {
     #[storage(read, write)]
     fn constructor(owner: Identity) {
         initialize_ownership(owner);
+    }
+}
+
+abi EmitSRC20Events {
+    fn emit_src20_events(asset: AssetId);
+}
+
+impl EmitSRC20Events for Contract {
+    fn emit_src20_events(asset: AssetId) {
+        // Metadata that is stored as a configurable should only be emitted once.
+        let sender = msg_sender().unwrap();
+
+        SetDecimalsEvent::new(asset, 0u8, sender).log();
     }
 }

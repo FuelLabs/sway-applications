@@ -5,4 +5,4 @@ license = "Apache-2.0"
 name = "f-NFT-contract"
 
 [dependencies]
-standards = { git = "https://github.com/FuelLabs/sway-standards", tag = "v0.4.4" }
+standards = { git = "https://github.com/FuelLabs/sway-standards", tag = "v0.6.1" }

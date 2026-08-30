@@ -228,8 +228,8 @@ impl SRC3 for Contract {
     /// }
     /// ```
     #[storage(read, write)]
-    fn mint(recipient: Identity, sub_id: SubId, amount: u64) {
-        let asset = AssetId::new(ContractId::this(), sub_id);
+    fn mint(recipient: Identity, sub_id: Option<SubId>, amount: u64) {
+        let asset = AssetId::new(ContractId::this(), sub_id.unwrap());
         require(amount == 1, MintError::CannotMintMoreThanOneNFTWithSubId);
         require(
             storage
@@ -252,7 +252,8 @@ impl SRC3 for Contract {
             storage
                 .total_supply,
             recipient,
-            sub_id,
+            sub_id
+                .unwrap(),
             amount,
         );
     }

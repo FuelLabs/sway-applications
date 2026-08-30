@@ -144,13 +144,13 @@ pub(crate) async fn setup_nft(
 
     let _ = nft
         .methods()
-        .mint(identity, Bits256(*sub_id_1), 1)
+        .mint(identity, Some(Bits256(*sub_id_1)), 1)
         .append_variable_outputs(1)
         .call()
         .await;
     let _ = nft
         .methods()
-        .mint(identity, Bits256(*sub_id_2), 1)
+        .mint(identity, Some(Bits256(*sub_id_2)), 1)
         .append_variable_outputs(1)
         .call()
         .await;

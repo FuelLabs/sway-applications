@@ -22,7 +22,7 @@ In this barebones F-NFT example project, where locking a NFT into the vault will
 
 ## Standards Implementations
 
-The project implements and follows the [SRC-6; Vault](https://github.com/FuelLabs/sway-standards/blob/master/SRCs/src-6.md) and [SRC-20; Native Asset](https://github.com/FuelLabs/sway-standards/blob/master/SRCs/src-20.md) standards. 
+The project implements and follows the [SRC-6; Vault](https://github.com/FuelLabs/sway-standards/blob/master/SRCs/src-6.md) and [SRC-20; Native Asset](https://docs.fuel.network/docs/sway-standards/src-20-native-asset/) standards. 
 
 ### SRC-6
 
@@ -47,7 +47,7 @@ abi SRC6 {
 
 ### SRC-20
 
-The [SRC-20](https://github.com/FuelLabs/sway-standards/blob/master/SRCs/src-20.md) standard has been implemented for the resulting minted shares when a NFT is locked in the vault. Information on the share assets can be queried with the [SRC-20](https://github.com/FuelLabs/sway-standards/blob/master/SRCs/src-20.md) standard.
+The [SRC-20](https://docs.fuel.network/docs/sway-standards/src-20-native-asset/) standard has been implemented for the resulting minted shares when a NFT is locked in the vault. Information on the share assets can be queried with the [SRC-20](https://docs.fuel.network/docs/sway-standards/src-20-native-asset/) standard.
 
 ```sway
 abi SRC20 {

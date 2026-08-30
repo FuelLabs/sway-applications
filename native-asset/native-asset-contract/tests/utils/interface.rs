@@ -57,7 +57,7 @@ pub(crate) async fn mint(
 ) -> FuelCallResponse<()> {
     contract
         .methods()
-        .mint(recipient, sub_id, amount)
+        .mint(recipient, Some(sub_id), amount)
         .append_variable_outputs(1)
         .call()
         .await
