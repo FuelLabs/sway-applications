@@ -153,7 +153,7 @@ mod success {
         let metadata1 = Metadata::String(String::from("Fuel NFT Metadata 1"));
         let metadata2 = Metadata::Int(1);
         let metadata3 =
-            Metadata::Bytes(Bytes::from_hex_str("bytes").expect("failed to conver to bytes"));
+            Metadata::Bytes(Bytes::from_hex_str("bytes").expect("failed to convert to bytes"));
         let key1 = String::from("key1");
         let key2 = String::from("key2");
         let key3 = String::from("key3");
